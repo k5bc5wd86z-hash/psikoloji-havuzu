@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ Yönetici Ayarları & Terminal Komuta Merkezi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="background-color: var(--bg-base); padding: 2rem;">
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h1 style="font-family: var(--font-serif); font-size: 2.5rem; color: var(--text-primary);">⚙️ Sistem Ayarları & Terminal</h1>
+                <p style="color: var(--text-muted);">Platform parametrelerini yönetin, uzmanları silin ve terminal komutları çalıştırın.</p>
+            </div>
+            <div>
+                <a href="/admin_dashboard" class="btn-outline" style="padding: 0.6rem 1.2rem; text-decoration: none; margin-right: 0.5rem;">← Yönetim Paneline Dön</a>
+                <a href="/" class="btn-outline" style="padding: 0.6rem 1.2rem; text-decoration: none;">Ana Sayfa</a>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <!-- Site Ayarları Formu -->
+            <div class="dashboard-card">
+                <h3>🛠️ Platform Ayarları</h3>
+                <form action="/admin/update_settings" method="POST">
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Marka / Site Adı</label>
+                        <input type="text" name="brand_name" class="editor-input" value="{{ settings.brand_name if settings else 'Psikoloji Havuzu' }}" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Hero Başlığı</label>
+                        <input type="text" name="hero_title" class="editor-input" value="{{ settings.hero_title if settings else 'Zihni, Bedeni ve Hücreyi Anlamak.' }}" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Hero Alt Başlığı</label>
+                        <textarea name="hero_subtitle" class="editor-textarea" style="min-height: 80px;" required>{{ settings.hero_subtitle if settings else 'Profesyonel danışmanlık ve bilimsel makaleler.' }}</textarea>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Ana Sayfa Yerleşim Düzeni</label>
+                        <select name="layout_order" class="editor-select">
+                            <option value="default" {% if settings and settings.layout_order == 'default' %}selected{% endif %}>Makaleler Önce</option>
+                            <option value="experts_first" {% if settings and settings.layout_order == 'experts_first' %}selected{% endif %}>Uzmanlar Önce</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-follow" style="width: 100%;">Ayarları Güncelle</button>
+                </form>
+            </div>
+
+            <!-- Sağ Kolon: Uzman Silme Yetkisi ve Terminal Komut Paneli -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Ek Yetki: Uzman Silme Paneli -->
+                <div class="dashboard-card">
+                    <h3>❌ Uzman Yönetimi & Silme</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Sistemdeki kayıtlı uzmanları doğrudan sistemden silebilirsiniz.</p>
+                    <div style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem;">
+                        {% for exp in experts %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-base); padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid var(--border-light);">
+                            <div>
+                                <strong style="font-size: 0.9rem;">{{ exp.name }}</strong><br>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">{{ exp.role }} (@{{ exp.username }})</span>
+                            </div>
+                            <a href="/admin/delete_expert/{{ exp.username }}" class="btn-outline" style="padding: 0.2rem 0.6rem; font-size: 0.75rem; border-color: #d9534f; color: #d9534f;" onclick="return confirm('Bu uzmanı kalıcı olarak silmek istediğinize emin misiniz?');">Uzmanı Sil</a>
+                        </div>
+                        {% else %}
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Kayıtlı uzman bulunmuyor.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+              
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+KİMDEN: sistem@psikolojihavuzu.com
+KİME: Kurucu Yönetici
+KONU: 🔒 Güvenlik Kodunuz
+TARİH: 24.07.2026 00:29:22
+--------------------------------------------------
+
+Yönetici paneline giriş yapmak için tek kullanımlık doğrulama kodunuz:
+
+>>>  256263  <<<
+
+Bu girişi siz yapmadıysanız lütfen acilen sistem şifrenizi değiştirin.

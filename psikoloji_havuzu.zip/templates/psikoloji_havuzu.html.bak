@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psikoloji Havuzu | Bütüncül Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% if session_user and not is_member and session_role != 'Kurucu Yönetici' %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='expert_style.css') }}">
+    {% endif %}
+    <style>
+        :root { --bg-base: {{ settings.bg_base if settings else '#FBF9F5' }}; --bg-card: {{ settings.bg_card if settings else '#FFFFFF' }}; --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="/" class="brand-logo">{{ settings.brand_name if settings and settings.brand_name else 'Psikoloji Havuzu' }}</a>
+            <ul class="nav-links"><li><a href="/">Ana Sayfa</a></li><li><a href="#icerik-alani">Keşfet</a></li></ul>
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <!-- KARANLIK MOD BUTONU -->
+                <button onclick="toggleDarkMode()" style="background:transparent; border:none; font-size:1.4rem; cursor:pointer;" id="themeToggle">🌙</button>
+                
+                {% if session_user %}
+                    <span style="font-size: 0.85rem; font-weight: 600;">{{ session_name }}</span>
+                    <a href="/logout" class="btn-follow" style="background: #c94a4a; padding: 0.4rem 1rem; font-size: 0.8rem;">Çıkış</a>
+                {% else %}
+                    <button class="btn-outline" onclick="openModal('adminModal')">Giriş Yap</button>
+                    <button class="btn-follow" onclick="openModal('registerModal')">Kayıt Ol</button>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px;">Bütüncül Esenlik Platformu</span>
+        <h1>{{ settings.hero_title if settings and settings.hero_title else 'Zihni, Bedeni ve Hücreyi Anlamak.' }}</h1>
+        <p>{{ settings.hero_subtitle if settings and settings.hero_subtitle else 'Profesyonel danışmanlık ve bilimsel makaleler.' }}</p>
+    </section>
+
+    {% if is_member %}
+    <section class="editor-section">
+        <div style="margin-bottom: 2rem;"><h2 style="font-family: var(--font-serif); font-size: 2.2rem;">Hoş Geldin, {{ session_name }} ✨</h2></div>
+        <div class="dashboard-grid">
+            <div class="dashboard-card" style="grid-column: span 1;">
+                <h3>👤 Sağlık & Randevu Paneli</h3>
+                {% if session_gender == 'Kadın' %}
+                <div class="period-widget">
+                    <div class="circle">🌸</div>
+                    {% if is_period_week %}
+                        <p class="period-status" style="font-weight: bold; font-size: 1.1rem; color: #d16b8a; margin-bottom: 0.5rem;">Şu an regl dönemindesiniz.</p>
+                        <p style="font-size: 0.85rem; color: #b04b6a;">Bedeninizi dinleyin, dinlenmeye vakit ayırın.</p>
+                    {% else %}
+                        <p class="period-status">Döngünüz normal seyrinde.</p>
+                    {% endif %}
+                    <form action="/update_period" method="POST" style="margin-top: 1.5rem;">
+                        <input type="date" name="lastPeriod" class="editor-input" value="{{ last_period if last_period else '' }}" required style="background: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">
+                        <button type="submit" class="btn-follow" style="background: #d16b8a; width: 100%; font-size: 0.8rem;">Döngüyü Güncelle</button>
+                    </form>
+                </div>
+                {% endif %}
+                <div style="background: var(--bg-base); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border-light); margin-top: auto;">
+                    <h4 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--accent-warm);">🗓️ Aktif Randevularım</h4>
+                    {% for appt in appointments %}
+                        {% if appt.user_name == session_name %}
+                            <div style="padding: 0.8rem 0; border-bottom: 1px dashed var(--border-light); font-size: 0.9rem;">
+                                Uzman: <strong>{{ appt.expert_username }}</strong><br>Tarih: {{ appt.date }} | ⏰ {{ appt.time }}<br>
+                                Durum: <span style="display: inline-block; padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: #fff; background: {% if appt.status == 'Onaylandı' %}#4caf50{% elif appt.status == 'Reddedildi' %}#c94a4a{% else %}#ff9800{% endif %};">{{ appt.status }}</span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- GÜNLÜK VE AI ANALİZİ -->
+            <div class="dashboard-card" style="grid-column: span 1;">
+                <h3>✍️ Kişisel Günlüğüm</h3>
+                <form action="/add_diary" method="POST">
+                    <input type="text" name="diaryTitle" class="editor-input" placeholder="Bugün nasıl hissediyorsun?" required style="margin-bottom: 0.8rem;">
+                    <textarea name="diaryContent" class="editor-textarea" placeholder="Duygularını buraya dök. Yapay Zeka analiz edecek..." required style="min-height: 80px; margin-bottom: 0.8rem;"></textarea>
+                    <button type="submit" class="btn-follow" style="width: 100%;">Günlüğe Kaydet</button>
+                </form>
+                {% if diaries %}
+                <div class="diary-list">
+                    <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); margin-top: 1rem;">Geçmiş Kayıtlar & Analizler</h4>
+                    {% for diary in diaries %}
+                        <div class="diary-item">
+                            <span class="diary-date">📅 {{ diary.date }}</span>
+                            <strong style="display: block; margin-bottom: 0.3rem; color: var(--text-primary);">{{ diary.title }}</strong>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.5rem;">{{ diary.content }}</p>
+                            <!-- YENİ: AI DUYGU DURUMU GERİ BİLDİRİMİ -->
+                            {% if diary.ai_analysis %}
+                                <div style="background: rgba(191, 160, 133, 0.1); border-left: 3px solid var(--accent-warm); padding: 0.5rem 0.8rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">
+                                    {{ diary.ai_analysis }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="dashboard-card" style="grid-column: span 1; background: var(--bg-base); border-color: var(--accent-warm);">
+                <h3>💡 Sana Özel Öneriler</h3>
+                <div>
+                    {% set suggested_count = 0 %}
+                    {% for post in posts %}
+                        {% if is_period_week and (post.category == 'Kadın Sağlığı & Psikoloji' or post.category == 'Beslenme Psikolojisi') %}
+                            {% if suggested_count < 2 %}
+                                <div class="rec-item" onclick="openArticleModal({{ post.id }})"><span class="rec-category">🌸 Öncelikli Öneri</span><span class="rec-title">{{ post.title }}</span></div>
+                                {% set suggested_count = suggested_count + 1 %}
+                            {% endif %}
+                        {% elif not is_period_week and suggested_count < 2 and (post.category == 'Klinik Psikoloji & Terapi' or post.category == 'Nöropsikoloji & Zihin') %}
+                            <div class="rec-item" onclick="openArticleModal({{ post.id }})"><span class="rec-category">📚 İlgini Çekebilir</span><span class="rec-title">{{ post.title }}</span></div>
+                            {% set suggested_count = suggested_count + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if session_user and not is_member and session_role != 'Kurucu Yönetici' %}
+    <section class="editor-section" style="max-width: 1200px;" id="ortak-calisma">
+        <div style="margin-bottom: 1rem;">
+            <h2 style="font-family: var(--font-serif); font-size: 2.4rem;">Uzman Paneli</h2>
+            <p style="color: var(--text-muted);">Yeni randevu aldığınızda sağ alttan bildirim gelecektir.</p>
+        </div>
+        <div class="expert-dashboard-container">
+            <div class="expert-calendar-card">
+                <div class="calendar-header"><h3>🗓️ Randevu Takvimi</h3></div>
+                <div class="calendar-grid">
+                    <div class="cal-day-header">Pzt</div><div class="cal-day-header">Sal</div><div class="cal-day-header">Çar</div>
+                    <div class="cal-day-header">Per</div><div class="cal-day-header">Cum</div><div class="cal-day-header">Cmt</div><div class="cal-day-header">Paz</div>
+                    {% for day in range(1, 15) %}
+                    <div class="cal-day"><span class="cal-date-num">{{ day }}</span>
+                        {% for appt in appointments %}{% if appt.expert_username == session_user and appt.date.endswith('%02d'|format(day)) %}
+                                <div class="cal-event" onclick="alert('Danışan: {{ appt.user_name }}\nNeden: {{ appt.reason }}\nDurum: {{ appt.status }}')">⏰ {{ appt.time }} - {{ appt.user_name }}</div>
+                        {% endif %}{% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <h4 style="margin-top: 2rem; margin-bottom: 1rem; font-family: var(--font-serif); font-size: 1.4rem;">Bekleyen Talepler</h4>
+                <div style="background: var(--bg-base); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-light);">
+                    {% for appt in appointments %}
+                        {% if appt.expert_username == session_user %}
+                            <div style="padding: 0.8rem 0; border-bottom: 1px solid var(--border-light);">
+                                <strong>{{ appt.user_name }}</strong> ({{ appt.date }} - {{ appt.time }}) <br>
+                                Durum: <strong>{{ appt.status }}</strong>
+                                <div style="margin-top: 0.5rem;">
+                                    <a href="/update_appointment/{{ appt.id }}/Onaylandı" style="color: #4caf50; font-weight: bold; text-decoration: none; margin-right: 1rem;">✔ Onayla</a>
+                                    <a href="/update_appointment/{{ appt.id }}/Reddedildi" style="color: #c94a4a; font-weight: bold; text-decoration: none;">❌ Reddet</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="collab-card">
+                <h3 class="collab-header">🤝 Ortak Çalışma Odası</h3>
+                <div class="chat-container" id="chatContainer">
+                    {% for chat in expert_chats %}
+                        <div class="chat-bubble {% if chat.sender == session_name %}mine{% else %}other{% endif %}">
+                            <span class="chat-sender">{{ chat.sender }}</span>{{ chat.message }}<span class="chat-time">{{ chat.time }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <form action="/add_expert_chat" method="POST" style="display: flex; gap: 0.5rem; margin-top: auto;">
+                    <input type="text" name="chatMsg" class="editor-input" placeholder="Uzmanlara mesaj yaz..." style="margin-bottom: 0;" required>
+                    <button type="submit" class="btn-follow">Gönder</button>
+                </form>
+            </div>
+        </div>
+        <div class="expert-article-box">
+            <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">✍️ Makale Yayınla</h3>
+            <form action="/add_post" method="POST">
+                <input type="text" name="postTitle" class="editor-input" placeholder="Makale Başlığı" required>
+                <select name="postCategory" class="editor-select" required>
+                    <option value="Klinik Psikoloji & Terapi">Klinik Psikoloji & Terapi</option>
+                    <option value="Kadın Sağlığı & Psikoloji">Kadın Sağlığı & Psikoloji</option>
+                    <option value="Nöropsikoloji & Zihin">Nöropsikoloji & Zihin</option>
+                </select>
+                <textarea name="postContent" class="editor-textarea" required></textarea>
+                <button type="submit" class="btn-follow" style="width: 100%;">Paylaş</button>
+            </form>
+        </div>
+    </section>
+    <script>var chatBox = document.getElementById("chatContainer"); if(chatBox){ chatBox.scrollTop = chatBox.scrollHeight; }</script>
+    {% endif %}
+
+    <div id="icerik-alani" style="display: flex; flex-direction: column;">
+        <section class="blog-section" style="order: {{ 1 if (settings and settings.layout_order == 'experts_first') else 2 }}; padding-bottom: 2rem;">
+            <div class="section-header"><h2>Uzman Kadromuz</h2></div>
+            <div class="blog-grid">
+                {% for expert in experts %}
+                    <div class="expert-card">
+                        <div>
+                            <div class="expert-photo">{{ expert.photo }}</div>
+                            <h3 style="text-align: center; font-size: 1.4rem;">{{ expert.name }}</h3>
+                            <div style="text-align: center; margin-bottom: 1rem;"><span class="role-badge">{{ expert.role }}</span></div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted); background: var(--bg-base); padding: 1rem; border-radius: 12px; border-left: 4px solid var(--accent-warm);">{{ expert.cv }}</div>
+                        </div>
+                        <button class="btn-outline" style="width: 100%; margin-top: 1.5rem;" onclick="openAppointmentModal('{{ expert.username }}')">🗓️ Randevu Al</button>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="blog-section" style="order: {{ 2 if (settings and settings.layout_order == 'experts_first') else 1 }};">
+            <div class="section-header"><h2>Güncel Makaleler</h2></div>
+            <div class="blog-grid">
+                {% for post in posts %}
+                    <article class="blog-card">
+                        <div style="flex-grow: 1;">
+                            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-warm); font-weight: 600; margin-bottom: 0.8rem;">{{ post.category }}</div>
+                            <h3 style="font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem;">{{ post.title }}</h3>
+                            <div id="post-title-{{ post.id }}" style="display: none;">{{ post.title }}</div>
+                            <div id="post-category-{{ post.id }}" style="display: none;">{{ post.category }}</div>
+                            <div id="post-author-{{ post.id }}" style="display: none;">Yazar: {{ post.author }}</div>
+                            <div id="post-content-{{ post.id }}" style="display: none;">{{ post.content }}</div>
+                            <p class="text-clamp" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">{{ post.content }}</p>
+                        </div>
+                        <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; align-items: center;">
+                            {% if is_member %}<a href="/like_post/{{ post.id }}" class="btn-outline" style="padding: 0.5rem 1rem; text-decoration: none;">❤️ {{ post.likes }}</a>{% endif %}
+                            <button class="btn-follow" style="flex: 1;" onclick="openArticleModal({{ post.id }})">📖 Devamını Oku</button>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <!-- MODALLAR -->
+    <div class="modal-overlay" id="adminModal"><div class="modal-card"><button class="modal-close" onclick="closeModal('adminModal')">&times;</button><h3>Sistem Girişi</h3><form action="/login" method="POST"><input type="text" name="adminUsername" class="editor-input" placeholder="Kullanıcı Adı" required><input type="password" name="adminPassword" class="editor-input" placeholder="Şifre" required><button type="submit" class="btn-follow" style="width: 100%;">Giriş Yap</button></form></div></div>
+    <div class="modal-overlay" id="registerModal"><div class="modal-card"><button class="modal-close" onclick="closeModal('registerModal')">&times;</button><h3>Kayıt Ol</h3><form action="/register_member" method="POST"><input type="text" name="regName" class="editor-input" placeholder="Ad Soyad" required><input type="text" name="regUsername" class="editor-input" placeholder="Kullanıcı Adı" required><input type="password" name="regPassword" class="editor-input" placeholder="Şifre" required><select name="regGender" class="editor-select" required><option value="Kadın">Kadın</option><option value="Erkek">Erkek</option></select><button type="submit" class="btn-follow" style="width: 100%;">Kayıt Ol</button></form></div></div>
+    <div class="modal-overlay" id="appointmentModal"><div class="modal-card"><button class="modal-close" onclick="closeModal('appointmentModal')">&times;</button><h3>🗓️ Randevu Talebi</h3><form action="/add_appointment" method="POST"><input type="hidden" name="apptExpertUsername" id="apptExpertUsername"><input type="text" name="apptUserName" class="editor-input" value="{{ session_name if session_name else '' }}" placeholder="Adınız" required><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;"><input type="date" name="apptDate" class="editor-input" required><input type="time" name="apptTime" class="editor-input" required></div><textarea name="apptReason" class="editor-textarea" placeholder="Görüşme Nedeni" required></textarea><button type="submit" class="btn-follow" style="width: 100%;">Gönder</button></form></div></div>
+    <div class="modal-overlay" id="articleModal"><div class="modal-card large"><button class="modal-close" onclick="closeModal('articleModal')">&times;</button><div id="readModalCategory" style="font-size: 0.85rem; color: var(--accent-warm); font-weight: 600; margin-bottom: 1rem;"></div><h3 id="readModalTitle" style="font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 0.5rem; line-height: 1.2;"></h3><p id="readModalAuthor" style="font-size: 0.95rem; font-weight: bold; margin-bottom: 2rem; color: var(--text-muted); border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;"></p><div id="readModalContent" style="font-size: 1.05rem; line-height: 1.9; white-space: pre-wrap;"></div></div></div>
+
+    <!-- YENİ: BİLDİRİM BALONLARI KUTUSU -->
+    <div id="toast-container"></div>
+
+    <script>
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function openAppointmentModal(expertUsername) { document.getElementById('apptExpertUsername').value = expertUsername; openModal('appointmentModal'); }
+        function openArticleModal(id) {
+            document.getElementById('readModalTitle').innerText = document.getElementById('post-title-' + id).innerText;
+            document.getElementById('readModalCategory').innerText = document.getElementById('post-category-' + id).innerText;
+            document.getElementById('readModalAuthor').innerText = document.getElementById('post-author-' + id).innerText;
+            document.getElementById('readModalContent').innerText = document.getElementById('post-content-' + id).innerText;
+            openModal('articleModal');
+        }
+        
+        // 1. KARANLIK MOD (DARK MODE) SİSTEMİ
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('themeToggle').innerText = '☀️'; }
+        
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            let theme = 'light';
+            if (document.body.classList.contains('dark-mode')) { theme = 'dark'; document.getElementById('themeToggle').innerText = '☀️'; } 
+            else { document.getElementById('themeToggle').innerText = '🌙'; }
+            localStorage.setItem('theme', theme);
+        }
+
+        // 2. CANLI BİLDİRİM (AJAX POLLING) SİSTEMİ
+        {% if session_user %}
+        function fetchNotifications() {
+            fetch('/api/notifications')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(notification => {
+                        const toast = document.createElement('div');
+                        toast.className = 'toast';
+                        toast.innerText = notification.message;
+                        document.getElementById('toast-container').appendChild(toast);
+                        setTimeout(() => {
+                            toast.style.animation = 'fadeOutRight 0.4s forwards';
+                            setTimeout(() => toast.remove(), 400);
+                        }, 5000);
+                    });
+                });
+        }
+        setInterval(fetchNotifications, 5000); // Her 5 saniyede bir yeni bildirim var mı diye kontrol et!
+        {% endif %}
+    </script>
+</body>
+</html>

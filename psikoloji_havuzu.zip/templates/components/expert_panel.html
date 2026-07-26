@@ -1,0 +1,79 @@
+<section class="editor-section" style="max-width: 1200px;" id="ortak-calisma">
+    <div style="margin-bottom: 1rem;">
+        <h2 style="font-family: var(--font-serif); font-size: 2.4rem;">Uzman Paneli</h2>
+        <p style="color: var(--text-muted);">Yeni randevu aldığınızda sağ alttan bildirim gelecektir.</p>
+    </div>
+    <div class="expert-dashboard-container">
+        <div class="expert-calendar-card">
+            <div class="calendar-header"><h3>🗓️ Randevu Takvimi</h3></div>
+            <div class="calendar-grid">
+                <div class="cal-day-header">Pzt</div><div class="cal-day-header">Sal</div><div class="cal-day-header">Çar</div>
+                <div class="cal-day-header">Per</div><div class="cal-day-header">Cum</div><div class="cal-day-header">Cmt</div><div class="cal-day-header">Paz</div>
+                {% for day in range(1, 15) %}
+                <div class="cal-day"><span class="cal-date-num">{{ day }}</span>
+                    {% for appt in appointments %}{% if appt.expert_username == session_user and appt.date.endswith('%02d'|format(day)) %}
+                            <div class="cal-event" onclick="alert('Danışan: {{ appt.user_name }}\nNeden: {{ appt.reason }}\nDurum: {{ appt.status }}')">⏰ {{ appt.time }} - {{ appt.user_name }}</div>
+                    {% endif %}{% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            <h4 style="margin-top: 2rem; margin-bottom: 1rem; font-family: var(--font-serif); font-size: 1.4rem;">Bekleyen Talepler</h4>
+            <div style="background: var(--bg-base); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-light);">
+                {% for appt in appointments %}
+                    {% if appt.expert_username == session_user %}
+                        <div style="padding: 0.8rem 0; border-bottom: 1px solid var(--border-light);">
+                            <strong>{{ appt.user_name }}</strong> ({{ appt.date }} - {{ appt.time }}) <br>
+                            Durum: <strong>{{ appt.status }}</strong>
+                            <div style="margin-top: 0.5rem;">
+                                <a href="/update_appointment/{{ appt.id }}/Onaylandı" style="color: #4caf50; font-weight: bold; text-decoration: none; margin-right: 1rem;">✔ Onayla</a>
+                                <a href="/update_appointment/{{ appt.id }}/Reddedildi" style="color: #c94a4a; font-weight: bold; text-decoration: none;">❌ Reddet</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="collab-card">
+            <h3 class="collab-header">🤝 Ortak Çalışma Odası</h3>
+            <div class="chat-container" id="chatContainer">
+                {% for chat in expert_chats %}
+                    <div class="chat-bubble {% if chat.sender == session_name %}mine{% else %}other{% endif %}">
+                        <span class="chat-sender">{{ chat.sender }}</span>{{ chat.message }}<span class="chat-time">{{ chat.time }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            <form action="/add_expert_chat" method="POST" style="display: flex; gap: 0.5rem; margin-top: auto;">
+                <input type="text" name="chatMsg" class="editor-input" placeholder="Uzmanlara mesaj yaz..." style="margin-bottom: 0;" required>
+                <button type="submit" class="btn-follow">Gönder</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SİSTEMLİ CV YÜKLEME ALANI -->
+    <div class="expert-article-box" style="margin-top: 2rem;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">📄 CV Yükle ve Sistemi Otomatik Tanıt</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">PDF formatındaki CV'nizi yükleyin; sistem metni okuyup herkese açık profilinizde sergilenecek şekilde otomatik özetlesin.</p>
+        <form action="/upload_cv" method="POST" enctype="multipart/form-data">
+            <div style="margin-bottom: 1rem;">
+                <input type="file" name="cvFile" accept=".pdf" class="editor-input" required style="padding: 0.6rem;">
+            </div>
+            <button type="submit" class="btn-follow" style="width: 100%;">CV'yi İşle ve Profili Güncelle</button>
+        </form>
+    </div>
+
+    <div class="expert-article-box">
+        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">✍️ Makale Yayınla</h3>
+        <form action="/add_post" method="POST">
+            <input type="text" name="postTitle" class="editor-input" placeholder="Makale Başlığı" required>
+            <select name="postCategory" class="editor-select" required>
+                <option value="Klinik Psikoloji & Terapi">Klinik Psikoloji & Terapi</option>
+                <option value="Kadın Sağlığı & Psikoloji">Kadın Sağlığı & Psikoloji</option>
+                <option value="Nöropsikoloji & Zihin">Nöropsikoloji & Zihin</option>
+                <option value="Hasta Hakları">Hasta Hakları</option>
+            </select>
+            <textarea name="postContent" class="editor-textarea" required></textarea>
+            <button type="submit" class="btn-follow" style="width: 100%;">Paylaş</button>
+        </form>
+    </div>
+</section>
+<script>var chatBox = document.getElementById("chatContainer"); if(chatBox){ chatBox.scrollTop = chatBox.scrollHeight; }</script>

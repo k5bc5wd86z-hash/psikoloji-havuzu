@@ -1,0 +1,94 @@
+<!-- Uzman Başvuru Modalı -->
+<div class="modal-overlay" id="applyExpertModal">
+    <div class="modal-card" style="max-width: 550px; padding: 2.5rem; border-radius: 20px;">
+        <button class="modal-close" onclick="closeModal('applyExpertModal')">&times;</button>
+        
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 0.3rem;">Uzman Başvuru Formu</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Platformumuzda unvanınızla yer almak için bilgilerinizi doldurun.</p>
+        </div>
+
+        <form action="/apply_expert" method="POST" enctype="multipart/form-data">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem;">Ad Soyad</label>
+                    <input type="text" name="expName" class="editor-input" placeholder="Örn: Dr. Ahmet Yılmaz" required style="width: 100%;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem;">Kullanıcı Adı</label>
+                    <input type="text" name="expUser" class="editor-input" placeholder="Kullanıcı adı" required style="width: 100%;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem;">E-Posta</label>
+                    <input type="email" name="expEmail" class="editor-input" placeholder="ornek@mail.com" required style="width: 100%;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem;">Şifre</label>
+                    <input type="password" name="expPass" class="editor-input" placeholder="Şifreniz" required style="width: 100%;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem;">Uzmanlık Alanı / Rol</label>
+                <select name="expRole" class="editor-input" style="width: 100%; background: var(--bg-base);" required>
+                    <option value="Psikolog">Psikolog</option>
+                    <option value="Klinik Psikolog">Klinik Psikolog</option>
+                    <option value="Psikiyatrist">Psikiyatrist</option>
+                    <option value="Moleküler Biyolog">Moleküler Biyolog & Genetikçi</option>
+                </select>
+            </div>
+
+            <!-- Okul, Eğitim ve Sertifikalar Alanı (Karakter bozulmasını önleyen tertemiz metin kutusu) -->
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem;">Okul, Eğitim ve Sertifikalarınız</label>
+                <textarea name="expEducation" class="editor-textarea" placeholder="Örn: Hacettepe Üniversitesi Psikoloji Bölümü Lisans, Klinik Psikoloji Yüksek Lisans, BDT Sertifikası..." required style="min-height: 90px; width: 100%;"></textarea>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem;">CV / Belge Dosyası (İsteğe Bağlı)</label>
+                <input type="file" name="expCvFile" accept=".pdf" class="editor-input" style="width: 100%; padding: 0.5rem; background: var(--bg-base);">
+            </div>
+
+            <button type="submit" class="btn-follow" style="width: 100%; padding: 0.8rem;">Başvuruyu Tamamla</button>
+        </form>
+    </div>
+</div>
+
+<!-- Uzman Detay ve CV Modalı -->
+<div class="modal-overlay" id="expertDetailModal">
+    <div class="modal-card" style="max-width: 600px; padding: 2.5rem; border-radius: 20px;">
+        <button class="modal-close" onclick="closeModal('expertDetailModal')">&times;</button>
+        
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="font-size: 3.5rem; margin-bottom: 0.5rem;" id="modalExpertPhoto">👤</div>
+            <h3 id="modalExpertName" style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 0.3rem; color: var(--text-primary);">Uzman Adı</h3>
+            <span id="modalExpertRole" style="background: var(--accent-light, #f4ebe1); color: var(--accent-warm, #BFA085); padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-block;">Unvan</span>
+        </div>
+
+        <div style="margin-bottom: 1.2rem;">
+            <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem;">İletişim E-Posta</h4>
+            <p id="modalExpertEmail" style="font-size: 0.95rem; font-weight: 500; color: var(--text-primary);"></p>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+            <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem;">Eğitim, Okul ve Kariyer Geçmişi</h4>
+            <div id="modalExpertCv" style="background: var(--bg-base); padding: 1.2rem; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; color: var(--text-primary); border: 1px solid var(--border-light, #eae5df); max-height: 250px; overflow-y: auto;"></div>
+        </div>
+
+        <button class="btn-follow" style="width: 100%; padding: 0.8rem;" onclick="closeModal('expertDetailModal')">Pencereyi Kapat</button>
+    </div>
+</div>
+
+<script>
+function openExpertDetailModal(name, role, email, cv, photo) {
+    document.getElementById('modalExpertName').innerText = name;
+    document.getElementById('modalExpertRole').innerText = role;
+    document.getElementById('modalExpertEmail').innerText = email;
+    document.getElementById('modalExpertCv').innerText = cv;
+    document.getElementById('modalExpertPhoto').innerText = photo || '👤';
+    openModal('expertDetailModal');
+}
+</script>
