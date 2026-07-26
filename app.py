@@ -187,16 +187,16 @@ def send_contact():
         try:
             resend.Emails.send({
                 "from": "Psikoloji Havuzu <iletisim@psikolojihavuzu.com>",
-                "to": ["sunayssssila@gmail.com"],[cite: 1]
-                "subject": f"Psikoloji Havuzu - Yeni İletişim: {name}",[cite: 1]
-                "html": f"<p><strong>Gönderen:</strong> {name}</p><p><strong>E-posta:</strong> {email}</p><p><strong>Mesaj:</strong><br>{message}</p>"[cite: 1]
+                "to": ["sunayssssila@gmail.com"],
+                "subject": f"Psikoloji Havuzu - Yeni İletişim: {name}",
+                "html": f"<p><strong>Gönderen:</strong> {name}</p><p><strong>E-posta:</strong> {email}</p><p><strong>Mesaj:</strong><br>{message}</p>"
             })
-            flash('Mesajınız başarıyla iletildi.', 'success')[cite: 1]
+            flash('Mesajınız başarıyla iletildi.', 'success')
         except Exception as e:
-            print("Mail gönderme hatası:", e)[cite: 1]
-            flash('Mesaj gönderilirken sunucu kaynaklı bir hata oluştu.', 'danger')[cite: 1]
+            print("Mail gönderme hatası:", e)
+            flash('Mesaj gönderilirken sunucu kaynaklı bir hata oluştu.', 'danger')
             
-    return redirect(url_for('anasayfa'))[cite: 1]
+    return redirect(url_for('anasayfa'))
 
 if __name__ == '__main__':
     app.run(debug=True)
