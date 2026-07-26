@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yönetici Doğrulama</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-image-container" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+    <div class="modal-card" style="max-width: 400px; width: 100%; text-align: center;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">İki Aşamalı Doğrulama</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">E-posta adresinize gönderilen 6 haneli doğrulama kodunu girin.</p>
+        <form action="/verify_code" method="POST">
+            <input type="text" name="verificationCode" class="editor-input" placeholder="Kod (Örn: 123456)" required style="text-align: center; font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 1rem;">
+            <button type="submit" class="btn-follow" style="width: 100%;">Doğrula ve Giriş Yap</button>
+        </form>
+    </div>
+</body>
+</html>

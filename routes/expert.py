@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 from flask import Blueprint, request, redirect, url_for, session
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash
+from flask_mail import Message
 from pypdf import PdfReader
 import os
 import datetime
@@ -19,7 +22,6 @@ def upload_cv():
     if session.get('role') == 'Standart Üye' or not session.get('user'):
         return redirect('/')
     
-    # Kullanıcının formdan yazdığı detaylı eğitim/sertifika bilgisini alıyoruz
     education_details = request.form.get('educationDetails', 'Eğitim ve kariyer detayları sisteme işlendi.')
     
     if 'cvFile' in request.files:
@@ -43,6 +45,9 @@ def apply_expert():
     try:
         education_details = request.form.get('expEducation', 'Mezuniyet ve sertifika bilgileri inceleniyor.')
         
+        raw_password = request.form.get('expPass')
+        hashed_password = generate_password_hash(raw_password, method='pbkdf2:sha256') if raw_password else None
+        
         if 'expCvFile' in request.files:
             file = request.files['expCvFile']
             if file and file.filename != '':
@@ -54,7 +59,7 @@ def apply_expert():
 
         conn.execute('INSERT INTO admins (username, password, role, name, email, cv, photo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
                      (request.form.get('expUser'), 
-                      request.form.get('expPass'), 
+                      hashed_password, 
                       request.form.get('expRole'), 
                       request.form.get('expName'), 
                       request.form.get('expEmail'), 
@@ -76,7 +81,7 @@ def add_post():
     author_role = session.get('role') or 'Yazar'
     bugunun_tarihi = datetime.date.today().strftime("%d.%m.%Y")
     
-    formatted_content = f"{raw_content}\n\n──────────────\n✒️ Yazar: {author_name} ({author_role})\n📅 Tarih: {bugunun_tarihi}"
+    formatted_content = f"{raw_content}\n\n──────────────\nTarih: {bugunun_tarihi}"
     
     if title and raw_content:
         conn = get_db_connection()
@@ -88,4 +93,75 @@ def add_post():
             conn.execute('INSERT INTO posts (title, content, likes) VALUES (?, ?, ?)', (title, formatted_content, 0))
         conn.commit()
         conn.close()
+    return redirect(url_for('anasayfa'))
+
+@expert_bp.route('/refer_client', methods=['POST'])
+def refer_client():
+    if session.get('role') == 'Standart Üye' or not session.get('user'):
+        return redirect('/')
+        
+    client_name = request.form.get('clientName')
+    target_expert = request.form.get('targetExpert')
+    referral_note = request.form.get('referralNote')
+    
+    if client_name and target_expert and referral_note:
+        conn = get_db_connection()
+        try:
+            conn.execute('INSERT INTO referrals (client_name, referring_expert, receiving_expert, reason) VALUES (?, ?, ?, ?)',
+                         (client_name, session.get('user'), target_expert, referral_note))
+            conn.commit()
+        except Exception as e:
+            print("Yönlendirme hatası:", e)
+        finally:
+            conn.close()
+            
+    return redirect(url_for('anasayfa'))
+
+@expert_bp.route('/add_appointment', methods=['POST'])
+def add_appointment():
+    expert_username = request.form.get('apptExpertUsername')
+    user_name = request.form.get('apptUserName')
+    date = request.form.get('apptDate')
+    time = request.form.get('apptTime')
+    reason = request.form.get('apptReason')
+    
+    if expert_username and user_name and date and time:
+        conn = get_db_connection()
+        
+        conn.execute('''
+            INSERT INTO appointments (expert_username, user_name, date, time, reason, status)
+            VALUES (?, ?, ?, ?, ?, 'Bekliyor')
+        ''', (expert_username, user_name, date, time, reason))
+        conn.commit()
+        
+        expert = conn.execute('SELECT email, name FROM admins WHERE username = ?', (expert_username,)).fetchone()
+        conn.close()
+        
+        if expert and expert['email']:
+            try:
+                from app import mail, app
+                msg = Message(
+                    subject=f"Psikoloji Havuzu - Yeni Randevu Talebi: {user_name}",
+                    sender=app.config.get("MAIL_USERNAME"),
+                    recipients=[expert['email']]
+                )
+                msg.body = f"Merhaba {expert['name']},\n\nSistem üzerinden yeni bir randevu talebi aldınız.\n\nDanışan: {user_name}\nTarih: {date} | {time}\nGörüşme Nedeni: {reason}\n\nLütfen panelinizden onay veriniz."
+                mail.send(msg)
+            except Exception as e:
+                print("Randevu maili gönderilemedi:", e)
+                
+    return redirect(url_for('anasayfa'))
+
+@expert_bp.route('/update_appointment/<int:appt_id>/<status>', methods=['POST', 'GET'])
+def update_appointment(appt_id, status):
+    if status in ['Onaylandı', 'Reddedildi']:
+        conn = get_db_connection()
+        try:
+            conn.execute('UPDATE appointments SET status = ? WHERE id = ?', (status, appt_id))
+            conn.commit()
+        except Exception as e:
+            print("Randevu durum güncelleme hatası:", e)
+        finally:
+            conn.close()
+            
     return redirect(url_for('anasayfa'))

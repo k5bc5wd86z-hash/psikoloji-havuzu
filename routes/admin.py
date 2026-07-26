@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, jsonify, session
+# -*- coding: utf-8 -*-
+from flask import Blueprint, render_template, request, redirect, session
+import os
 from database import get_db_connection
 
 admin_bp = Blueprint('admin', __name__)
@@ -53,9 +55,11 @@ def delete_expert(username):
 def admin_settings():
     if session.get('role') not in ['Sistem Yöneticisi', 'Kurucu Yönetici']:
         return redirect('/')
+    
     conn = get_db_connection()
     settings = conn.execute('SELECT * FROM site_settings WHERE id = 1').fetchone()
-    experts = conn.execute('SELECT * FROM admins WHERE username != "yonetici"').fetchall()
+    admin_user = os.environ.get('ADMIN_USERNAME', 'yonetici')
+    experts = conn.execute('SELECT * FROM admins WHERE username != ?', (admin_user,)).fetchall()
     conn.close()
     return render_template('admin_settings.html', settings=settings, experts=experts)
 
@@ -63,32 +67,21 @@ def admin_settings():
 def admin_update_settings():
     if session.get('role') not in ['Sistem Yöneticisi', 'Kurucu Yönetici']:
         return redirect('/')
+    
     brand_name = request.form.get('brand_name')
     hero_title = request.form.get('hero_title')
     hero_subtitle = request.form.get('hero_subtitle')
-    layout_order = request.form.get('layout_order')
     
     conn = get_db_connection()
     settings = conn.execute('SELECT * FROM site_settings WHERE id = 1').fetchone()
+    
     if settings:
-        conn.execute('UPDATE site_settings SET brand_name = ?, hero_title = ?, hero_subtitle = ?, layout_order = ? WHERE id = 1',
-                     (brand_name, hero_title, hero_subtitle, layout_order))
+        conn.execute('UPDATE site_settings SET brand_name = ?, hero_title = ?, hero_subtitle = ? WHERE id = 1',
+                     (brand_name, hero_title, hero_subtitle))
     else:
-        conn.execute('INSERT INTO site_settings (brand_name, hero_title, hero_subtitle, layout_order) VALUES (?, ?, ?, ?)',
-                     (brand_name, hero_title, hero_subtitle, layout_order))
+        conn.execute('INSERT INTO site_settings (brand_name, hero_title, hero_subtitle) VALUES (?, ?, ?)',
+                     (brand_name, hero_title, hero_subtitle))
+    
     conn.commit()
     conn.close()
     return redirect('/admin/settings')
-
-@admin_bp.route('/admin/execute_terminal', methods=['POST'])
-def execute_terminal():
-    if session.get('role') not in ['Sistem Yöneticisi', 'Kurucu Yönetici']:
-        return jsonify({'status': 'error', 'message': 'Yetkisiz erişim!'}), 403
-    
-    code = request.form.get('terminal_code')
-    try:
-        local_vars = {}
-        exec(code, {}, local_vars)
-        return jsonify({'status': 'success', 'output': 'Kod başarıyla çalıştırıldı ve dosyalara işlendi!'})
-    except Exception as e:
-        return jsonify({'status': 'error', 'output': str(e)}), 400

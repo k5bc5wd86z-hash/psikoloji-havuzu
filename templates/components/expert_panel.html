@@ -5,14 +5,14 @@
     </div>
     <div class="expert-dashboard-container">
         <div class="expert-calendar-card">
-            <div class="calendar-header"><h3>🗓️ Randevu Takvimi</h3></div>
+            <div class="calendar-header"><h3>Randevu Takvimi</h3></div>
             <div class="calendar-grid">
                 <div class="cal-day-header">Pzt</div><div class="cal-day-header">Sal</div><div class="cal-day-header">Çar</div>
                 <div class="cal-day-header">Per</div><div class="cal-day-header">Cum</div><div class="cal-day-header">Cmt</div><div class="cal-day-header">Paz</div>
                 {% for day in range(1, 15) %}
                 <div class="cal-day"><span class="cal-date-num">{{ day }}</span>
                     {% for appt in appointments %}{% if appt.expert_username == session_user and appt.date.endswith('%02d'|format(day)) %}
-                            <div class="cal-event" onclick="alert('Danışan: {{ appt.user_name }}\nNeden: {{ appt.reason }}\nDurum: {{ appt.status }}')">⏰ {{ appt.time }} - {{ appt.user_name }}</div>
+                            <div class="cal-event" onclick="alert('Danışan: {{ appt.user_name }}\nNeden: {{ appt.reason }}\nDurum: {{ appt.status }}')">{{ appt.time }} - {{ appt.user_name }}</div>
                     {% endif %}{% endfor %}
                 </div>
                 {% endfor %}
@@ -34,7 +34,7 @@
             </div>
         </div>
         <div class="collab-card">
-            <h3 class="collab-header">🤝 Ortak Çalışma Odası</h3>
+            <h3 class="collab-header">Ortak Çalışma Odası</h3>
             <div class="chat-container" id="chatContainer">
                 {% for chat in expert_chats %}
                     <div class="chat-bubble {% if chat.sender == session_name %}mine{% else %}other{% endif %}">
@@ -51,7 +51,7 @@
 
     <!-- SİSTEMLİ CV YÜKLEME ALANI -->
     <div class="expert-article-box" style="margin-top: 2rem;">
-        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">📄 CV Yükle ve Sistemi Otomatik Tanıt</h3>
+        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">CV Yükle ve Sistemi Otomatik Tanıt</h3>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">PDF formatındaki CV'nizi yükleyin; sistem metni okuyup herkese açık profilinizde sergilenecek şekilde otomatik özetlesin.</p>
         <form action="/upload_cv" method="POST" enctype="multipart/form-data">
             <div style="margin-bottom: 1rem;">
@@ -61,8 +61,28 @@
         </form>
     </div>
 
-    <div class="expert-article-box">
-        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">✍️ Makale Yayınla</h3>
+    <!-- YENİ: DANIŞAN YÖNLENDİRME ALANI -->
+    <div class="expert-article-box" style="margin-top: 2rem;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Danışan Yönlendirme</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Klinik alanınız dışındaki danışanlarınızı uygun gördüğünüz diğer uzmanlara güvenle yönlendirin.</p>
+        <form action="/refer_client" method="POST">
+            <input type="text" name="clientName" class="editor-input" placeholder="Danışanın Adı ve Soyadı" required style="margin-bottom: 1rem;">
+            <select name="targetExpert" class="editor-select" required style="margin-bottom: 1rem;">
+                <option value="" disabled selected>Yönlendirilecek Uzmanı Seçin</option>
+                {% for expert in experts %}
+                    {% if expert.username != session_user %}
+                        <option value="{{ expert.username }}">{{ expert.name }} ({{ expert.role }})</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <textarea name="referralNote" class="editor-textarea" placeholder="Yönlendirme nedeni ve klinik notlar (Sadece hedef uzman görebilir)..." required style="min-height: 100px; margin-bottom: 1rem;"></textarea>
+            <button type="submit" class="btn-outline" style="width: 100%; padding: 0.8rem; background-color: var(--bg-base);">Yönlendirme Talebi Oluştur</button>
+        </form>
+    </div>
+
+    <!-- MAKALE YAYINLAMA ALANI -->
+    <div class="expert-article-box" style="margin-top: 2rem;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Makale Yayınla</h3>
         <form action="/add_post" method="POST">
             <input type="text" name="postTitle" class="editor-input" placeholder="Makale Başlığı" required>
             <select name="postCategory" class="editor-select" required>

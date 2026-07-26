@@ -1,18 +1,31 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, session
 import datetime
 import random
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify, flash
+from flask_mail import Mail, Message
 from database import get_db_connection, init_db
-
-# Blueprint modüllerimizi dahil ediyoruz
 from routes.auth import auth_bp
 from routes.expert import expert_bp
 from routes.admin import admin_bp
 
-from kutuphane import BOOKS, SONGS
-
 app = Flask(__name__)
 app.secret_key = 'psikoloji_havuzu_guvenli_anahtar_2026'
+
+# Veritabanını hemen başlat
+init_db()
+
+# Mail Ayarları
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'psikolojihavuzu@gmail.com' 
+app.config['MAIL_PASSWORD'] = 'qpoa dzms dduv ypgs' 
+mail = Mail(app)
+
+# Blueprint Kayıtları
+app.register_blueprint(auth_bp)
+app.register_blueprint(expert_bp)
+app.register_blueprint(admin_bp)
 
 MOTIVATIONAL_QUOTES = [
     "Kendinize karşı nazik olun; zihinsel iyileşme bir yarış değil, bir yolculuktur.",
@@ -26,56 +39,69 @@ ACADEMIC_DISCIPLINES = [
     "Bilişsel Nörobilim",
     "Sosyal Psikoloji",
     "Gelişim Psikolojisi",
-    "Psikofarmakoloji"
+    "Psikofarmakoloji",
+    "Hasta Hakları"
 ]
-
-init_db()
-
-# Blueprint'leri ana uygulamaya kaydediyoruz
-app.register_blueprint(auth_bp)
-app.register_blueprint(expert_bp)
-app.register_blueprint(admin_bp)
 
 @app.route('/')
 def anasayfa():
     conn = get_db_connection()
-    selected_discipline = request.args.get('discipline')
-    if selected_discipline:
-        posts = conn.execute('SELECT * FROM posts WHERE category = ? ORDER BY id DESC', (selected_discipline,)).fetchall()
-    else:
-        posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
-        
-    experts = conn.execute('SELECT * FROM admins WHERE username != "yonetici" AND status="Onaylı"').fetchall()
-    settings = conn.execute('SELECT * FROM site_settings WHERE id = 1').fetchone()
-    community_chats = conn.execute('SELECT * FROM community_chats ORDER BY id DESC LIMIT 20').fetchall()
-    expert_chats = conn.execute('SELECT * FROM expert_chats ORDER BY id DESC LIMIT 20').fetchall()
+    
+    # Veritabanı Sorguları
+    posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
+    experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
     appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
-    diaries = []
+    expert_chats = conn.execute('SELECT * FROM expert_chats ORDER BY id DESC').fetchall()
+    community_chats = conn.execute('SELECT * FROM community_chats ORDER BY id DESC').fetchall()
+    settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
     
-    daily_quote = random.choice(MOTIVATIONAL_QUOTES)
-    
+    # Günlük Kitap ve Şarkı Seçimi (Veritabanı Entegreli)
     bugunun_tarihi_str = datetime.date.today().strftime('%Y%m%d')
     gunluk_secici = random.Random(bugunun_tarihi_str)
     
-    secilen_kitap = gunluk_secici.choice(BOOKS)
-    secilen_sarki = gunluk_secici.choice(SONGS)
+    try:
+        book_count = conn.execute('SELECT COUNT(*) FROM books').fetchone()[0]
+        song_count = conn.execute('SELECT COUNT(*) FROM songs').fetchone()[0]
+    except:
+        book_count = 0
+        song_count = 0
     
     recommendation = {
-        "book": secilen_kitap["book"],
-        "book_author": secilen_kitap["book_author"],
-        "song": secilen_sarki["song"],
-        "song_desc": secilen_sarki["song_desc"]
+        "book": "Kütüphane güncelleniyor...",
+        "book_author": "-",
+        "song": "Kütüphane güncelleniyor...",
+        "song_desc": "-"
     }
     
+    if book_count > 0 and song_count > 0:
+        random_book_index = gunluk_secici.randint(0, book_count - 1)
+        random_song_index = gunluk_secici.randint(0, song_count - 1)
+        
+        secilen_kitap = conn.execute('SELECT * FROM books LIMIT 1 OFFSET ?', (random_book_index,)).fetchone()
+        secilen_sarki = conn.execute('SELECT * FROM songs LIMIT 1 OFFSET ?', (random_song_index,)).fetchone()
+        
+        if secilen_kitap and secilen_sarki:
+            recommendation = {
+                "book": secilen_kitap["book"],
+                "book_author": secilen_kitap["book_author"],
+                "song": secilen_sarki["song"],
+                "song_desc": secilen_sarki["song_desc"]
+            }
+    
+    # Oturum ve Kullanıcı Bilgileri
     is_member = session.get('is_member', False)
     session_user = session.get('user')
     session_name = session.get('name')
     session_role = session.get('role')
     
+    diaries = []
     if is_member and session_user:
         diaries = conn.execute('SELECT * FROM diaries WHERE username = ? ORDER BY id DESC', (session_user,)).fetchall()
         
     conn.close()
+    
+    daily_quote = gunluk_secici.choice(MOTIVATIONAL_QUOTES)
+    selected_discipline = None
     
     return render_template('psikoloji_havuzu.html', 
                            posts=posts, 
@@ -94,23 +120,61 @@ def anasayfa():
                            disciplines=ACADEMIC_DISCIPLINES,
                            selected_discipline=selected_discipline)
 
-@app.route('/like_post/<int:post_id>')
+# Beğeni Butonu (AJAX)
+@app.route('/like_post/<int:post_id>', methods=['POST'])
 def like_post(post_id):
     conn = get_db_connection()
     conn.execute('UPDATE posts SET likes = likes + 1 WHERE id = ?', (post_id,))
     conn.commit()
+    
+    post = conn.execute('SELECT likes FROM posts WHERE id = ?', (post_id,)).fetchone()
     conn.close()
+    
+    if post:
+        return jsonify({'success': True, 'new_likes': post['likes']})
+    return jsonify({'success': False}), 404
+
+#Günlük
+@app.route('/add_diary', methods=['POST'])
+def add_diary():
+    if not session.get('is_member') or not session.get('user'):
+        return redirect(url_for('anasayfa'))
+        
+    title = request.form.get('diaryTitle')
+    content = request.form.get('diaryContent')
+    username = session.get('user')
+    bugunun_tarihi = datetime.date.today().strftime("%d.%m.%Y")
+    
+    if title and content:
+        conn = get_db_connection()
+        try:
+            conn.execute('''
+                INSERT INTO diaries (username, title, content, date)
+                VALUES (?, ?, ?, ?)
+            ''', (username, title, content, bugunun_tarihi))
+            conn.commit()
+        except Exception as e:
+            print("Günlük ekleme hatası:", e)
+        finally:
+            conn.close()
+            
     return redirect(url_for('anasayfa'))
 
-@app.route('/delete_post/<int:post_id>')
+# Makale Silme Rotası
+@app.route('/delete_post/<int:post_id>', methods=['POST', 'GET'])
 def delete_post(post_id):
     if session.get('role') in ['Sistem Yöneticisi', 'Kurucu Yönetici', 'Uzman']:
         conn = get_db_connection()
         conn.execute('DELETE FROM posts WHERE id = ?', (post_id,))
         conn.commit()
         conn.close()
+        flash('Makale başarıyla silindi.', 'success')
+    else:
+        flash('Bu işlem için yetkiniz yok.', 'danger')
+        
     return redirect(url_for('anasayfa'))
 
+# Topluluk Sohbet Duvarı Mesaj Ekleme
 @app.route('/add_community_chat', methods=['POST'])
 def add_community_chat():
     msg = request.form.get('chatMsg')
@@ -123,6 +187,28 @@ def add_community_chat():
         conn.commit()
         conn.close()
     return redirect(url_for('anasayfa') + '#destek-duvari')
+
+# Doğrudan İletişim Formu (E-posta Otomasyonu)
+@app.route('/send_contact', methods=['POST'])
+def send_contact():
+    name = request.form.get('name')
+    email = request.form.get('email')
+    message = request.form.get('message')
+    
+    if name and email and message:
+        try:
+            msg = Message(subject=f"Psikoloji Havuzu - Yeni İletişim: {name}",
+                          sender=app.config.get("MAIL_USERNAME"),
+                          recipients=["psikolojihavuzu@gmail.com"]) 
+            
+            msg.body = f"Gönderen: {name}\nE-posta: {email}\n\nMesaj:\n{message}"
+            mail.send(msg)
+            flash('Mesajınız başarıyla iletildi.', 'success')
+        except Exception as e:
+            print("Mail gönderme hatası:", e)
+            flash('Mesaj gönderilirken sunucu kaynaklı bir hata oluştu.', 'danger')
+            
+    return redirect(url_for('anasayfa'))
 
 if __name__ == '__main__':
     app.run(debug=True)

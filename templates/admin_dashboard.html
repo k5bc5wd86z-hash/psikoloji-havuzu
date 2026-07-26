@@ -10,13 +10,12 @@
 <body>
     <header>
         <div class="nav-container">
-            <a href="/" class="brand-logo">👑 Kurucu Yönetici Paneli</a>
+            <a href="/" class="brand-logo">Kurucu Yönetici Paneli</a>
             <ul class="nav-links">
                 <li><a href="/">Siteye Dön</a></li>
             </ul>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <!-- YENİ EKLENEN AYARLAR BUTONU -->
-                <a href="/admin/settings" class="btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem; border-color: #d4af37; color: #d4af37;">⚙️ Ayarlar</a>
+                <a href="/admin/settings" class="btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem; border-color: #d4af37; color: #d4af37;">Ayarlar</a>
                 <a href="/logout" class="btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem; border-color: #d9534f; color: #d9534f;">Çıkış Yap</a>
             </div>
         </div>
@@ -25,20 +24,19 @@
     <section class="editor-section" style="margin-top: 3rem;">
         <div class="section-header">
             <h2>Özel Yönetim & Değerlendirme Merkezi</h2>
-            <p style="color: var(--text-muted); font-size: 1rem;">Özel kodunuzla doğrudan üye ekleyebilir, çevrimiçi görüşme bekleyen uzman/üyeleri onaylayabilir veya silebilirsiniz.</p>
+            <p style="color: var(--text-muted); font-size: 1rem;">Bekleyen uzman başvurularını onaylayabilir veya üyeleri silebilirsiniz.</p>
         </div>
 
         <div class="dashboard-grid">
-            <!-- Çevrimiçi Görüşme Bekleyenler -->
             <div class="dashboard-card">
-                <h3>⏳ Çevrimiçi Görüşme / Onay Bekleyenler</h3>
+                <h3>Onay Bekleyenler</h3>
                 {% if pending_experts %}
                     {% for exp in pending_experts %}
                     <div class="diary-item">
                         <span class="diary-date">{{ exp.role }}</span>
                         <p><strong>{{ exp.name }}</strong> ({{ exp.email }})</p>
                         <div style="margin-top: 1rem; display: flex; gap: 1rem;">
-                            <a href="/admin/approve_expert/{{ exp.username }}" class="btn-follow" style="padding: 0.4rem 1rem; font-size: 0.8rem; background: #5cb85c;">Görüşme Olumlu - Onayla</a>
+                            <a href="/admin/approve_expert/{{ exp.username }}" class="btn-follow" style="padding: 0.4rem 1rem; font-size: 0.8rem; background: #5cb85c;">Onayla</a>
                             <a href="/admin/reject_expert/{{ exp.username }}" class="btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem; border-color: #d9534f; color: #d9534f;">Reddet</a>
                         </div>
                     </div>
@@ -48,9 +46,8 @@
                 {% endif %}
             </div>
 
-            <!-- Kayıtlı Üyeler Listesi ve Silme Yetkisi -->
             <div class="dashboard-card" style="grid-column: span 1;">
-                <h3>👥 Sistemdeki Üyeler & Yönetim</h3>
+                <h3>Sistemdeki Üyeler</h3>
                 {% if all_members %}
                     <div style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem;">
                         {% for m in all_members %}

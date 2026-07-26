@@ -10,7 +10,7 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     
-    # 1. Yöneticiler ve Uzmanlar
+    # Tüm tablolar eksiksiz
     conn.execute('''CREATE TABLE IF NOT EXISTS admins (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
@@ -20,10 +20,10 @@ def init_db():
         email TEXT,
         cv TEXT,
         photo TEXT,
-        status TEXT
+        status TEXT,
+        verification_code TEXT
     )''')
     
-    # 2. Standart Üyeler
     conn.execute('''CREATE TABLE IF NOT EXISTS members (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
@@ -33,26 +33,61 @@ def init_db():
         last_period TEXT
     )''')
     
-    # 3. Makaleler (Güncel Sütunlarla)
     conn.execute('''CREATE TABLE IF NOT EXISTS posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         content TEXT,
         category TEXT,
         author TEXT,
-        likes INTEGER
+        likes INTEGER DEFAULT 0,
+        date_posted TEXT
     )''')
     
-    # 4. Uzman Ortak Çalışma Odası
+    conn.execute('''CREATE TABLE IF NOT EXISTS comments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        post_id INTEGER,
+        username TEXT NOT NULL,
+        content TEXT NOT NULL,
+        date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+    
+    conn.execute('''CREATE TABLE IF NOT EXISTS referrals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        client_name TEXT NOT NULL,
+        referring_expert TEXT NOT NULL,
+        receiving_expert TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        status TEXT DEFAULT 'Beklemede',
+        date_referred TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+
+    conn.execute('''CREATE TABLE IF NOT EXISTS site_settings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        brand_name TEXT,
+        hero_title TEXT,
+        hero_subtitle TEXT,
+        layout_order TEXT
+    )''')
+
+    conn.execute('''CREATE TABLE IF NOT EXISTS appointments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        expert_username TEXT,
+        user_name TEXT,
+        date TEXT,
+        time TEXT,
+        reason TEXT,
+        status TEXT DEFAULT 'Bekliyor'
+    )''')
+
+    # --- EKSİK OLAN DİĞER TABLOLAR EKLENDİ ---
     conn.execute('''CREATE TABLE IF NOT EXISTS expert_chats (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT,
-        sender TEXT,
+        name TEXT,
         message TEXT,
         time TEXT
     )''')
 
-    # 5. Topluluk Destek Duvarı
     conn.execute('''CREATE TABLE IF NOT EXISTS community_chats (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT,
@@ -61,46 +96,32 @@ def init_db():
         time TEXT
     )''')
 
-    # 6. Randevular
-    conn.execute('''CREATE TABLE IF NOT EXISTS appointments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        expert_username TEXT,
-        user_name TEXT,
-        date TEXT,
-        time TEXT,
-        reason TEXT,
-        status TEXT
-    )''')
-    
-    # 7. Günlükler
     conn.execute('''CREATE TABLE IF NOT EXISTS diaries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT,
         title TEXT,
         content TEXT,
-        date TEXT,
-        ai_analysis TEXT
-    )''')
-    
-    # 8. Site Ayarları (Güncel Sütunlarla)
-    conn.execute('''CREATE TABLE IF NOT EXISTS site_settings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        brand_name TEXT,
-        hero_title TEXT,
-        hero_subtitle TEXT,
-        layout_order TEXT,
-        bg_base TEXT,
-        bg_card TEXT,
-        accent_warm TEXT
+        date TEXT
     )''')
 
-    # KURUCU YÖNETİCİ HESABINI OTOMATİK OLUŞTUR (Silinmelere Karşı Koruma)
+    conn.execute('''CREATE TABLE IF NOT EXISTS books (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        book TEXT,
+        book_author TEXT
+    )''')
+
+    conn.execute('''CREATE TABLE IF NOT EXISTS songs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        song TEXT,
+        song_desc TEXT
+    )''')
+
+    # Kurucu Yönetici Garantisi (Kullanıcı: yonetici, Şifre: yonetici123)
     yonetici = conn.execute('SELECT * FROM admins WHERE username = "yonetici"').fetchone()
     if not yonetici:
-        # Şifre otomatik olarak '123456' olarak belirlendi (İstersen sonradan değiştirebilirsin)
-        hashed_pw = generate_password_hash('123456', method='pbkdf2:sha256') 
+        hashed_pw = generate_password_hash('yonetici123', method='pbkdf2:sha256') 
         conn.execute('INSERT INTO admins (username, password, role, name, email, status) VALUES (?, ?, ?, ?, ?, ?)',
-                     ('yonetici', hashed_pw, 'Kurucu Yönetici', 'Kurucu', 'admin@psikolojihavuzu.com', 'Onaylı'))
+                     ('yonetici', hashed_pw, 'Kurucu Yönetici', 'Sistem Yöneticisi', 'psikolojihavuzu@gmail.com', 'Onaylı'))
 
     conn.commit()
     conn.close()

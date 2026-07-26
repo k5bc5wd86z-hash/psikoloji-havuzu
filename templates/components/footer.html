@@ -2,7 +2,15 @@
     <div style="max-width: 600px; margin: 0 auto;">
         <h4 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">Psikoloji Havuzu</h4>
         <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem;">Zihni, bedeni ve hücreyi anlamak için multidisipliner bilim platformu.</p>
-        <a href="https://instagram.com/" target="_blank" class="btn-outline" style="text-decoration: none; padding: 0.6rem 2rem; border-radius: 50px; font-weight: 600;">📸 Instagram'da Takip Et</a>
+        
+        <!-- Instagram ve Kayıt Ol Butonları Yan Yana -->
+        <div style="display: flex; justify-content: center; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <a href="https://instagram.com/psikolojihavuzuu" target="_blank" class="btn-outline" style="text-decoration: none; padding: 0.6rem 2rem; border-radius: 50px; font-weight: 600;">Instagram'da Takip Et</a>
+            {% if not session_user %}
+                <button class="btn-follow" onclick="openModal('registerModal')" style="padding: 0.6rem 2rem; border-radius: 50px; font-weight: 600; cursor: pointer;">Kayıt Ol</button>
+            {% endif %}
+        </div>
+
         <div style="margin-top: 3rem; font-size: 0.85rem; color: var(--text-muted);">
             &copy; 2026 Psikoloji Havuzu. Tüm hakları saklıdır.
         </div>

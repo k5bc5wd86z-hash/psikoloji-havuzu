@@ -1,8 +1,8 @@
 <header>
     <div class="nav-container">
-        <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-primary);">
-            <img src="{{ url_for('static', filename='images.png') }}" alt="Psikoloji Havuzu Logo" style="width: 40px; height: 40px; object-fit: contain; mix-blend-mode: multiply; filter: contrast(120%);">
-            <span style="font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px;">Psikoloji Havuzu</span>
+        <a href="/" style="text-decoration: none; color: var(--text-primary); font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: var(--accent-warm); color: var(--bg-card); font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">Ψ</span>
+            Psikoloji Havuzu
         </a>
        
         <ul class="nav-links">
@@ -10,15 +10,18 @@
             <li><a href="#icerik-alani">Keşfet</a></li>
         </ul>
         
-        <div style="display: flex; align-items: center; gap: 0.8rem;">
-            <button onclick="toggleDarkMode()" style="background:transparent; border:none; font-size:1.4rem; cursor:pointer;" id="themeToggle">🌙</button>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <!-- Yazısız, Saf ve Şık Gece/Gündüz Yuvarlak Toggle Butonu -->
+            <button onclick="toggleDarkMode()" style="width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--text-primary); background: var(--bg-card); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></button>
             
-            {% if session_user %}
+           {% if session_user %}
                 <span style="font-size: 0.85rem; font-weight: 600;">{{ session_name }}</span>
+                {% if session_role == 'Kurucu Yönetici' or session_role == 'Sistem Yöneticisi' %}
+                    <a href="/admin_dashboard" class="btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Yönetici Paneli</a>
+                {% endif %}
                 <a href="/logout" class="btn-follow" style="background: #c94a4a; padding: 0.4rem 1rem; font-size: 0.8rem;">Çıkış</a>
             {% else %}
                 <button class="btn-outline" onclick="openModal('adminModal')">Giriş Yap</button>
-                <button class="btn-follow" onclick="openModal('registerModal')">Kayıt Ol</button>
             {% endif %}
         </div>
     </div>

@@ -13,7 +13,7 @@
         :root { --bg-base: {{ settings.bg_base if settings else '#FBF9F5' }}; --bg-card: {{ settings.bg_card if settings else '#FFFFFF' }}; --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; }
     </style>
 </head>
-<body>
+<body class="bg-image-container">
     <!-- Üst Menü -->
     {% include 'components/header.html' %}
 
@@ -26,13 +26,12 @@
     <!-- Üye Paneli -->
     {% if is_member %}
     <section class="editor-section">
-        <div style="margin-bottom: 2rem;"><h2 style="font-family: var(--font-serif); font-size: 2.2rem;">Hoş Geldin, {{ session_name }} ✨</h2></div>
+        <div style="margin-bottom: 2rem;"><h2 style="font-family: var(--font-serif); font-size: 2.2rem;">Hoş Geldin, {{ session_name }}</h2></div>
         <div class="dashboard-grid">
             <div class="dashboard-card" style="grid-column: span 1;">
-                <h3>👤 Sağlık & Randevu Paneli</h3>
+                <h3>Sağlık & Randevu Paneli</h3>
                 {% if session_gender == 'Kadın' %}
                 <div class="period-widget">
-                    <div class="circle">🌸</div>
                     {% if is_period_week %}
                         <p class="period-status" style="font-weight: bold; font-size: 1.1rem; color: #d16b8a; margin-bottom: 0.5rem;">Şu an regl dönemindesiniz.</p>
                     {% else %}
@@ -45,11 +44,11 @@
                 </div>
                 {% endif %}
                 <div style="background: var(--bg-base); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border-light); margin-top: auto;">
-                    <h4 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--accent-warm);">🗓️ Aktif Randevularım</h4>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--accent-warm);">Aktif Randevularım</h4>
                     {% for appt in appointments %}
                         {% if appt.user_name == session_name %}
                             <div style="padding: 0.8rem 0; border-bottom: 1px dashed var(--border-light); font-size: 0.9rem;">
-                                Uzman: <strong>{{ appt.expert_username }}</strong><br>Tarih: {{ appt.date }} | ⏰ {{ appt.time }}<br>
+                                Uzman: <strong>{{ appt.expert_username }}</strong><br>Tarih: {{ appt.date }} | {{ appt.time }}<br>
                                 Durum: <span style="display: inline-block; padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: #fff; background: {% if appt.status == 'Onaylandı' %}#4caf50{% elif appt.status == 'Reddedildi' %}#c94a4a{% else %}#ff9800{% endif %};">{{ appt.status }}</span>
                             </div>
                         {% endif %}
@@ -58,7 +57,7 @@
             </div>
 
             <div class="dashboard-card" style="grid-column: span 1;">
-                <h3>✍️ Kişisel Günlüğüm</h3>
+                <h3>Kişisel Günlüğüm</h3>
                 <form action="/add_diary" method="POST">
                     <input type="text" name="diaryTitle" class="editor-input" placeholder="Bugün nasıl hissediyorsun?" required style="margin-bottom: 0.8rem;">
                     <textarea name="diaryContent" class="editor-textarea" placeholder="Duygularını buraya dök..." required style="min-height: 80px; margin-bottom: 0.8rem;"></textarea>
@@ -69,7 +68,7 @@
                     <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); margin-top: 1rem;">Geçmiş Kayıtlar</h4>
                     {% for diary in diaries %}
                         <div class="diary-item">
-                            <span class="diary-date">📅 {{ diary.date }}</span>
+                            <span class="diary-date">{{ diary.date }}</span>
                             <strong style="display: block; margin-bottom: 0.3rem; color: var(--text-primary);">{{ diary.title }}</strong>
                             <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.5rem;">{{ diary.content }}</p>
                         </div>
@@ -79,12 +78,12 @@
             </div>
 
             <div class="dashboard-card" style="grid-column: span 1; background: var(--bg-base); border-color: var(--accent-warm);">
-                <h3>💡 Sana Özel Öneriler</h3>
+                <h3>Sana Özel Öneriler</h3>
                 <div>
                     {% set suggested_count = 0 %}
                     {% for post in posts %}
                         {% if suggested_count < 2 %}
-                            <div class="rec-item" onclick="openArticleModal({{ post.id }})"><span class="rec-category">📚 İlgini Çekebilir</span><span class="rec-title">{{ post.title }}</span></div>
+                            <div class="rec-item" onclick="openArticleModal({{ post.id }})"><span class="rec-category">İlgini Çekebilir</span><span class="rec-title">{{ post.title }}</span></div>
                             {% set suggested_count = suggested_count + 1 %}
                         {% endif %}
                     {% endfor %}
@@ -105,10 +104,9 @@
             <div class="dashboard-card" style="border-left: 4px solid var(--accent-gold); padding: 2rem;">
                 <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 0.5rem;">Ruhunu Dinlendir! </h3>
                 <div style="background: var(--bg-base); padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1.5rem; border: 1px solid var(--border-light); margin-top: 1rem;">
-                    <div style="font-size: 3rem;">🎧</div>
                     <div>
-                        <strong style="font-size: 1.1rem; color: var(--text-primary); display: block;">📖 Kitap: {{ recommendation.book }} ({{ recommendation.book_author }})</strong>
-                        <span style="color: var(--accent-warm); font-weight: 600; font-size: 0.95rem;">🎵 Şarkı: {{ recommendation.song }}</span>
+                        <strong style="font-size: 1.1rem; color: var(--text-primary); display: block;">Kitap: {{ recommendation.book }} ({{ recommendation.book_author }})</strong>
+                        <span style="color: var(--accent-warm); font-weight: 600; font-size: 0.95rem;">Şarkı: {{ recommendation.song }}</span>
                         <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">{{ recommendation.song_desc }}</p>
                     </div>
                 </div>
@@ -127,19 +125,19 @@
                             <div style="text-align: center; margin-bottom: 1rem;"><span class="role-badge">{{ expert.role }}</span></div>
                             
                             <div style="font-size: 0.85rem; color: var(--text-primary); background: var(--bg-base); padding: 1.2rem; border-radius: 12px; border-left: 4px solid var(--accent-warm); margin-bottom: 1rem; line-height: 1.6; max-height: 120px; overflow: hidden; position: relative;">
-                                <strong style="display: block; margin-bottom: 0.4rem; color: var(--accent-warm);">🎓 Sistem Onaylı CV & Kariyer</strong>
+                                <strong style="display: block; margin-bottom: 0.4rem; color: var(--accent-warm);">Sistem Onaylı CV & Kariyer</strong>
                                 {{ expert.cv if expert.cv else 'Akademik geçmiş ve kariyer detayları sisteme yükleniyor...' }}
                                 <div style="font-size: 0.75rem; color: var(--accent-warm); margin-top: 0.5rem; font-weight: 600; text-align: right;">Detayları Gör →</div>
                             </div>
                         </div>
-                        <button class="btn-outline" style="width: 100%; margin-top: auto;" onclick="event.stopPropagation(); openAppointmentModal('{{ expert.username }}')">🗓️ Randevu Al</button>
+                        <button class="btn-outline" style="width: 100%; margin-top: auto;" onclick="event.stopPropagation(); openAppointmentModal('{{ expert.username }}')">Randevu Al</button>
                     </div>
                 {% endfor %}
             </div>
             
             <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--bg-base); border-radius: 16px; border: 1px dashed var(--accent-warm);">
                 <h4 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 0.5rem;">Ekibimize Katılmak İster Misiniz?</h4>
-                <button class="btn-follow" onclick="openModal('applyExpertModal')">📝 Uzman Başvuru Formu</button>
+                <button class="btn-follow" onclick="openModal('applyExpertModal')">Uzman Başvuru Formu</button>
             </div>
         </section>
 
@@ -154,16 +152,33 @@
                             <h3 style="font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem;">{{ post.title }}</h3>
                             <div id="post-title-{{ post.id }}" style="display: none;">{{ post.title }}</div>
                             <div id="post-category-{{ post.id }}" style="display: none;">{{ post.category }}</div>
-                            <div id="post-author-{{ post.id }}" style="display: none;">Yazar: {{ post.author }}</div>
+                            <!-- YAZAR ADI KALDIRILDI, TARİH EKLENDİ -->
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Tarih: Bugün</div>
                             <div id="post-content-{{ post.id }}" style="display: none;">{{ post.content }}</div>
                             <p class="text-clamp" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">{{ post.content }}</p>
                         </div>
                         <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; align-items: center;">
-                            {% if is_member %}<a href="/like_post/{{ post.id }}" class="btn-outline" style="padding: 0.5rem 1rem; text-decoration: none;">❤️ {{ post.likes }}</a>{% endif %}
-                            <button class="btn-follow" style="flex: 1;" onclick="openArticleModal({{ post.id }})">📖 Devamını Oku</button>
+                            {% if is_member %}
+                            <!-- AJAX UYUMLU BEĞENİ BUTONU -->
+                            <button id="like-btn-{{ post.id }}" class="btn-outline" style="padding: 0.5rem 1rem;" onclick="likePost({{ post.id }})">Beğen (<span id="like-count-{{ post.id }}">{{ post.likes }}</span>)</button>
+                            {% endif %}
+                            <button class="btn-follow" style="flex: 1;" onclick="openArticleModal({{ post.id }})">Devamını Oku</button>
                         </div>
                     </article>
                 {% endfor %}
+            </div>
+        </section>
+
+        <!-- YENİ: İLETİŞİM FORMU (En Alta Eklendi) -->
+        <section class="blog-section" style="order: 3; padding-bottom: 3rem;">
+             <div class="dashboard-card" style="max-width: 600px; margin: 0 auto; padding: 2rem;">
+                <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem; text-align: center;">Bize Ulaşın</h3>
+                <form action="/send_contact" method="POST">
+                    <input type="text" name="name" class="editor-input" placeholder="Adınız Soyadınız" required style="margin-bottom: 1rem;">
+                    <input type="email" name="email" class="editor-input" placeholder="E-posta Adresiniz" required style="margin-bottom: 1rem;">
+                    <textarea name="message" class="editor-textarea" placeholder="Mesajınızı buraya yazın..." required style="min-height: 120px; margin-bottom: 1rem;"></textarea>
+                    <button type="submit" class="btn-follow" style="width: 100%;">Mesaj Gönder</button>
+                </form>
             </div>
         </section>
     </div>
@@ -180,8 +195,9 @@
             <button class="modal-close" onclick="closeModal('adminModal')">&times;</button>
             <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">Sistem Girişi</h3>
             <form action="/login" method="POST">
-                <input type="text" name="adminUsername" class="editor-input" placeholder="Kullanıcı Adı" required>
-                <input type="password" name="adminPassword" class="editor-input" placeholder="Şifre" required>
+                <!-- DÜZELTİLDİ: name değerleri backend ile eşleştirildi -->
+                <input type="text" name="username" class="editor-input" placeholder="Kullanıcı Adı" required>
+                <input type="password" name="password" class="editor-input" placeholder="Şifre" required>
                 <button type="submit" class="btn-follow" style="width: 100%;">Giriş Yap</button>
             </form>
         </div>
@@ -209,7 +225,7 @@
     <div class="modal-overlay" id="appointmentModal">
         <div class="modal-card">
             <button class="modal-close" onclick="closeModal('appointmentModal')">&times;</button>
-            <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">🗓️ Randevu Talebi</h3>
+            <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">Randevu Talebi</h3>
             <form action="/add_appointment" method="POST">
                 <input type="hidden" name="apptExpertUsername" id="apptExpertUsername">
                 <input type="text" name="apptUserName" class="editor-input" value="{{ session_name if session_name else '' }}" placeholder="Adınız" required>
@@ -229,7 +245,6 @@
             <button class="modal-close" onclick="closeModal('articleModal')">&times;</button>
             <div id="readModalCategory" style="font-size: 0.85rem; color: var(--accent-warm); font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase;"></div>
             <h3 id="readModalTitle" style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 0.5rem; line-height: 1.2;"></h3>
-            <p id="readModalAuthor" style="font-size: 0.9rem; font-weight: bold; margin-bottom: 1.5rem; color: var(--text-muted); border-bottom: 1px solid var(--border-light); padding-bottom: 0.8rem;"></p>
             <div id="readModalContent" style="font-size: 1rem; line-height: 1.8; white-space: pre-wrap; max-height: 400px; overflow-y: auto;"></div>
         </div>
     </div>
@@ -257,21 +272,33 @@
             const titleEl = document.getElementById('post-title-' + id);
             const categoryEl = document.getElementById('post-category-' + id);
             const contentEl = document.getElementById('post-content-' + id);
-            const authorEl = document.getElementById('post-author-' + id);
 
             if (titleEl) document.getElementById('readModalTitle').innerText = titleEl.innerText;
             if (categoryEl) document.getElementById('readModalCategory').innerText = categoryEl.innerText;
             if (contentEl) document.getElementById('readModalContent').innerText = contentEl.innerText;
-            if (authorEl) document.getElementById('readModalAuthor').innerText = authorEl.innerText;
 
             openModal('articleModal');
+        }
+
+        // YENİ: AJAX BEĞENİ FONKSİYONU
+        function likePost(postId) {
+            fetch('/like_post/' + postId, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('like-count-' + postId).innerText = data.new_likes;
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
 
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme === 'dark') { 
             document.body.classList.add('dark-mode'); 
             const themeToggleBtn = document.getElementById('themeToggle');
-            if (themeToggleBtn) themeToggleBtn.innerText = '☀️'; 
+            if (themeToggleBtn) themeToggleBtn.innerText = 'Gündüz'; 
         }
         
         function toggleDarkMode() {
@@ -280,9 +307,9 @@
             const themeToggleBtn = document.getElementById('themeToggle');
             if (document.body.classList.contains('dark-mode')) { 
                 theme = 'dark'; 
-                if (themeToggleBtn) themeToggleBtn.innerText = '☀️'; 
+                if (themeToggleBtn) themeToggleBtn.innerText = 'Gündüz'; 
             } else { 
-                if (themeToggleBtn) themeToggleBtn.innerText = '🌙'; 
+                if (themeToggleBtn) themeToggleBtn.innerText = 'Gece'; 
             }
             localStorage.setItem('theme', theme);
         }
