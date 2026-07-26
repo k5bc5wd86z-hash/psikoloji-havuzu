@@ -12,9 +12,6 @@ def login():
     username = request.form.get('adminUsername') or request.form.get('username')
     password = request.form.get('adminPassword') or request.form.get('password')
     
-    print("GELEN KULLANICI:", username) 
-    print("GELEN ŞİFRE:", password)
-    
     conn = get_db_connection()
     
     # 1. Kurucu Yönetici
@@ -22,17 +19,15 @@ def login():
         admin = conn.execute('SELECT * FROM admins WHERE username = "yonetici"').fetchone()
         
         if admin and check_password_hash(admin['password'], password):
-            # 2FA Kodu Üretimi ve Mail Gönderimi
             code = str(random.randint(100000, 999999))
             conn.execute('UPDATE admins SET verification_code = ? WHERE id = ?', (code, admin['id']))
             conn.commit()
             conn.close()
             
             try:
-                # Resend ile 2FA Maili Gönderimi
                 resend.Emails.send({
-                    "from": "onboarding@resend.dev",
-                    "to": [admin['email'] or "psikolojihavuzu@gmail.com"],
+                    "from": "Psikoloji Havuzu <iletisim@psikolojihavuzu.com>",
+                    "to": ["sunayssssila@gmail.com"],
                     "subject": "Psikoloji Havuzu - Yönetici Giriş Doğrulama Kodu",
                     "html": f"<p>Merhaba {admin['name']},</p><p>Yönetici paneline giriş yapmak için onay kodunuz:</p><h2>{code}</h2><p>Bu kodu talep etmediyseniz lütfen dikkate almayın.</p>"
                 })
@@ -60,13 +55,6 @@ def login():
         
     # 3. Standart Üye Girişi
     member = conn.execute('SELECT * FROM members WHERE username = ?', (username,)).fetchone()
-    
-    if member:
-        print("VERİTABANINDAKİ ÜYE BULUNDU:", member['username'])
-       
-    else:
-        print("BÖYLE BİR ÜYE VERİTABANINDA YOK!")
-        
     conn.close()
     
     if member and check_password_hash(member['password'], password):
@@ -113,10 +101,7 @@ def register_member():
     name = request.form.get('regName')
     gender = request.form.get('regGender')
     
-    print("KAYIT DENENEN KULLANICI:", username)
-    
     if not username or not raw_password:
-        print("KAYIT BAŞARISIZ: Kullanıcı adı veya şifre boş!")
         return redirect(url_for('anasayfa'))
 
     hashed_password = generate_password_hash(raw_password, method='pbkdf2:sha256')
@@ -126,7 +111,6 @@ def register_member():
         conn.execute('INSERT INTO members (username, password, name, gender) VALUES (?, ?, ?, ?)', 
                      (username, hashed_password, name, gender))
         conn.commit()
-        print("VERİTABANINA ÜYE BAŞARIYLA YAZILDI:", username)
     except Exception as e:
         print("SQL KAYIT HATASI:", e)
     finally:
