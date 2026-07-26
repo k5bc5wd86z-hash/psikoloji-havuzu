@@ -43,7 +43,6 @@ ACADEMIC_DISCIPLINES = [
 def anasayfa():
     conn = get_db_connection()
     
-    # Veritabanı Sorguları
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
     experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
     appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
@@ -51,7 +50,6 @@ def anasayfa():
     community_chats = conn.execute('SELECT * FROM community_chats ORDER BY id DESC').fetchall()
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
     
-    # Günlük Kitap ve Şarkı Seçimi (Veritabanı Entegreli)
     bugunun_tarihi_str = datetime.date.today().strftime('%Y%m%d')
     gunluk_secici = random.Random(bugunun_tarihi_str)
     
@@ -84,7 +82,6 @@ def anasayfa():
                 "song_desc": secilen_sarki["song_desc"]
             }
     
-    # Oturum ve Kullanıcı Bilgileri
     is_member = session.get('is_member', False)
     session_user = session.get('user')
     session_name = session.get('name')
@@ -116,7 +113,6 @@ def anasayfa():
                            disciplines=ACADEMIC_DISCIPLINES,
                            selected_discipline=selected_discipline)
 
-# Beğeni Butonu (AJAX)
 @app.route('/like_post/<int:post_id>', methods=['POST'])
 def like_post(post_id):
     conn = get_db_connection()
@@ -130,7 +126,6 @@ def like_post(post_id):
         return jsonify({'success': True, 'new_likes': post['likes']})
     return jsonify({'success': False}), 404
 
-# Günlük
 @app.route('/add_diary', methods=['POST'])
 def add_diary():
     if not session.get('is_member') or not session.get('user'):
@@ -156,7 +151,6 @@ def add_diary():
             
     return redirect(url_for('anasayfa'))
 
-# Makale Silme Rotası
 @app.route('/delete_post/<int:post_id>', methods=['POST', 'GET'])
 def delete_post(post_id):
     if session.get('role') in ['Sistem Yöneticisi', 'Kurucu Yönetici', 'Uzman']:
@@ -170,7 +164,6 @@ def delete_post(post_id):
         
     return redirect(url_for('anasayfa'))
 
-# Topluluk Sohbet Duvarı Mesaj Ekleme
 @app.route('/add_community_chat', methods=['POST'])
 def add_community_chat():
     msg = request.form.get('chatMsg')
@@ -184,7 +177,6 @@ def add_community_chat():
         conn.close()
     return redirect(url_for('anasayfa') + '#destek-duvari')
 
-# Doğrudan İletişim Formu (E-posta Otomasyonu - Resend ile Güncellendi)
 @app.route('/send_contact', methods=['POST'])
 def send_contact():
     name = request.form.get('name')
@@ -194,17 +186,17 @@ def send_contact():
     if name and email and message:
         try:
             resend.Emails.send({
-                "from": "onboarding@resend.dev",
-                "to": ["psikolojihavuzu@gmail.com"], 
-                "subject": f"Psikoloji Havuzu - Yeni İletişim: {name}",
-                "html": f"<p><strong>Gönderen:</strong> {name}</p><p><strong>E-posta:</strong> {email}</p><p><strong>Mesaj:</strong><br>{message}</p>"
+                "from": "Psikoloji Havuzu <iletisim@psikolojihavuzu.com>",
+                "to": ["sunayssssila@gmail.com"],[cite: 1]
+                "subject": f"Psikoloji Havuzu - Yeni İletişim: {name}",[cite: 1]
+                "html": f"<p><strong>Gönderen:</strong> {name}</p><p><strong>E-posta:</strong> {email}</p><p><strong>Mesaj:</strong><br>{message}</p>"[cite: 1]
             })
-            flash('Mesajınız başarıyla iletildi.', 'success')
+            flash('Mesajınız başarıyla iletildi.', 'success')[cite: 1]
         except Exception as e:
-            print("Mail gönderme hatası:", e)
-            flash('Mesaj gönderilirken sunucu kaynaklı bir hata oluştu.', 'danger')
+            print("Mail gönderme hatası:", e)[cite: 1]
+            flash('Mesaj gönderilirken sunucu kaynaklı bir hata oluştu.', 'danger')[cite: 1]
             
-    return redirect(url_for('anasayfa'))
+    return redirect(url_for('anasayfa'))[cite: 1]
 
 if __name__ == '__main__':
     app.run(debug=True)

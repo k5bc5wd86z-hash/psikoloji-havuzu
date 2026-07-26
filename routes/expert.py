@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
+import datetime
+import resend
 from flask import Blueprint, request, redirect, url_for, session
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
-from flask_mail import Message
-from pypdf import PdfReader
-import os
-import datetime
-import re
 from database import get_db_connection
 
 expert_bp = Blueprint('expert', __name__)
@@ -44,7 +42,6 @@ def apply_expert():
     conn = get_db_connection()
     try:
         education_details = request.form.get('expEducation', 'Mezuniyet ve sertifika bilgileri inceleniyor.')
-        
         raw_password = request.form.get('expPass')
         hashed_password = generate_password_hash(raw_password, method='pbkdf2:sha256') if raw_password else None
         
@@ -78,7 +75,6 @@ def add_post():
     category = request.form.get('postCategory') or request.form.get('discipline', 'Klinik Psikoloji & Terapi')
     
     author_name = session.get('name') or session.get('user') or 'Anonim Uzman'
-    author_role = session.get('role') or 'Yazar'
     bugunun_tarihi = datetime.date.today().strftime("%d.%m.%Y")
     
     formatted_content = f"{raw_content}\n\n──────────────\nTarih: {bugunun_tarihi}"
@@ -127,7 +123,6 @@ def add_appointment():
     
     if expert_username and user_name and date and time:
         conn = get_db_connection()
-        
         conn.execute('''
             INSERT INTO appointments (expert_username, user_name, date, time, reason, status)
             VALUES (?, ?, ?, ?, ?, 'Bekliyor')
@@ -139,14 +134,12 @@ def add_appointment():
         
         if expert and expert['email']:
             try:
-                from app import mail, app
-                msg = Message(
-                    subject=f"Psikoloji Havuzu - Yeni Randevu Talebi: {user_name}",
-                    sender=app.config.get("MAIL_USERNAME"),
-                    recipients=[expert['email']]
-                )
-                msg.body = f"Merhaba {expert['name']},\n\nSistem üzerinden yeni bir randevu talebi aldınız.\n\nDanışan: {user_name}\nTarih: {date} | {time}\nGörüşme Nedeni: {reason}\n\nLütfen panelinizden onay veriniz."
-                mail.send(msg)
+                resend.Emails.send({
+                    "from": "Psikoloji Havuzu <iletisim@psikolojihavuzu.com>",
+                    "to": [expert['email'] or "psikolojihavuzu@gmail.com"],
+                    "subject": f"Psikoloji Havuzu - Yeni Randevu Talebi: {user_name}",
+                    "html": f"<p>Merhaba {expert['name']},</p><p>Sistem üzerinden yeni bir randevu talebi aldınız.</p><ul><li><strong>Danışan:</strong> {user_name}</li><li><strong>Tarih:</strong> {date} | {time}</li><li><strong>Görüşme Nedeni:</strong> {reason}</li></ul><p>Lütfen panelinizden onay veriniz.</p>"
+                })
             except Exception as e:
                 print("Randevu maili gönderilemedi:", e)
                 

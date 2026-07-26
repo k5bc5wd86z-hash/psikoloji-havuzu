@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import random
+import resend
 from flask import Blueprint, request, redirect, url_for, session, render_template, flash
 from database import get_db_connection
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_mail import Message
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -12,9 +12,6 @@ def login():
     username = request.form.get('adminUsername') or request.form.get('username')
     password = request.form.get('adminPassword') or request.form.get('password')
     
-    print("GELEN KULLANICI:", username) # Terminalde görebilmek için
-    print("GELEN ŞİFRE:", password)
-    
     conn = get_db_connection()
     
     # 1. Kurucu Yönetici
@@ -22,21 +19,18 @@ def login():
         admin = conn.execute('SELECT * FROM admins WHERE username = "yonetici"').fetchone()
         
         if admin and check_password_hash(admin['password'], password):
-            # 2FA Kodu Üretimi ve Mail Gönderimi
             code = str(random.randint(100000, 999999))
             conn.execute('UPDATE admins SET verification_code = ? WHERE id = ?', (code, admin['id']))
             conn.commit()
             conn.close()
             
             try:
-                from app import mail, app
-                msg = Message(
-                    subject="Psikoloji Havuzu - Yönetici Giriş Doğrulama Kodu",
-                    sender=app.config.get("MAIL_USERNAME"),
-                    recipients=[admin['email'] or "psikolojihavuzu@gmail.com"]
-                )
-                msg.body = f"Merhaba {admin['name']},\n\nYönetici paneline giriş yapmak için onay kodunuz:\n\n{code}\n\nBu kodu talep etmediyseniz lütfen dikkate almayın."
-                mail.send(msg)
+                resend.Emails.send({
+                    "from": "Psikoloji Havuzu <iletisim@psikolojihavuzu.com>",[cite: 4]
+                    "to": ["sunayssssila@gmail.com"],[cite: 4]
+                    "subject": "Psikoloji Havuzu - Yönetici Giriş Doğrulama Kodu",[cite: 4]
+                    "html": f"<p>Merhaba {admin['name']},</p><p>Yönetici paneline giriş yapmak için onay kodunuz:</p><h2>{code}</h2><p>Bu kodu talep etmediyseniz lütfen dikkate almayın.</p>"[cite: 4]
+                })
             except Exception as e:
                 print("2FA mail gönderim hatası:", e)
                 
@@ -61,13 +55,6 @@ def login():
         
     # 3. Standart Üye Girişi
     member = conn.execute('SELECT * FROM members WHERE username = ?', (username,)).fetchone()
-    
-    if member:
-        print("VERİTABANINDAKİ ÜYE BULUNDU:", member['username'])
-        print("ŞİFRE DOĞRULAMA SONUCU:", check_password_hash(member['password'], password))
-    else:
-        print("BÖYLE BİR ÜYE VERİTABANINDA YOK!")
-        
     conn.close()
     
     if member and check_password_hash(member['password'], password):
@@ -114,10 +101,7 @@ def register_member():
     name = request.form.get('regName')
     gender = request.form.get('regGender')
     
-    print("KAYIT DENENEN KULLANICI:", username)
-    
     if not username or not raw_password:
-        print("KAYIT BAŞARISIZ: Kullanıcı adı veya şifre boş!")
         return redirect(url_for('anasayfa'))
 
     hashed_password = generate_password_hash(raw_password, method='pbkdf2:sha256')
@@ -127,7 +111,6 @@ def register_member():
         conn.execute('INSERT INTO members (username, password, name, gender) VALUES (?, ?, ?, ?)', 
                      (username, hashed_password, name, gender))
         conn.commit()
-        print("VERİTABANINA ÜYE BAŞARIYLA YAZILDI:", username)
     except Exception as e:
         print("SQL KAYIT HATASI:", e)
     finally:

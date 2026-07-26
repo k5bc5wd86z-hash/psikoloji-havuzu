@@ -10,7 +10,7 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     
-    # Tüm tablolar eksiksiz
+    # 1. Admins tablosu
     conn.execute('''CREATE TABLE IF NOT EXISTS admins (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
@@ -20,10 +20,16 @@ def init_db():
         email TEXT,
         cv TEXT,
         photo TEXT,
-        status TEXT,
-        verification_code TEXT
+        status TEXT
     )''')
     
+    # Eksik sütunları otomatik ekleme (Render disk sıfırlanmalarına karşı güvenlik önlemi)
+    try:
+        conn.execute('ALTER TABLE admins ADD COLUMN verification_code TEXT')
+    except Exception:
+        pass # Zaten varsa hata verir, yoksay geç
+        
+
     conn.execute('''CREATE TABLE IF NOT EXISTS members (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
