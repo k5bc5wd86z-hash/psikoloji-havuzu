@@ -66,3 +66,43 @@
         </div>
     </section>
     {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="dashboard-card" style="grid-column: span 1;">
+                <h3>Kişisel Günlüğüm</h3>
+                <form action="/add_diary" method="POST">
+                    <input type="text" name="diaryTitle" class="editor-input" placeholder="Bugün nasıl hissediyorsun?" required style="margin-bottom: 0.8rem;">
+                    <textarea name="diaryContent" class="editor-textarea" placeholder="Duygularını buraya dök..." required style="min-height: 80px; margin-bottom: 0.8rem;"></textarea>
+                    <button type="submit" class="btn-follow" style="width: 100%;">Günlüğe Kaydet</button>
+                </form>
+                {% if diaries %}
+                <div class="diary-list">
+                    <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); margin-top: 1rem;">Geçmiş Kayıtlar</h4>
+                    {% for diary in diaries %}
+                        <div class="diary-item">
+                            <span class="diary-date">{{ diary.date }}</span>
+                            <strong style="display: block; margin-bottom: 0.3rem; color: var(--text-primary);">{{ diary.title }}</strong>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.5rem;">{{ diary.content }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="dashboard-card" style="grid-column: span 1; background: var(--bg-base); border-color: var(--accent-warm);">
+                <h3>Sana Özel Öneriler</h3>
+                <div>
+                    {% set suggested_count = 0 %}
+                    {% for post in posts %}
+                        {% if suggested_count < 2 %}
+                            <div class="rec-item" onclick="openArticleModal({{ post.id }})"><span class="rec-category">İlgini Çekebilir</span><span class="rec-title">{{ post.title }}</span></div>
+                            {% set suggested_count = suggested_count + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
