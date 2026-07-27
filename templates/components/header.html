@@ -1,32 +1,51 @@
-<!-- Sol Kısım: Hamburger Menü Butonu ve Logo -->
-<div style="display: flex; align-items: center; gap: 1rem;">
-    <!-- 3 Çizgi Butonu -->
-    <button onclick="toggleSidebar()" style="background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px;">
-        <span style="width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px;"></span>
-        <span style="width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px;"></span>
-        <span style="width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px;"></span>
-    </button>
+<!-- Üst Banker (Header) Başlangıcı -->
+<header style="position: sticky; top: 0; background: var(--bg-main); z-index: 1000; border-bottom: 1px solid var(--border-light); padding: 0.75rem 1.5rem;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+        
+        <!-- Sol Kısım: Hamburger Menü Butonu ve Logo -->
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <!-- 3 Çizgi Butonu -->
+            <button onclick="toggleSidebar()" style="background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px;">
+                <span style="width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px;"></span>
+                <span style="width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px;"></span>
+                <span style="width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px;"></span>
+            </button>
 
-    <a href="/" style="text-decoration: none; color: var(--text-primary); font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem;">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Psikoloji Havuzu Logosu" style="height: 38px; width: auto; object-fit: contain; background: var(--bg-card); padding: 4px; border-radius: 50%;">
-        Psikoloji Havuzu
-    </a>
-</div>
+            <a href="/" style="text-decoration: none; color: var(--text-primary); font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem;">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Psikoloji Havuzu Logosu" style="height: 38px; width: auto; object-fit: contain; background: var(--bg-card); padding: 4px; border-radius: 50%;">
+                Psikoloji Havuzu
+            </a>
+        </div>
+
+        <!-- Sağ Kısım: Estetik Genişleyen Arama Modülü -->
+        <div style="display: flex; align-items: center; position: relative;">
+            <div id="searchContainer" style="display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 50px; padding: 0.3rem 0.6rem; transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); width: 42px; overflow: hidden; box-shadow: var(--shadow-soft);">
+                <button onclick="toggleSearch()" style="background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0;">
+                    🔍
+                </button>
+                <input type="text" id="siteSearchInput" placeholder="Makale, konu veya uzman ara..." onkeyup="filterSiteContent()" style="border: none; background: transparent; outline: none; color: var(--text-primary); font-size: 0.9rem; width: 0; opacity: 0; transition: all 0.35s ease; padding: 0;">
+            </div>
+        </div>
+
+    </div>
+</header>
 
 <!-- Sol Bölünmüş Yan Menü (Drawer) -->
-<div id="sideDrawer" style="position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: var(--bg-card); box-shadow: var(--shadow-soft); z-index: 1000; transition: left 0.3s ease; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; border-right: 1px solid var(--border-light);">
+<div id="sideDrawer" style="position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: var(--bg-card); box-shadow: var(--shadow-soft); z-index: 1100; transition: left 0.3s ease; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; border-right: 1px solid var(--border-light);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <h3 style="font-family: var(--font-serif); font-size: 1.4rem; color: var(--text-primary);">Keşfet</h3>
         <button onclick="toggleSidebar()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary);">&times;</button>
     </div>
-    
-    <a href="/tum_makaleler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">📄 Bütün Makaleler</a>
-    <a href="/tum_uzmanlar" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">👥 Bütün Uzman Kadromuz</a>
-    <a href="/etik_kurul_testler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">📊 Etik Kurul Onaylı Testler</a>
-    <a href="/psikoloji_nedir" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">🧠 Psikoloji Nedir?</a>
+
+    <a href="/psikoloji_nedir" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Psikoloji Nedir?</a>
+    <a href="/tum_makaleler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Makalelerimiz</a>
+    <a href="/tum_uzmanlar" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Uzman Kadromuz</a>
+    <a href="/etik_kurul_testler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Etik Kurul Onaylı Testler</a>
+   
 </div>
 
 <script>
+// Yan Menü Açma/Kapama
 function toggleSidebar() {
     const drawer = document.getElementById('sideDrawer');
     if (drawer.style.left === '0px') {
@@ -35,31 +54,39 @@ function toggleSidebar() {
         drawer.style.left = '0px';
     }
 }
-</script>
-<!-- Arama Çubuğu Modülü -->
-        <section style="max-width: 600px; margin: 2rem auto 1rem auto; padding: 0 1.5rem;">
-            <div style="position: relative;">
-                <input type="text" id="siteSearchInput" placeholder="Makalelerde, konularda veya uzmanlarda arayın..." class="editor-input" style="padding-left: 2.8rem; border-radius: 50px; background: var(--bg-card); box-shadow: var(--shadow-soft);" onkeyup="filterSiteContent()">
-                <span style="position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem;">🔍</span>
-            </div>
-        </section>
 
-        <script>
-        // Anlık Arama ve Filtreleme Fonksiyonu
-        function filterSiteContent() {
-            let input = document.getElementById('siteSearchInput').value.toLowerCase();
-            let cards = document.querySelectorAll('.blog-card');
-            
-            cards.forEach(card => {
-                let title = card.querySelector('h3').innerText.toLowerCase();
-                let content = card.querySelector('p').innerText.toLowerCase();
-                if (title.includes(input) || content.includes(input)) {
-                    card.style.display = "";
-                } else {
-                    card.style.display = "none";
-                }
-            });
+// Estetik Genişleyen Arama Çubuğu Fonksiyonu
+function toggleSearch() {
+    const container = document.getElementById('searchContainer');
+    const input = document.getElementById('siteSearchInput');
+    
+    if (container.style.width === '260px') {
+        container.style.width = '42px';
+        input.style.width = '0';
+        input.style.opacity = '0';
+        input.style.padding = '0';
+    } else {
+        container.style.width = '260px';
+        input.style.width = '200px';
+        input.style.opacity = '1';
+        input.style.padding = '0.2rem 0.4rem';
+        input.focus();
+    }
+}
+
+// Anlık Arama ve Filtreleme Fonksiyonu
+function filterSiteContent() {
+    let input = document.getElementById('siteSearchInput').value.toLowerCase();
+    let cards = document.querySelectorAll('.blog-card');
+    
+    cards.forEach(card => {
+        let title = card.querySelector('h3').innerText.toLowerCase();
+        let content = card.querySelector('p').innerText.toLowerCase();
+        if (title.includes(input) || content.includes(input)) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
         }
-        </script>
-</div> 
-</header> 
+    });
+}
+</script>
