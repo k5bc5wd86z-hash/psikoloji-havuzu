@@ -81,19 +81,21 @@
     </div>
 
     <!-- MAKALE YAYINLAMA ALANI -->
-    <div class="expert-article-box" style="margin-top: 2rem;">
-        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Makale Yayınla</h3>
-        <form action="/add_post" method="POST">
-            <input type="text" name="postTitle" class="editor-input" placeholder="Makale Başlığı" required>
-            <select name="postCategory" class="editor-select" required>
-                <option value="Klinik Psikoloji & Terapi">Klinik Psikoloji & Terapi</option>
-                <option value="Kadın Sağlığı & Psikoloji">Kadın Sağlığı & Psikoloji</option>
-                <option value="Nöropsikoloji & Zihin">Nöropsikoloji & Zihin</option>
-                <option value="Hasta Hakları">Hasta Hakları</option>
-            </select>
-            <textarea name="postContent" class="editor-textarea" required></textarea>
-            <button type="submit" class="btn-follow" style="width: 100%;">Paylaş</button>
-        </form>
-    </div>
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+    <label for="articleCategory" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Alanı / Kategori</label>
+    <select id="articleCategory" name="category" class="form-control" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary);">
+        <option value="" disabled selected>Uzmanlık / Branş Alanı Seçin</option>
+        <option value="Psikoloji">Psikoloji</option>
+        <option value="Klinik Psikoloji">Klinik Psikoloji</option>
+        <option value="Gelişim Psikolojisi">Gelişim Psikolojisi</option>
+        <option value="Sosyal Psikoloji">Sosyal Psikoloji</option>
+        <option value="Bilişsel Davranışçı Yaklaşımlar">Bilişsel Davranışçı Yaklaşımlar</option>
+        <option value="Diyetisyen / Beslenme">Diyetisyen ve Beslenme</option>
+        <option value="Moleküler Biyoloji ve Genetik">Moleküler Biyoloji ve Genetik</option>
+        <option value="Nörobiyoloji ve Beyin Sağlığı">Nörobiyoloji ve Beyin Sağlığı</option>
+        <option value="Bütüncül Esenlik ve Yaşam">Bütüncül Esenlik ve Yaşam</option>
+        <option value="Akademik Araştırmalar">Akademik Araştırmalar</option>
+    </select>
+   </div>
 </section>
 <script>var chatBox = document.getElementById("chatContainer"); if(chatBox){ chatBox.scrollTop = chatBox.scrollHeight; }</script>
