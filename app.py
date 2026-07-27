@@ -213,6 +213,10 @@ def tum_uzmanlar():
 def etik_kurul_testler():
     return render_template('testler.html')
 
+@app.route('/psikoloji_nedir')
+def psikoloji_nedir():
+    return render_template('psikoloji_nedir.html')
+    
 @app.route('/')
 def index():
     # Sadece Kurucu Uzman etiketine sahip olanlar
