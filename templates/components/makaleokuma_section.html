@@ -37,4 +37,38 @@
 
             openModal('articleModal');
         }
+
+        // YENİ: AJAX BEĞENİ FONKSİYONU
+        function likePost(postId) {
+            fetch('/like_post/' + postId, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('like-count-' + postId).innerText = data.new_likes;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') { 
+            document.body.classList.add('dark-mode'); 
+            const themeToggleBtn = document.getElementById('themeToggle');
+            if (themeToggleBtn) themeToggleBtn.innerText = 'Gündüz'; 
+        }
+        
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            let theme = 'light';
+            const themeToggleBtn = document.getElementById('themeToggle');
+            if (document.body.classList.contains('dark-mode')) { 
+                theme = 'dark'; 
+                if (themeToggleBtn) themeToggleBtn.innerText = 'Gündüz'; 
+            } else { 
+                if (themeToggleBtn) themeToggleBtn.innerText = 'Gece'; 
+            }
+            localStorage.setItem('theme', theme);
+        }
     </script>
