@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <!-- Head etiketleri aynı kalabilir -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Psikoloji Havuzu | Bütüncül Platform{% endblock %}</title>
@@ -14,28 +13,29 @@
     <main>
         <!-- EĞER KULLANICI ÜYE GİRİŞİ YAPDIYSA -->
         {% if session_user and is_member %}
-            <!-- Sadece Üye Paneli Görünür (İçinde asla uzman kadrosu/makale olmamalı) -->
+            <!-- Sadece Üye Paneli Görünür -->
             <div class="page-section-wrapper">
                 {% include 'components/uye_panel.html' %}
             </div>
         {% else %}
-            <!-- Üye DEĞİLSE Normal Karşılama ve İçerikler Görünür -->
+            <!-- Üye DEĞİLSE Normal Karşılama Görünür -->
             <section class="hero" style="text-align: center; padding: 4rem 1.5rem 2rem 1.5rem;">
                 <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px;">Bütüncül Esenlik Platformu</span>
                 <h1>{{ settings.hero_title if settings and settings.hero_title else 'Zihni, Bedeni ve Davranışı Anlamak.' }}</h1>
                 <p>{{ settings.hero_subtitle if settings and settings.hero_subtitle else 'Profesyonel danışmanlık ve bilimsel makaleler.' }}</p>
             </section>
-
-            <div class="page-section-wrapper">
-                {% include 'components/uzman_kadro.html' %}
-            </div>
-            
-            <div class="page-section-wrapper">
-                {% include 'components/guncel_makale.html' %}
-            </div>
         {% endif %}
 
-        <!-- Herkesin görebileceği ortak alanlar (SSS ve İletişim) -->
+        <!-- Uzman Kadrosu ve Güncel Makaleler Her Zaman Burada Tek Seferde Çağrılır -->
+        <div class="page-section-wrapper">
+            {% include 'components/uzman_kadro.html' %}
+        </div>
+        
+        <div class="page-section-wrapper">
+            {% include 'components/guncel_makale.html' %}
+        </div>
+
+        <!-- Ortak Alanlar -->
         <div class="page-section-wrapper">
             {% include 'components/faq_section.html' %}
         </div>
