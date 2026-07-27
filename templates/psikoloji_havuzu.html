@@ -50,7 +50,10 @@
         }
     </style>
 </head>
-<main>
+     <!-- Üst Menü -->
+    {% include 'components/header.html' %}
+    
+ <main>
         <!-- EĞER KULLANICI ÜYE GİRİŞİ YAPDIYSA -->
         {% if session_user and is_member %}
             <!-- Sadece Üye Paneli Görünür -->
