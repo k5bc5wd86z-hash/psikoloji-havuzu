@@ -17,8 +17,10 @@
             </a>
         </div>
 
-        <!-- Sağ Kısım: Estetik Genişleyen Arama Modülü -->
-        <div style="display: flex; align-items: center; position: relative;">
+        <!-- Sağ Kısım: Arama, Gece Modu ve Kullanıcı Alanı (Boşluklar Düzenlendi) -->
+        <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+            
+            <!-- Estetik Genişleyen Arama Modülü -->
             <div id="searchContainer" style="display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 50px; padding: 0.3rem 0.6rem; transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); width: 42px; overflow: hidden; box-shadow: var(--shadow-soft);">
                 <button onclick="toggleSearch()" style="background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0;">
                     🔍
@@ -27,19 +29,23 @@
             </div>
             
             <!-- Yazısız, Saf ve Şık Gece/Gündüz Yuvarlak Toggle Butonu -->
-            <button onclick="toggleDarkMode()" style="width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--text-primary); background: var(--bg-card); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></button>
+            <button onclick="toggleDarkMode()" style="width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--text-primary); background: var(--bg-card); cursor: pointer; transition: transform 0.2s; flex-shrink: 0;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></button>
             
-           {% if session_user %}
-                <span style="font-size: 0.85rem; font-weight: 600;">{{ session_name }}</span>
-                {% if session_role == 'Kurucu Yönetici' or session_role == 'Sistem Yöneticisi' %}
-                    <a href="/admin_dashboard" class="btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Yönetici Paneli</a>
+            <!-- Kullanıcı Oturum Durumu -->
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                {% if session_user %}
+                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">{{ session_name }}</span>
+                    {% if session_role == 'Kurucu Yönetici' or session_role == 'Sistem Yöneticisi' %}
+                        <a href="/admin_dashboard" class="btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem; text-decoration: none;">Yönetici Paneli</a>
+                    {% endif %}
+                    <a href="/logout" class="btn-follow" style="background: #c94a4a; color: #fff; padding: 0.4rem 1rem; font-size: 0.8rem; text-decoration: none; border-radius: 4px;">Çıkış</a>
+                {% else %}
+                    <button class="btn-outline" onclick="openModal('adminModal')" style="cursor: pointer; padding: 0.4rem 1rem; font-size: 0.85rem;">Giriş Yap</button>
                 {% endif %}
-                <a href="/logout" class="btn-follow" style="background: #c94a4a; padding: 0.4rem 1rem; font-size: 0.8rem;">Çıkış</a>
-            {% else %}
-                <button class="btn-outline" onclick="openModal('adminModal')">Giriş Yap</button>
-            {% endif %}
+            </div>
+
         </div>      
-  </div>
+    </div>
 </header>
 
 <!-- Sol Bölünmüş Yan Menü (Drawer) -->
@@ -53,8 +59,8 @@
     <a href="/tum_makaleler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Makalelerimiz</a>
     <a href="/tum_uzmanlar" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Uzman Kadromuz</a>
     <a href="/etik_kurul_testler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Etik Kurul Onaylı Testler</a>
-   
 </div>
+
 <script>
 // Yan Menü Açma/Kapama
 function toggleSidebar() {
