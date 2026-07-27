@@ -67,28 +67,7 @@
     </section>
 
     <!-- Üye Paneli -->
-    
-
-    <!-- Uzman Paneli -->
-    {% if session_user and not is_member and session_role != 'Kurucu Yönetici' %}
-        {% include 'components/expert_panel.html' %}
-    {% endif %}
-
-    <div id="icerik-alani" style="display: flex; flex-direction: column;">
-        <!-- Kitap & Şarkı Önerisi -->
-        <section class="blog-section" style="order: 0; padding-bottom: 1rem; max-width: 900px; margin: 0 auto 3rem auto;">
-            <div class="dashboard-card" style="border-left: 4px solid var(--accent-gold); padding: 2rem;">
-                <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 0.5rem;">Ruhunu Dinlendir! </h3>
-                <div style="background: var(--bg-base); padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1.5rem; border: 1px solid var(--border-light); margin-top: 1rem;">
-                    <div>
-                        <strong style="font-size: 1.1rem; color: var(--text-primary); display: block;">Kitap: {{ recommendation.book }} ({{ recommendation.book_author }})</strong>
-                        <span style="color: var(--accent-warm); font-weight: 600; font-size: 0.95rem;">Şarkı: {{ recommendation.song }}</span>
-                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">{{ recommendation.song_desc }}</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
+   
         <!-- Uzman Kadrosu -->
         <section class="blog-section" style="order: 1; padding-bottom: 2rem;">
             <div class="section-header"><h2>Uzman Kadromuz</h2></div>
