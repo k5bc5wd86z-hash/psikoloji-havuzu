@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bütün Makaleler | Psikoloji Havuzu</title>
+    <meta name="description" content="Psikoloji Havuzu platformunda yayınlanan tüm akademik makaleleri ve yazıları keşfedin.">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root { --bg-base: {{ settings.bg_base if settings else '#FBF9F5' }}; --bg-card: {{ settings.bg_card if settings else '#FFFFFF' }}; --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; }
+    </style>
+</head>
+<body class="bg-image-container">
+    <!-- Üst Menü -->
+    {% include 'components/header.html' %}
 
+    <main style="max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem;">
+        <div class="section-header" style="text-align: center; margin-bottom: 2.5rem;">
+            <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px;">Arşiv & İçerikler</span>
+            <h1 style="font-family: var(--font-serif); font-size: 2.5rem; margin-top: 0.5rem; color: var(--text-primary);">Bütün Makaleler</h1>
+            <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.5rem;">Bilimsel temelli psikoloji makaleleri ve derinlemesine yazılar.</p>
+        </div>
+
+        <!-- Makale Kartları Grid Yapısı -->
+        <div class="blog-grid">
+            {% for post in posts %}
+                <article class="blog-card">
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-warm); font-weight: 600; margin-bottom: 0.8rem;">{{ post.category }}</div>
+                        <h3 style="font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);">{{ post.title }}</h3>
+                        <div id="post-title-{{ post.id }}" style="display: none;">{{ post.title }}</div>
+                        <div id="post-category-{{ post.id }}" style="display: none;">{{ post.category }}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Tarih: Arşiv</div>
+                        <div id="post-content-{{ post.id }}" style="display: none;">{{ post.content }}</div>
+                        <p class="text-clamp" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">{{ post.content }}</p>
+                    </div>
+                    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; align-items: center;">
+                        {% if is_member %}
+                        <button id="like-btn-{{ post.id }}" class="btn-outline" style="padding: 0.5rem 1rem;" onclick="likePost({{ post.id }})">Beğen (<span id="like-count-{{ post.id }}">{{ post.likes }}</span>)</button>
+                        {% endif %}
+                        <button class="btn-follow" style="flex: 1;" onclick="openArticleModal({{ post.id }})">Devamını Oku</button>
+                    </div>
+                </article>
+            {% else %}
+                <div style="grid-column: span 3; text-align: center; padding: 3rem; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-light);">
+                    <p style="color: var(--text-muted); font-size: 1.1rem;">Henüz sistemde yayınlanmış makale bulunmuyor.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    {% include 'components/footer.html' %}
+
+    <!-- Modallar -->
+    {% include 'components/modals.html' %}
+    {% include 'components/makaleokuma_section.html' %}
+
+    <script>
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.add('active');
+        }
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('active');
+        }
+        function openArticleModal(id) {
+            const titleEl = document.getElementById('post-title-' + id);
+            const categoryEl = document.getElementById('post-category-' + id);
+            const contentEl = document.getElementById('post-content-' + id);
+
+            if (titleEl) document.getElementById('readModalTitle').innerText = titleEl.innerText;
+            if (categoryEl) document.getElementById('readModalCategory').innerText = categoryEl.innerText;
+            if (contentEl) document.getElementById('readModalContent').innerText = contentEl.innerText;
+
+            openModal('articleModal');
+        }
+        function likePost(postId) {
+            fetch('/like_post/' + postId, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('like-count-' + postId).innerText = data.new_likes;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
