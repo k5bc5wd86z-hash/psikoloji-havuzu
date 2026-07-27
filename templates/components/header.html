@@ -1,53 +1,27 @@
-<header>
-    <div class="nav-container">
-        <a href="/" style="text-decoration: none; color: var(--text-primary); font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem;">
-            <img src="{{ url_for('static', filename='logo.png') }}" alt="Psikoloji Havuzu Logosu" style="height: 38px; width: auto; object-fit: contain; background: var(--bg-card); padding: 4px; border-radius: 50%;">
-            Psikoloji Havuzu
-        </a>
-       
-        <ul class="nav-links">
-            <li><a href="/">Ana Sayfa</a></li>
-            <li><a href="#icerik-alani">Keşfet</a></li>
-        </ul>
-        
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <!-- Yazısız, Saf ve Şık Gece/Gündüz Yuvarlak Toggle Butonu -->
-            <button onclick="toggleDarkMode()" style="width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--text-primary); background: var(--bg-card); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></button>
-            
-           {% if session_user %}
-                <span style="font-size: 0.85rem; font-weight: 600;">{{ session_name }}</span>
-                {% if session_role == 'Kurucu Yönetici' or session_role == 'Sistem Yöneticisi' %}
-                    <a href="/admin_dashboard" class="btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Yönetici Paneli</a>
-                {% endif %}
-                <a href="/logout" class="btn-follow" style="background: #c94a4a; padding: 0.4rem 1rem; font-size: 0.8rem;">Çıkış</a>
-            {% else %}
-                <button class="btn-outline" onclick="openModal('adminModal')">Giriş Yap</button>
-            {% endif %}
-        </div>
-        <!-- Arama Çubuğu Modülü -->
-<section style="max-width: 600px; margin: 2rem auto 1rem auto; padding: 0 1.5rem;">
-    <div style="position: relative;">
-        <input type="text" id="siteSearchInput" placeholder="Makalelerde, konularda veya uzmanlarda arayın..." class="editor-input" style="padding-left: 2.8rem; border-radius: 50px; background: var(--bg-card); box-shadow: var(--shadow-soft);" onkeyup="filterSiteContent()">
-        <span style="position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem;">🔍</span>
-    </div>
-</section>
+<!-- Arama Çubuğu Modülü -->
+        <section style="max-width: 600px; margin: 2rem auto 1rem auto; padding: 0 1.5rem;">
+            <div style="position: relative;">
+                <input type="text" id="siteSearchInput" placeholder="Makalelerde, konularda veya uzmanlarda arayın..." class="editor-input" style="padding-left: 2.8rem; border-radius: 50px; background: var(--bg-card); box-shadow: var(--shadow-soft);" onkeyup="filterSiteContent()">
+                <span style="position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem;">🔍</span>
+            </div>
+        </section>
 
-<script>
-// Anlık Arama ve Filtreleme Fonksiyonu
-function filterSiteContent() {
-    let input = document.getElementById('siteSearchInput').value.toLowerCase();
-    let cards = document.querySelectorAll('.blog-card');
-    
-    cards.forEach(card => {
-        let title = card.querySelector('h3').innerText.toLowerCase();
-        let content = card.querySelector('p').innerText.toLowerCase();
-        if (title.includes(input) || content.includes(input)) {
-            card.style.display = "";
-        } else {
-            card.style.display = "none";
+        <script>
+        // Anlık Arama ve Filtreleme Fonksiyonu
+        function filterSiteContent() {
+            let input = document.getElementById('siteSearchInput').value.toLowerCase();
+            let cards = document.querySelectorAll('.blog-card');
+            
+            cards.forEach(card => {
+                let title = card.querySelector('h3').innerText.toLowerCase();
+                let content = card.querySelector('p').innerText.toLowerCase();
+                if (title.includes(input) || content.includes(input)) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
         }
-    });
-}
-</script>
-    </div>
-</header>
+        </script>
+    </div> 
+</header> 
