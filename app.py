@@ -198,6 +198,21 @@ def send_contact():
             
     return redirect(url_for('anasayfa'))
 
+@app.route('/tum_makaleler')
+def tum_makaleler():
+    # Veritabanından tüm makaleleri çekip basacağımız arayüz
+    posts = Post.query.all() # Örnek sorgu
+    return render_template('tum_makaleler.html', posts=posts)
+
+@app.route('/tum_uzmanlar')
+def tum_uzmanlar():
+    experts = Expert.query.all()
+    return render_template('tum_uzmanlar.html', experts=experts)
+
+@app.route('/etik_kurul_testler')
+def etik_kurul_testler():
+    return render_template('testler.html')
+    
 @app.route('/sitemap.xml')
 def sitemap():
     xml_content = """<?xml version="1.0" encoding="UTF-8"?>
