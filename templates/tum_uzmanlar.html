@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uzman Kadromuz | Psikoloji Havuzu</title>
+    <meta name="description" content="Psikoloji Havuzu platformunun uzman kadrosunu inceleyin, klinik psikologlar ve uzmanlardan randevu talep edin.">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root { --bg-base: {{ settings.bg_base if settings else '#FBF9F5' }}; --bg-card: {{ settings.bg_card if settings else '#FFFFFF' }}; --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; }
+    </style>
+</head>
+<body class="bg-image-container">
+    <!-- Üst Menü -->
+    {% include 'components/header.html' %}
 
+    <main style="max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem;">
+        <div class="section-header" style="text-align: center; margin-bottom: 2.5rem;">
+            <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px;">Profesyonel Destek</span>
+            <h1 style="font-family: var(--font-serif); font-size: 2.5rem; margin-top: 0.5rem; color: var(--text-primary);">Bütün Uzman Kadromuz</h1>
+            <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.5rem;">Alanında uzman kadromuzla güvenilir ve etik danışmanlık hizmeti.</p>
+        </div>
+
+        <!-- Uzman Kartları Grid Yapısı -->
+        <div class="blog-grid">
+            {% for expert in experts %}
+                <div class="expert-card" onclick="openExpertDetailModal('{{ expert.name }}', '{{ expert.role }}', '{{ expert.email }}', '{{ expert.cv }}', '{{ expert.photo }}')" style="cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div>
+                        <div class="expert-photo">{{ expert.photo }}</div>
+                        <h3 style="text-align: center; font-size: 1.4rem; color: var(--text-primary);">{{ expert.name }}</h3>
+                        <div style="text-align: center; margin-bottom: 1rem;"><span class="role-badge">{{ expert.role }}</span></div>
+                        
+                        <div style="font-size: 0.85rem; color: var(--text-primary); background: var(--bg-base); padding: 1.2rem; border-radius: 12px; border-left: 4px solid var(--accent-warm); margin-bottom: 1rem; line-height: 1.6; max-height: 120px; overflow: hidden; position: relative;">
+                            <strong style="display: block; margin-bottom: 0.4rem; color: var(--accent-warm);">Sistem Onaylı CV & Kariyer</strong>
+                            {{ expert.cv if expert.cv else 'Akademik geçmiş ve kariyer detayları sisteme yükleniyor...' }}
+                            <div style="font-size: 0.75rem; color: var(--accent-warm); margin-top: 0.5rem; font-weight: 600; text-align: right;">Detayları Gör →</div>
+                        </div>
+                    </div>
+                    <button class="btn-outline" style="width: 100%; margin-top: auto;" onclick="event.stopPropagation(); openAppointmentModal('{{ expert.username }}')">Randevu Al</button>
+                </div>
+            {% else %}
+                <div style="grid-column: span 3; text-align: center; padding: 3rem; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-light);">
+                    <p style="color: var(--text-muted); font-size: 1.1rem;">Henüz sistemde kayıtlı uzman bulunmuyor.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--bg-card); border-radius: 16px; border: 1px dashed var(--accent-warm);">
+            <h4 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 0.5rem; color: var(--text-primary);">Ekibimize Katılmak İster Misiniz?</h4>
+            <button class="btn-follow" onclick="openModal('applyExpertModal')">Uzman Başvuru Formu</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    {% include 'components/footer.html' %}
+
+    <!-- Modallar -->
+    {% include 'components/modals.html' %}
+
+    <script>
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.add('active');
+        }
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('active');
+        }
+        function openAppointmentModal(expertUsername) {
+            const expertInput = document.getElementById('apptExpertUsername');
+            if (expertInput) expertInput.value = expertUsername;
+            openModal('appointmentModal');
+        }
+        function openExpertDetailModal(name, role, email, cv, photo) {
+            document.getElementById('modalExpertName').innerText = name;
+            document.getElementById('modalExpertRole').innerText = role;
+            document.getElementById('modalExpertEmail').innerText = email;
+            document.getElementById('modalExpertCv').innerText = cv;
+            document.getElementById('modalExpertPhoto').innerText = photo || '👤';
+            openModal('expertDetailModal');
+        }
+    </script>
+</body>
+</html>
