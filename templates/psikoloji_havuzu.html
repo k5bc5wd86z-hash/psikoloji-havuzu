@@ -211,32 +211,7 @@
                 {% endfor %}
             </div>
         </section>
-
-        <!-- Sıkça Sorulan Sorular (SSS) Modülü -->
-<section class="blog-section" style="order: 4; max-width: 900px; margin: 0 auto 4rem auto;">
-    <div class="section-header">
-        <h2>Sıkça Sorulan Sorular</h2>
-        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;">Psikoloji Havuzu platformu ve süreçler hakkında merak edilenler.</p>
-    </div>
-    
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-        <div class="dashboard-card" style="padding: 1.5rem 2rem;">
-            <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-primary);">🔹 Psikoloji Havuzu nedir ve kimler yararlanabilir?</h4>
-            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">Psikoloji Havuzu; akademik makaleler, uzman kadro ve etik kurul onaylı testlerle bütüncül esenlik sunan, öğrenciler, araştırmacılar ve danışanlar için tasarlanmış güvenilir bir platformdur.</p>
-        </div>
         
-        <div class="dashboard-card" style="padding: 1.5rem 2rem;">
-            <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-primary);">🔹 Testler etik kurul onaylı mı?</h4>
-            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">Evet, platformumuzda yer alan tüm ölçekler ve testler bilimsel standartlara uygun olarak uzman denetiminden geçer.</p>
-        </div>
-
-        <div class="dashboard-card" style="padding: 1.5rem 2rem;">
-            <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-primary);">🔹 Nasıl randevu alabilirim?</h4>
-            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">Uzman kadromuz sekmesinden dilediğiniz uzmanın kartındaki "Randevu Al" butonuna tıklayarak kolayca talep oluşturabilirsiniz.</p>
-        </div>
-    </div>
-</section>
-
     <!-- SSS -->
     {% include 'components/faq_section.html' 
         
@@ -247,57 +222,7 @@
     {% include 'components/footer.html' %}
 
     <!-- Modallar -->
-    {% include 'components/modals.html' %}
-
-    <!-- GİRİŞ YAP MODALI -->
-    <div class="modal-overlay" id="adminModal">
-        <div class="modal-card">
-            <button class="modal-close" onclick="closeModal('adminModal')">&times;</button>
-            <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">Sistem Girişi</h3>
-            <form action="/login" method="POST">
-                <!-- DÜZELTİLDİ: name değerleri backend ile eşleştirildi -->
-                <input type="text" name="username" class="editor-input" placeholder="Kullanıcı Adı" required>
-                <input type="password" name="password" class="editor-input" placeholder="Şifre" required>
-                <button type="submit" class="btn-follow" style="width: 100%;">Giriş Yap</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- KAYIT OL MODALI -->
-    <div class="modal-overlay" id="registerModal">
-        <div class="modal-card">
-            <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
-            <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">Kayıt Ol</h3>
-            <form action="/register_member" method="POST">
-                <input type="text" name="regName" class="editor-input" placeholder="Ad Soyad" required>
-                <input type="text" name="regUsername" class="editor-input" placeholder="Kullanıcı Adı" required>
-                <input type="password" name="regPassword" class="editor-input" placeholder="Şifre" required>
-                <select name="regGender" class="editor-select" required>
-                    <option value="Kadın">Kadın</option>
-                    <option value="Erkek">Erkek</option>
-                </select>
-                <button type="submit" class="btn-follow" style="width: 100%;">Kayıt Ol</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- RANDEVU MODALI -->
-    <div class="modal-overlay" id="appointmentModal">
-        <div class="modal-card">
-            <button class="modal-close" onclick="closeModal('appointmentModal')">&times;</button>
-            <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">Randevu Talebi</h3>
-            <form action="/add_appointment" method="POST">
-                <input type="hidden" name="apptExpertUsername" id="apptExpertUsername">
-                <input type="text" name="apptUserName" class="editor-input" value="{{ session_name if session_name else '' }}" placeholder="Adınız" required>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <input type="date" name="apptDate" class="editor-input" required>
-                    <input type="time" name="apptTime" class="editor-input" required>
-                </div>
-                <textarea name="apptReason" class="editor-textarea" placeholder="Görüşme Nedeni" required></textarea>
-                <button type="submit" class="btn-follow" style="width: 100%;">Randevu Talebi Gönder</button>
-            </form>
-        </div>
-    </div>
+    {% include 'components/modals.html' %
 
     <!-- MAKALE OKUMA MODALI -->
     <div class="modal-overlay" id="articleModal">
