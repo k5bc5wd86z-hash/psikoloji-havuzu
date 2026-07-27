@@ -1,0 +1,40 @@
+<div class="modal-overlay" id="articleModal">
+        <div class="modal-card" style="max-width: 700px;">
+            <button class="modal-close" onclick="closeModal('articleModal')">&times;</button>
+            <div id="readModalCategory" style="font-size: 0.85rem; color: var(--accent-warm); font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase;"></div>
+            <h3 id="readModalTitle" style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 0.5rem; line-height: 1.2;"></h3>
+            <div id="readModalContent" style="font-size: 1rem; line-height: 1.8; white-space: pre-wrap; max-height: 400px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        function openModal(id) { 
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.add('active'); 
+        }
+        
+        function closeModal(id) { 
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('active'); 
+        }
+        
+        function openAppointmentModal(expertUsername) { 
+            const expertInput = document.getElementById('apptExpertUsername');
+            if (expertInput) expertInput.value = expertUsername; 
+            openModal('appointmentModal'); 
+        }
+        
+        function openArticleModal(id) {
+            const titleEl = document.getElementById('post-title-' + id);
+            const categoryEl = document.getElementById('post-category-' + id);
+            const contentEl = document.getElementById('post-content-' + id);
+
+            if (titleEl) document.getElementById('readModalTitle').innerText = titleEl.innerText;
+            if (categoryEl) document.getElementById('readModalCategory').innerText = categoryEl.innerText;
+            if (contentEl) document.getElementById('readModalContent').innerText = contentEl.innerText;
+
+            openModal('articleModal');
+        }
+    </script>
