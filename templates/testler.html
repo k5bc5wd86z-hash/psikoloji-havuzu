@@ -1,1 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etik Kurul Onaylı Testler | Psikoloji Havuzu</title>
+    <meta name="description" content="Türk Psikologlar Derneği ve bilimsel standartlara uygun, etik kurul onaylı psikolojik tarama ve değerlendirme ölçekleri.">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root { --bg-base: {{ settings.bg_base if settings else '#FBF9F5' }}; --bg-card: {{ settings.bg_card if settings else '#FFFFFF' }}; --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; }
+    </style>
+</head>
+<body class="bg-image-container">
+    <!-- Üst Menü -->
+    {% include 'components/header.html' %}
 
+    <main style="max-width: 900px; margin: 3rem auto; padding: 0 1.5rem;">
+        <div class="section-header" style="text-align: center; margin-bottom: 2.5rem;">
+            <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px;">Bilimsel Değerlendirme</span>
+            <h1 style="font-family: var(--font-serif); font-size: 2.5rem; margin-top: 0.5rem; color: var(--text-primary);">Etik Kurul Onaylı Testler</h1>
+            <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.5rem;">Akademik geçerliliği tescillenmiş psikometrik ölçekler ve tarama araçları.</p>
+        </div>
+
+        <!-- Bilgilendirme Kutusu (Etik Sorumluluk Beyanı) -->
+        <div style="background: var(--bg-card); padding: 1.8rem; border-radius: 16px; border: 1px solid var(--border-light); margin-bottom: 2rem; box-shadow: var(--shadow-soft);">
+            <h3 style="font-family: var(--font-serif); font-size: 1.3rem; color: var(--text-primary); margin-bottom: 0.5rem;">⚠️ Etik Sorumluluk ve Kullanım Koşulları</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">Platformumuzda yer alan tüm psikometrik ölçekler yalnızca tarama, bilgilendirme ve akademik ön değerlendirme amaçlıdır. Kesin bir psikiyatrik veya klinik tanı koyma amacı taşımaz. Test sonuçları profesyonel bir klinik görüşmenin yerini tutmaz.</p>
+        </div>
+
+        <!-- Örnek / Aktif Test Kartı -->
+        <div class="dashboard-card" style="padding: 2.5rem; background: var(--bg-card); border-radius: 20px; box-shadow: var(--shadow-soft);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span style="background: var(--bg-base); color: var(--accent-warm); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Ölçek Kodu: PH-PSY-01</span>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Etik Kurul Durumu: Onaylı</span>
+            </div>
+            
+            <h2 style="font-family: var(--font-serif); font-size: 1.8rem; color: var(--text-primary); margin-bottom: 1rem;">Genel Psikolojik İyi Oluş ve Tarama Ölçeği</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">Bu ölçek, bireylerin son iki hafta içerisindeki genel psikolojik esenlik durumlarını, stres düzeylerini ve başa çıkma becerilerini akademik standartlara uygun olarak taramak için tasarlanmıştır.</p>
+            
+            <div style="border-top: 1px solid var(--border-light); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.9rem; color: var(--text-muted);">Süre: Yaklaşık 3-5 dakika</span>
+                <button class="btn-follow" onclick="alert('Test modülü aktif randevu ve üye oturumu üzerinden veri toplama protokolüne uygun olarak güncellenmektedir.')">Testi Başlat</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    {% include 'components/footer.html' %}
+
+    <!-- Modallar -->
+    {% include 'components/modals.html' %}
+</body>
+</html>
