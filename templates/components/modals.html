@@ -82,6 +82,56 @@
     </div>
 </div>
 
+ <!-- GİRİŞ YAP MODALI -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal('adminModal')">&times;</button>
+            <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">Sistem Girişi</h3>
+            <form action="/login" method="POST">
+                <!-- DÜZELTİLDİ: name değerleri backend ile eşleştirildi -->
+                <input type="text" name="username" class="editor-input" placeholder="Kullanıcı Adı" required>
+                <input type="password" name="password" class="editor-input" placeholder="Şifre" required>
+                <button type="submit" class="btn-follow" style="width: 100%;">Giriş Yap</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- KAYIT OL MODALI -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+            <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">Kayıt Ol</h3>
+            <form action="/register_member" method="POST">
+                <input type="text" name="regName" class="editor-input" placeholder="Ad Soyad" required>
+                <input type="text" name="regUsername" class="editor-input" placeholder="Kullanıcı Adı" required>
+                <input type="password" name="regPassword" class="editor-input" placeholder="Şifre" required>
+                <select name="regGender" class="editor-select" required>
+                    <option value="Kadın">Kadın</option>
+                    <option value="Erkek">Erkek</option>
+                </select>
+                <button type="submit" class="btn-follow" style="width: 100%;">Kayıt Ol</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- RANDEVU MODALI -->
+    <div class="modal-overlay" id="appointmentModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal('appointmentModal')">&times;</button>
+            <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 1rem;">Randevu Talebi</h3>
+            <form action="/add_appointment" method="POST">
+                <input type="hidden" name="apptExpertUsername" id="apptExpertUsername">
+                <input type="text" name="apptUserName" class="editor-input" value="{{ session_name if session_name else '' }}" placeholder="Adınız" required>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <input type="date" name="apptDate" class="editor-input" required>
+                    <input type="time" name="apptTime" class="editor-input" required>
+                </div>
+                <textarea name="apptReason" class="editor-textarea" placeholder="Görüşme Nedeni" required></textarea>
+                <button type="submit" class="btn-follow" style="width: 100%;">Randevu Talebi Gönder</button>
+            </form>
+        </div>
+    </div>
+
 <script>
 function openExpertDetailModal(name, role, email, cv, photo) {
     document.getElementById('modalExpertName').innerText = name;
