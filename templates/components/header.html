@@ -23,5 +23,43 @@
             });
         }
         </script>
-    </div> 
+<!-- Sol Kısım: Hamburger Menü Butonu ve Logo -->
+<div style="display: flex; align-items: center; gap: 1rem;">
+    <!-- 3 Çizgi Butonu -->
+    <button onclick="toggleSidebar()" style="background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px;">
+        <span style="width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px;"></span>
+        <span style="width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px;"></span>
+        <span style="width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px;"></span>
+    </button>
+
+    <a href="/" style="text-decoration: none; color: var(--text-primary); font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem;">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Psikoloji Havuzu Logosu" style="height: 38px; width: auto; object-fit: contain; background: var(--bg-card); padding: 4px; border-radius: 50%;">
+        Psikoloji Havuzu
+    </a>
+</div>
+
+<!-- Sol Bölünmüş Yan Menü (Drawer) -->
+<div id="sideDrawer" style="position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: var(--bg-card); box-shadow: var(--shadow-soft); z-index: 1000; transition: left 0.3s ease; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; border-right: 1px solid var(--border-light);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.4rem; color: var(--text-primary);">Keşfet</h3>
+        <button onclick="toggleSidebar()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary);">&times;</button>
+    </div>
+    
+    <a href="/tum_makaleler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">📄 Bütün Makaleler</a>
+    <a href="/tum_uzmanlar" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">👥 Bütün Uzman Kadromuz</a>
+    <a href="/etik_kurul_testler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">📊 Etik Kurul Onaylı Testler</a>
+    <a href="/psikoloji_nedir" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">🧠 Psikoloji Nedir?</a>
+</div>
+
+<script>
+function toggleSidebar() {
+    const drawer = document.getElementById('sideDrawer');
+    if (drawer.style.left === '0px') {
+        drawer.style.left = '-300px';
+    } else {
+        drawer.style.left = '0px';
+    }
+}
+</script>
+</div> 
 </header> 
