@@ -50,15 +50,21 @@
         }
     </style>
 </head>
-     <!-- Üst Menü -->
+<body class="bg-image-container">
+    <!-- Üst Menü -->
     {% include 'components/header.html' %}
     
- <main>
+    <main>
         <!-- EĞER KULLANICI ÜYE GİRİŞİ YAPDIYSA -->
         {% if session_user and is_member %}
             <!-- Sadece Üye Paneli Görünür -->
             <div class="page-section-wrapper">
                 {% include 'components/uye_panel.html' %}
+            </div>
+        {% elif session_user and session_role and session_role != 'Üye' and session_role != 'Danışan' %}
+            <!-- Uzman / Yönetici Girişindeyse Uzman Paneli Görünür -->
+            <div class="page-section-wrapper">
+                {% include 'components/uzman_panel.html' %}
             </div>
         {% else %}
             <!-- Üye DEĞİLSE Normal Karşılama Görünür -->
