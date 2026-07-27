@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <!-- GEO ve Yapay Zeka Motorları İçin Orijinal Optimizasyon Etiketleri -->
     <meta name="description" content="Psikoloji Havuzu - Etik kurul onaylı testler, uzman kadro ve derinlemesine psikoloji makaleleri ile güvenilir dijital platform.">
     <meta name="author" content="Psikoloji Havuzu Uzman Kadrosu">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 
-    <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -34,21 +32,9 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Dinamik SEO Başlığı -->
     <title>{% block title %}Psikoloji Havuzu | Bütüncül Platform{% endblock %}</title>
-
-    <!-- Dinamik Meta Açıklaması -->
     <meta name="description" content="{% block description %}Psikoloji Havuzu, uzman psikologlarla danışanları bir araya getiren güvenilir bütüncül destek platformu.{% endblock %}">
-
-    <!-- Open Graph Paylaşım Kartları -->
-    <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}{{ self.description() }}{% endblock %}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request.url }}">
-    <meta property="og:image" content="{{ url_for('static', filename='images.png', _external=True) }}">
     
-    <!-- Orijinal Font Bağlantıları -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
@@ -74,31 +60,19 @@
         <p>{{ settings.hero_subtitle if settings and settings.hero_subtitle else 'Profesyonel danışmanlık ve bilimsel makaleler.' }}</p>
     </section>
 
-    <!-- Üye Paneli -->
+    <!-- Tekil Bileşen Sıralaması (Her biri sadece bir kez yazıldı) -->
     {% include 'components/uye_panel.html' %}
-    
-    <!-- Uzman Paneli-->
     {% include 'components/uzman_panel.html' %}
-
-    <!-- Uzman Kadrosu-->
     {% include 'components/uzman_kadro.html' %}
-    
-    <!-- Güncel Makaleler -->
     {% include 'components/guncel_makale.html' %}
-        
-    <!-- SSS -->
     {% include 'components/faq_section.html' %}
-        
-    <!-- İletişim Formu -->  
     {% include 'components/contact_section.html' %}
-        
-    <!-- Footer -->
+
+    <!-- Footer En Altta Sabit -->
     {% include 'components/footer.html' %}
 
     <!-- Modallar -->
     {% include 'components/modals.html' %}
-        
-    <!-- MAKALE OKUMA MODALI -->
     {% include 'components/makaleokuma_section.html' %}
 </body>
 </html>
