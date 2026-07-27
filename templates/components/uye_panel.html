@@ -1,0 +1,68 @@
+{% if is_member %}
+    <section class="editor-section">
+        <div style="margin-bottom: 2rem;"><h2 style="font-family: var(--font-serif); font-size: 2.2rem;">Hoş Geldin, {{ session_name }}</h2></div>
+        <div class="dashboard-grid">
+            <div class="dashboard-card" style="grid-column: span 1;">
+                <h3>Sağlık & Randevu Paneli</h3>
+                {% if session_gender == 'Kadın' %}
+                <div class="period-widget">
+                    {% if is_period_week %}
+                        <p class="period-status" style="font-weight: bold; font-size: 1.1rem; color: #d16b8a; margin-bottom: 0.5rem;">Şu an regl dönemindesiniz.</p>
+                    {% else %}
+                        <p class="period-status">Döngünüz normal seyrinde.</p>
+                    {% endif %}
+                    <form action="/update_period" method="POST" style="margin-top: 1.5rem;">
+                        <input type="date" name="lastPeriod" class="editor-input" value="{{ last_period if last_period else '' }}" required style="background: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">
+                        <button type="submit" class="btn-follow" style="background: #d16b8a; width: 100%; font-size: 0.8rem;">Döngüyü Güncelle</button>
+                    </form>
+                </div>
+                {% endif %}
+                <div style="background: var(--bg-base); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border-light); margin-top: auto;">
+                    <h4 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--accent-warm);">Aktif Randevularım</h4>
+                    {% for appt in appointments %}
+                        {% if appt.user_name == session_name %}
+                            <div style="padding: 0.8rem 0; border-bottom: 1px dashed var(--border-light); font-size: 0.9rem;">
+                                Uzman: <strong>{{ appt.expert_username }}</strong><br>Tarih: {{ appt.date }} | {{ appt.time }}<br>
+                                Durum: <span style="display: inline-block; padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: #fff; background: {% if appt.status == 'Onaylandı' %}#4caf50{% elif appt.status == 'Reddedildi' %}#c94a4a{% else %}#ff9800{% endif %};">{{ appt.status }}</span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="dashboard-card" style="grid-column: span 1;">
+                <h3>Kişisel Günlüğüm</h3>
+                <form action="/add_diary" method="POST">
+                    <input type="text" name="diaryTitle" class="editor-input" placeholder="Bugün nasıl hissediyorsun?" required style="margin-bottom: 0.8rem;">
+                    <textarea name="diaryContent" class="editor-textarea" placeholder="Duygularını buraya dök..." required style="min-height: 80px; margin-bottom: 0.8rem;"></textarea>
+                    <button type="submit" class="btn-follow" style="width: 100%;">Günlüğe Kaydet</button>
+                </form>
+                {% if diaries %}
+                <div class="diary-list">
+                    <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); margin-top: 1rem;">Geçmiş Kayıtlar</h4>
+                    {% for diary in diaries %}
+                        <div class="diary-item">
+                            <span class="diary-date">{{ diary.date }}</span>
+                            <strong style="display: block; margin-bottom: 0.3rem; color: var(--text-primary);">{{ diary.title }}</strong>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.5rem;">{{ diary.content }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="dashboard-card" style="grid-column: span 1; background: var(--bg-base); border-color: var(--accent-warm);">
+                <h3>Sana Özel Öneriler</h3>
+                <div>
+                    {% set suggested_count = 0 %}
+                    {% for post in posts %}
+                        {% if suggested_count < 2 %}
+                            <div class="rec-item" onclick="openArticleModal({{ post.id }})"><span class="rec-category">İlgini Çekebilir</span><span class="rec-title">{{ post.title }}</span></div>
+                            {% set suggested_count = suggested_count + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
