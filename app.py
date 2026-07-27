@@ -217,13 +217,13 @@ def etik_kurul_testler():
 def psikoloji_nedir():
     return render_template('psikoloji_nedir.html')
     
-@app.route('/')
-def index():
+@app.route('/tags')
+def tags():
     # Sadece Kurucu Uzman etiketine sahip olanlar
     kurucu_uzmanlar = Expert.query.filter_by(tag='Kurucu Uzman').all()
     # Sadece ilk 2 makale
     ornek_makaleler = Post.query.limit(2).all()
-    return render_template('index.html', experts=kurucu_uzmanlar, posts=ornek_makaleler)
+    return render_template('psikoloji_havuzu.html', experts=kurucu_uzmanlar, posts=ornek_makaleler)
     
 @app.route('/sitemap.xml')
 def sitemap():
