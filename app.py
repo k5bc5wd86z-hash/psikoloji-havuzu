@@ -198,6 +198,27 @@ def send_contact():
             
     return redirect(url_for('anasayfa'))
 
+@app.route('/sitemap.xml')
+def sitemap():
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://www.psikolojihavuzu.com/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+</urlset>"""
+    return xml_content, 200, {'Content-Type': 'application/xml'}
+
+@app.route('/robots.txt')
+def robots():
+    lines = [
+        "User-agent: *",
+        "Disallow: /admin_dashboard",
+        "Disallow: /logout",
+        "Allow: /"
+    ]
+    return "\n".join(lines), 200, {'Content-Type': 'text/plain'}
+
 if __name__ == '__main__':
     app.run(debug=True)
-    # render guncelleme testi

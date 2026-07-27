@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Psikoloji Havuzu | Bütüncül Platform</title>
+    <!-- Dinamik SEO Başlığı -->
+<title>{% block title %}Psikoloji Havuzu | Bütüncül Platform{% endblock %}</title>
+
+<!-- Dinamik Meta Açıklaması -->
+<meta name="description" content="{% block description %}Psikoloji Havuzu, uzman psikologlarla danışanları bir araya getiren güvenilir bütüncül destek platformu.{% endblock %}">
+
+<!-- Open Graph (WhatsApp, Instagram, Twitter Paylaşım Kartları İçin) -->
+<meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{{ self.description() }}{% endblock %}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.url }}">
+<!-- ÖNEMLİ: Kendi statik klasöründeki logonun adını buraya yaz -->
+<meta property="og:image" content="{{ url_for('static', filename='images.png', _external=True) }}">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     {% if session_user and not is_member and session_role != 'Kurucu Yönetici' %}
