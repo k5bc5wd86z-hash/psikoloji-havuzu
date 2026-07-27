@@ -25,9 +25,21 @@
                 </button>
                 <input type="text" id="siteSearchInput" placeholder="Makale, konu veya uzman ara..." onkeyup="filterSiteContent()" style="border: none; background: transparent; outline: none; color: var(--text-primary); font-size: 0.9rem; width: 0; opacity: 0; transition: all 0.35s ease; padding: 0;">
             </div>
-        </div>
-
-    </div>
+            
+            <!-- Yazısız, Saf ve Şık Gece/Gündüz Yuvarlak Toggle Butonu -->
+            <button onclick="toggleDarkMode()" style="width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--text-primary); background: var(--bg-card); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></button>
+            
+           {% if session_user %}
+                <span style="font-size: 0.85rem; font-weight: 600;">{{ session_name }}</span>
+                {% if session_role == 'Kurucu Yönetici' or session_role == 'Sistem Yöneticisi' %}
+                    <a href="/admin_dashboard" class="btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Yönetici Paneli</a>
+                {% endif %}
+                <a href="/logout" class="btn-follow" style="background: #c94a4a; padding: 0.4rem 1rem; font-size: 0.8rem;">Çıkış</a>
+            {% else %}
+                <button class="btn-outline" onclick="openModal('adminModal')">Giriş Yap</button>
+            {% endif %}
+        </div>      
+  </div>
 </header>
 
 <!-- Sol Bölünmüş Yan Menü (Drawer) -->
