@@ -2,96 +2,120 @@
 <html lang="tr">
 <head>
     <!-- GEO ve Yapay Zeka Motorları İçin Optimizasyon Etiketleri -->
-<meta name="description" content="Psikoloji Havuzu - Etik kurul onaylı testler, uzman kadro ve derinlemesine psikoloji makaleleri ile güvenilir dijital platform.">
-<meta name="author" content="Psikoloji Havuzu Uzman Kadrosu">
-<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="description" content="Psikoloji Havuzu - Etik kurul onaylı testler, uzman kadro ve derinlemesine psikoloji makaleleri ile güvenilir dijital platform.">
+    <meta name="author" content="Psikoloji Havuzu Uzman Kadrosu">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 
-<!-- Schema.org JSON-LD (Yapay Zeka Botları ve Google için Otorite Sinyali) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "MedicalWebPage",
-  "name": "Psikoloji Havuzu",
-  "url": "https://psikolojihavuzu.com",
-  "description": "Etik kurul onaylı psikolojik testler, akademik makaleler ve uzman kadro ile psikoloji bilgi platformu.",
-  "about": {
-    "@type": "Thing",
-    "name": "Psychology and Mental Health"
-  },
-  "audience": {
-    "@type": "Audience",
-    "audienceType": "Students, Researchers, General Public"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Psikoloji Havuzu",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://psikolojihavuzu.com/static/images.png"
+    <!-- Schema.org JSON-LD (Yapay Zeka Botları ve Google için Otorite Sinyali) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MedicalWebPage",
+      "name": "Psikoloji Havuzu",
+      "url": "https://psikolojihavuzu.com",
+      "description": "Etik kurul onaylı psikolojik testler, akademik makaleler ve uzman kadro ile psikoloji bilgi platformu.",
+      "about": {
+        "@type": "Thing",
+        "name": "Psychology and Mental Health"
+      },
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Students, Researchers, General Public"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Psikoloji Havuzu",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://psikolojihavuzu.com/static/images.png"
+        }
+      }
     }
-  }
-}
-</script>
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <!-- Dinamik SEO Başlığı -->
-<title>{% block title %}Psikoloji Havuzu | Bütüncül Platform{% endblock %}</title>
+    <title>{% block title %}Psikoloji Havuzu | Bütüncül Platform{% endblock %}</title>
 
-<!-- Dinamik Meta Açıklaması -->
-<meta name="description" content="{% block description %}Psikoloji Havuzu, uzman psikologlarla danışanları bir araya getiren güvenilir bütüncül destek platformu.{% endblock %}">
+    <!-- Dinamik Meta Açıklaması -->
+    <meta name="description" content="{% block description %}Psikoloji Havuzu, uzman psikologlarla danışanları bir araya getiren güvenilir bütüncül destek platformu.{% endblock %}">
 
-<!-- Open Graph (WhatsApp, Instagram, Twitter Paylaşım Kartları İçin) -->
-<meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
-<meta property="og:description" content="{% block og_description %}{{ self.description() }}{% endblock %}">
-<meta property="og:type" content="website">
-<meta property="og:url" content="{{ request.url }}">
-<!-- ÖNEMLİ: Kendi statik klasöründeki logonun adını buraya yaz -->
-<meta property="og:image" content="{{ url_for('static', filename='images.png', _external=True) }}">
+    <!-- Open Graph Paylaşım Kartları -->
+    <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ self.description() }}{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:image" content="{{ url_for('static', filename='images.png', _external=True) }}">
+    
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
     {% if session_user and not is_member and session_role != 'Kurucu Yönetici' %}
         <link rel="stylesheet" href="{{ url_for('static', filename='expert_style.css') }}">
     {% endif %}
+    
     <style>
-        :root { --bg-base: {{ settings.bg_base if settings else '#FBF9F5' }}; --bg-card: {{ settings.bg_card if settings else '#FFFFFF' }}; --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; }
+        :root { 
+            --bg-base: {{ settings.bg_base if settings else '#FBF9F5' }}; 
+            --bg-card: {{ settings.bg_card if settings else '#FFFFFF' }}; 
+            --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; 
+        }
+        /* Sayfa bölümlerinin birbirine girmesini önleyen dikey boşluk standardı */
+        .page-section-wrapper {
+            padding: 3rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body class="bg-image-container">
     <!-- Üst Menü -->
     {% include 'components/header.html' %}
 
-    <section class="hero">
+    <!-- Hero Alanı -->
+    <section class="hero" style="text-align: center; padding: 4rem 1.5rem 2rem 1.5rem;">
         <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px;">Bütüncül Esenlik Platformu</span>
-        <h1>{{ settings.hero_title if settings and settings.hero_title else 'Zihni, Bedeni ve Davranışı Anlamak.' }}</h1>
-        <p>{{ settings.hero_subtitle if settings and settings.hero_subtitle else 'Profesyonel danışmanlık ve bilimsel makaleler.' }}</p>
+        <h1 style="font-family: var(--font-serif); font-size: 2.5rem; margin-top: 0.5rem; color: var(--text-primary);">{{ settings.hero_title if settings and settings.hero_title else 'Zihni, Bedeni ve Davranışı Anlamak.' }}</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 0.5rem;">{{ settings.hero_subtitle if settings and settings.hero_subtitle else 'Profesyonel danışmanlık ve bilimsel makaleler.' }}</p>
     </section>
 
-    <!-- Üye Paneli -->
-     {% include 'components/uye_panel.html' %}
-    
-    <!-- Uzman Paneli-->
-    {% include 'components/uzman_panel.html' %}
+    <!-- Dinamik Paneller ve İçerikler (Düzenli Sarmalayıcı İçinde) -->
+    <main>
+        {% if session_user %}
+            <div class="page-section-wrapper">
+                {% include 'components/uye_panel.html' %}
+            </div>
+        {% endif %}
+        
+        {% if session_role and session_role != 'Danışan' %}
+            <div class="page-section-wrapper">
+                {% include 'components/uzman_panel.html' %}
+            </div>
+        {% endif %}
 
-    <!-- Uzman Kadrosu-->
-    {% include 'components/uzman_kadro.html' %}
-    
-    
-    <!-- Güncel Makaleler -->
-    {% include 'components/guncel_makale.html' %}
+        <div class="page-section-wrapper">
+            {% include 'components/uzman_kadro.html' %}
+        </div>
         
-    <!-- SSS -->
-    {% include 'components/faq_section.html' %}
-        
-    <!-- İletişim Formu -->  
-    {% include 'components/contact_section.html' %}
-        
+        <div class="page-section-wrapper">
+            {% include 'components/guncel_makale.html' %}
+        </div>
+            
+        <div class="page-section-wrapper">
+            {% include 'components/faq_section.html' %}
+        </div>
+            
+        <div class="page-section-wrapper">
+            {% include 'components/contact_section.html' %}
+        </div>
+    </main>
+
     <!-- Footer -->
     {% include 'components/footer.html' %}
 
     <!-- Modallar -->
     {% include 'components/modals.html' %}
-        
-    <!-- MAKALE OKUMA MODALI -->
     {% include 'components/makaleokuma_section.html' %}
 </body>
 </html>
