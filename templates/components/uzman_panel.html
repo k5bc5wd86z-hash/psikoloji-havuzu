@@ -1,0 +1,76 @@
+
+  {% if session_user and not is_member and session_role != 'Kurucu Yönetici' %}
+        {% include 'components/expert_panel.html' %}
+    {% endif %}
+
+    <div id="icerik-alani" style="display: flex; flex-direction: column;">
+        <!-- Kitap & Şarkı Önerisi -->
+        <section class="blog-section" style="order: 0; padding-bottom: 1rem; max-width: 900px; margin: 0 auto 3rem auto;">
+            <div class="dashboard-card" style="border-left: 4px solid var(--accent-gold); padding: 2rem;">
+                <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 0.5rem;">Ruhunu Dinlendir! </h3>
+                <div style="background: var(--bg-base); padding: 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 1.5rem; border: 1px solid var(--border-light); margin-top: 1rem;">
+                    <div>
+                        <strong style="font-size: 1.1rem; color: var(--text-primary); display: block;">Kitap: {{ recommendation.book }} ({{ recommendation.book_author }})</strong>
+                        <span style="color: var(--accent-warm); font-weight: 600; font-size: 0.95rem;">Şarkı: {{ recommendation.song }}</span>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">{{ recommendation.song_desc }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Uzman Kadrosu -->
+        <section class="blog-section" style="order: 1; padding-bottom: 2rem;">
+            <div class="section-header"><h2>Uzman Kadromuz</h2></div>
+            <div class="blog-grid">
+                {% for expert in experts %}
+                    <div class="expert-card" onclick="openExpertDetailModal('{{ expert.name }}', '{{ expert.role }}', '{{ expert.email }}', '{{ expert.cv }}', '{{ expert.photo }}')" style="cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div>
+                            <div class="expert-photo">{{ expert.photo }}</div>
+                            <h3 style="text-align: center; font-size: 1.4rem;">{{ expert.name }}</h3>
+                            <div style="text-align: center; margin-bottom: 1rem;"><span class="role-badge">{{ expert.role }}</span></div>
+                            
+                            <div style="font-size: 0.85rem; color: var(--text-primary); background: var(--bg-base); padding: 1.2rem; border-radius: 12px; border-left: 4px solid var(--accent-warm); margin-bottom: 1rem; line-height: 1.6; max-height: 120px; overflow: hidden; position: relative;">
+                                <strong style="display: block; margin-bottom: 0.4rem; color: var(--accent-warm);">Sistem Onaylı CV & Kariyer</strong>
+                                {{ expert.cv if expert.cv else 'Akademik geçmiş ve kariyer detayları sisteme yükleniyor...' }}
+                                <div style="font-size: 0.75rem; color: var(--accent-warm); margin-top: 0.5rem; font-weight: 600; text-align: right;">Detayları Gör →</div>
+                            </div>
+                        </div>
+                        <button class="btn-outline" style="width: 100%; margin-top: auto;" onclick="event.stopPropagation(); openAppointmentModal('{{ expert.username }}')">Randevu Al</button>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--bg-base); border-radius: 16px; border: 1px dashed var(--accent-warm);">
+                <h4 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 0.5rem;">Ekibimize Katılmak İster Misiniz?</h4>
+                <button class="btn-follow" onclick="openModal('applyExpertModal')">Uzman Başvuru Formu</button>
+            </div>
+        </section>
+
+        <!-- Güncel Makaleler -->
+        <section class="blog-section" style="order: 2;">
+            <div class="section-header"><h2>Güncel Makaleler</h2></div>
+            <div class="blog-grid">
+                {% for post in posts %}
+                    <article class="blog-card">
+                        <div style="flex-grow: 1;">
+                            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-warm); font-weight: 600; margin-bottom: 0.8rem;">{{ post.category }}</div>
+                            <h3 style="font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem;">{{ post.title }}</h3>
+                            <div id="post-title-{{ post.id }}" style="display: none;">{{ post.title }}</div>
+                            <div id="post-category-{{ post.id }}" style="display: none;">{{ post.category }}</div>
+                            <!-- YAZAR ADI KALDIRILDI, TARİH EKLENDİ -->
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Tarih: Bugün</div>
+                            <div id="post-content-{{ post.id }}" style="display: none;">{{ post.content }}</div>
+                            <p class="text-clamp" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">{{ post.content }}</p>
+                        </div>
+                        <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; align-items: center;">
+                            {% if is_member %}
+                            <!-- AJAX UYUMLU BEĞENİ BUTONU -->
+                            <button id="like-btn-{{ post.id }}" class="btn-outline" style="padding: 0.5rem 1rem;" onclick="likePost({{ post.id }})">Beğen (<span id="like-count-{{ post.id }}">{{ post.likes }}</span>)</button>
+                            {% endif %}
+                            <button class="btn-follow" style="flex: 1;" onclick="openArticleModal({{ post.id }})">Devamını Oku</button>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+        
