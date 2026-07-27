@@ -1,1 +1,45 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psikoloji Nedir? | Psikoloji Havuzu</title>
+    <meta name="description" content="Psikoloji bilimi nedir, zihin, davranış ve ruh sağlığı süreçleri nasıl incelenir? Psikoloji Havuzu uzman kadrosuyla keşfedin.">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root { --bg-base: {{ settings.bg_base if settings else '#FBF9F5' }}; --bg-card: {{ settings.bg_card if settings else '#FFFFFF' }}; --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; }
+    </style>
+</head>
+<body class="bg-image-container">
+    <!-- Üst Menü -->
+    {% include 'components/header.html' %}
 
+    <main style="max-width: 900px; margin: 4rem auto; padding: 0 1.5rem;">
+        <article class="dashboard-card" style="padding: 3rem; background: var(--bg-card); border-radius: 20px; box-shadow: var(--shadow-soft);">
+            <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px; display: block; margin-bottom: 0.5rem;">Bilimsel Rehber</span>
+            <h1 style="font-family: var(--font-serif); font-size: 2.5rem; margin-bottom: 1.5rem; color: var(--text-primary); line-height: 1.2;">Psikoloji Nedir?</h1>
+            
+            <div style="font-size: 1.05rem; line-height: 1.8; color: var(--text-muted); display: flex; flexDirection: column; gap: 1.2rem;">
+                <p><strong>Psikoloji</strong>, zihinsel süreçleri ve insan davranışlarını inceleyen bilim dalıdır. Kelime kökeni olarak Yunanca ruh anlamına gelen "psyche" ve bilgi/bilim anlamına gelen "logia" kelimelerinin birleşiminden oluşmuştur.</p>
+                
+                <p>Bu bilim dalı; bireylerin düşünme biçimlerini, duygusal tepkilerini, motivasyonlarını, sosyal ilişkilerini ve biyolojik süreçlerle olan bağlarını ele alır. Psikoloji Havuzu olarak biz, insanı bir bütün olarak ele alan <em>bütüncül yaklaşımı</em> savunuyoruz; yani zihni, bedeni ve çevresel faktörleri birbirinden ayrı düşünmüyoruz.</p>
+
+                <h3 style="font-family: var(--font-serif); font-size: 1.6rem; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.5rem;">Psikolojinin Temel Alt Dalları Nelerdir?</h3>
+                <ul style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li><strong>Klinik Psikoloji:</strong> Ruhsal bozuklukların tanısı, değerlendirmesi ve psikoterapi süreçleriyle ilgilenir.</li>
+                    <li><strong>Gelişim Psikolojisi:</strong> İnsanın doğumdan ölüme kadar geçirdiği fiziksel, bilişsel ve sosyal değişimleri inceler.</li>
+                    <li><strong>Sosyal Psikoloji:</strong> Bireylerin düşünce ve davranışlarının başkalarından nasıl etkilendiğini araştırır.</li>
+                    <li><strong>Bilişsel Psikoloji:</strong> Hafıza, öğrenme, dikkat, algı ve problem çözme gibi zihinsel süreçlere odaklanır.</li>
+                </ul>
+
+                <h3 style="font-family: var(--font-serif); font-size: 1.6rem; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.5rem;">Neden Psikolojik Destek Almalıyız?</h3>
+                <p>Zorlayıcı yaşam olaylarıyla başa çıkmak, kendini daha derinlemesine tanımak, ilişkilerde sağlıklı sınırlar koyabilmek ve yaşam kalitesini artırmak her bireyin en doğal hakkıdır. Uzman kadromuz ve etik kurul onaylı süreçlerimizle bu yolculukta güvenli bir rehber sunuyoruz.</p>
+            </div>
+        </article>
+    </main>
+
+    <!-- Footer -->
+    {% include 'components/footer.html' %}
+</body>
+</html>
