@@ -212,6 +212,14 @@ def tum_uzmanlar():
 @app.route('/etik_kurul_testler')
 def etik_kurul_testler():
     return render_template('testler.html')
+
+@app.route('/')
+def index():
+    # Sadece Kurucu Uzman etiketine sahip olanlar
+    kurucu_uzmanlar = Expert.query.filter_by(tag='Kurucu Uzman').all()
+    # Sadece ilk 2 makale
+    ornek_makaleler = Post.query.limit(2).all()
+    return render_template('index.html', experts=kurucu_uzmanlar, posts=ornek_makaleler)
     
 @app.route('/sitemap.xml')
 def sitemap():
