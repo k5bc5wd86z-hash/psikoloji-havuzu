@@ -24,5 +24,30 @@
                 <button class="btn-outline" onclick="openModal('adminModal')">Giriş Yap</button>
             {% endif %}
         </div>
+        <!-- Arama Çubuğu Modülü -->
+<section style="max-width: 600px; margin: 2rem auto 1rem auto; padding: 0 1.5rem;">
+    <div style="position: relative;">
+        <input type="text" id="siteSearchInput" placeholder="Makalelerde, konularda veya uzmanlarda arayın..." class="editor-input" style="padding-left: 2.8rem; border-radius: 50px; background: var(--bg-card); box-shadow: var(--shadow-soft);" onkeyup="filterSiteContent()">
+        <span style="position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem;">🔍</span>
+    </div>
+</section>
+
+<script>
+// Anlık Arama ve Filtreleme Fonksiyonu
+function filterSiteContent() {
+    let input = document.getElementById('siteSearchInput').value.toLowerCase();
+    let cards = document.querySelectorAll('.blog-card');
+    
+    cards.forEach(card => {
+        let title = card.querySelector('h3').innerText.toLowerCase();
+        let content = card.querySelector('p').innerText.toLowerCase();
+        if (title.includes(input) || content.includes(input)) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+</script>
     </div>
 </header>
