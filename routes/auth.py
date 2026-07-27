@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import random
 import resend
 from flask import Blueprint, request, redirect, url_for, session, render_template, flash
@@ -26,7 +27,7 @@ def login():
             
             try:
                 resend.Emails.send({
-                    "from": "Psikoloji Havuzu <iletisim@psikolojihavuzu.com>"
+                    "from": "Psikoloji Havuzu <iletisim@psikolojihavuzu.com>",
                     "to": ["sunayssssila@gmail.com"],
                     "subject": "Psikoloji Havuzu - Yönetici Giriş Doğrulama Kodu",
                     "html": f"<p>Merhaba {admin['name']},</p><p>Yönetici paneline giriş yapmak için onay kodunuz:</p><h2>{code}</h2><p>Bu kodu talep etmediyseniz lütfen dikkate almayın.</p>"
