@@ -69,10 +69,12 @@ def apply_expert():
     return redirect(url_for('anasayfa'))
 
 @expert_bp.route('/add_post', methods=['POST'])
+@expert_bp.route('/add_post', methods=['POST'])
+@expert_bp.route('/publish_article', methods=['POST'])
 def add_post():
     title = request.form.get('postTitle') or request.form.get('title')
     raw_content = request.form.get('postContent') or request.form.get('content')
-    category = request.form.get('postCategory') or request.form.get('discipline', 'Klinik Psikoloji & Terapi')
+    category = request.form.get('postCategory') or request.form.get('category') or request.form.get('discipline', 'Klinik Psikoloji & Terapi')
     
     author_name = session.get('name') or session.get('user') or 'Anonim Uzman'
     bugunun_tarihi = datetime.date.today().strftime("%d.%m.%Y")
@@ -90,7 +92,7 @@ def add_post():
         conn.commit()
         conn.close()
     return redirect(url_for('anasayfa'))
-
+    
 @expert_bp.route('/refer_client', methods=['POST'])
 def refer_client():
     if session.get('role') == 'Standart Üye' or not session.get('user'):
