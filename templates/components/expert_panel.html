@@ -182,9 +182,7 @@
     {% endif %}
 </div>
 {% endfor %}
-    {% if session.get('role') in ['Sistem Yöneticisi', 'Kurucu Yönetici', 'Uzman'] %}
-    <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem;">
-
+    
 <script>
     var chatBox = document.getElementById("chatContainer");
     if (chatBox) { chatBox.scrollTop = chatBox.scrollHeight; }
