@@ -64,7 +64,7 @@
         {% elif session_user and session_role and session_role != 'Üye' and session_role != 'Danışan' %}
             <!-- Uzman / Yönetici Girişindeyse Uzman Paneli Görünür -->
             <div class="page-section-wrapper">
-                {% include 'components/uzman_panel.html' %}
+                {% include 'components/expert_panel.html' %}
             </div>
         {% else %}
             <!-- Üye DEĞİLSE Normal Karşılama Görünür -->
