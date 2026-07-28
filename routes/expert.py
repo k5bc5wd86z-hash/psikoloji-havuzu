@@ -69,28 +69,32 @@ def apply_expert():
     return redirect(url_for('anasayfa'))
 
 @expert_bp.route('/add_post', methods=['POST'])
-@expert_bp.route('/add_post', methods=['POST'])
 @expert_bp.route('/publish_article', methods=['POST'])
-def add_post():
-    title = request.form.get('postTitle') or request.form.get('title')
-    raw_content = request.form.get('postContent') or request.form.get('content')
-    category = request.form.get('postCategory') or request.form.get('category') or request.form.get('discipline', 'Klinik Psikoloji & Terapi')
+def publish_article():
+    if not session.get('user'):
+        return redirect(url_for('anasayfa'))
+        
+    title = request.form.get('title')
+    category = request.form.get('category')
+    content = request.form.get('content')
     
-    author_name = session.get('name') or session.get('user') or 'Anonim Uzman'
-    bugunun_tarihi = datetime.date.today().strftime("%d.%m.%Y")
+    author_name = session.get('name') or session.get('user')
+    author_role = session.get('role') or 'Uzman'
+    full_author = f"{author_name} — {author_role}"
     
-    formatted_content = f"{raw_content}\n\n──────────────\nTarih: {bugunun_tarihi}"
-    
-    if title and raw_content:
+    if title and content:
         conn = get_db_connection()
         try:
-            conn.execute('INSERT INTO posts (title, content, category, author, likes) VALUES (?, ?, ?, ?, ?)', 
-                         (title, formatted_content, category, author_name, 0))
+            conn.execute('''
+                INSERT INTO posts (title, category, content, author, likes) 
+                VALUES (?, ?, ?, ?, ?)
+            ''', (title, category, content, full_author, 0))
+            conn.commit()
         except Exception as e:
-            print("Veritabanı makale ekleme hatası:", e)
-            conn.execute('INSERT INTO posts (title, content, likes) VALUES (?, ?, ?)', (title, formatted_content, 0))
-        conn.commit()
-        conn.close()
+            print("Makale yayınlama hatası:", e)
+        finally:
+            conn.close()
+            
     return redirect(url_for('anasayfa'))
     
 @expert_bp.route('/refer_client', methods=['POST'])
