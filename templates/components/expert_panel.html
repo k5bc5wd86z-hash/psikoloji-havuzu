@@ -120,6 +120,51 @@
     </div>
 </section>
 
+<div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem;">
+    <!-- Silme Butonu -->
+    <form action="{{ url_for('expert.delete_post', post_id=post.id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Bu makaleyi silmek istediğinize emin misiniz?');">
+        <button type="submit" style="background: none; border: none; color: #c94a4a; font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 0; display: inline-flex; align-items: center; gap: 0.3rem;">
+            ❌ Makaleyi Sil
+        </button>
+    </form>
+
+    <!-- Düzenleme Butonu / Tetikleyicisi -->
+    <button type="button" onclick="document.getElementById('editForm-{{ post.id }}').style.display = 'block'" style="background: none; border: none; color: var(--accent-warm); font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 0;">
+        ✏️ Düzenle
+    </button>
+</div>
+
+<!-- Gizli Düzenleme Formu -->
+<div id="editForm-{{ post.id }}" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--bg-base); border-radius: 8px; border: 1px solid var(--border-light);">
+    <form action="{{ url_for('expert.edit_post', post_id=post.id) }}" method="POST">
+        <div style="margin-bottom: 0.8rem;">
+            <input type="text" name="title" value="{{ post.title }}" class="editor-input" required style="width: 100%; margin-bottom: 0;">
+        </div>
+        <div style="margin-bottom: 0.8rem;">
+            <select name="category" class="editor-select" required style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary);">
+                <option value="{{ post.category }}" selected>{{ post.category }} (Mevcut)</option>
+                <option value="Psikoloji">Psikoloji</option>
+                <option value="Klinik Psikoloji">Klinik Psikoloji</option>
+                <option value="Gelişim Psikolojisi">Gelişim Psikolojisi</option>
+                <option value="Sosyal Psikoloji">Sosyal Psikoloji</option>
+                <option value="Bilişsel Davranışçı Yaklaşımlar">Bilişsel Davranışçı Yaklaşımlar</option>
+                <option value="Diyetisyen / Beslenme">Diyetisyen ve Beslenme</option>
+                <option value="Moleküler Biyoloji ve Genetik">Moleküler Biyoloji ve Genetik</option>
+                <option value="Nörobiyoloji ve Beyin Sağlığı">Nörobiyoloji ve Beyin Sağlığı</option>
+                <option value="Bütüncül Esenlik ve Yaşam">Bütüncül Esenlik ve Yaşam</option>
+                <option value="Akademik Araştırmalar">Akademik Araştırmalar</option>
+            </select>
+        </div>
+        <div style="margin-bottom: 0.8rem;">
+            <textarea name="content" class="editor-textarea" required style="width: 100%; min-height: 100px; margin-bottom: 0;">{{ post.content }}</textarea>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button type="submit" class="btn-follow" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Kaydet</button>
+            <button type="button" onclick="document.getElementById('editForm-{{ post.id }}').style.display = 'none'" style="background: none; border: 1px solid var(--border-light); color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">İptal</button>
+        </div>
+    </form>
+</div>
+
 <script>
     var chatBox = document.getElementById("chatContainer");
     if (chatBox) { chatBox.scrollTop = chatBox.scrollHeight; }
