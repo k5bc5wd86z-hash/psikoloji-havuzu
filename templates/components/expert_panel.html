@@ -85,9 +85,10 @@
     </div>
 
     <!-- MAKALE YAYINLAMA FORMU -->
+    <!-- MAKALE YAYINLAMA FORMU -->
     <div class="expert-article-box" style="margin-top: 2rem;">
         <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Makale Yayınla</h3>
-        <form action="/publish_article" method="POST">
+        <form action="{{ url_for('expert.publish_article') }}" method="POST">
             <div style="margin-bottom: 1rem;">
                 <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Başlığı</label>
                 <input type="text" name="title" class="editor-input" placeholder="Makale başlığını girin..." required style="margin-bottom: 0; width: 100%;">
@@ -118,7 +119,7 @@
             <button type="submit" class="btn-follow" style="width: 100%; padding: 0.8rem;">Makaleyi Yayınla</button>
         </form>
     </div>
-
+    
     <!-- YAYINLANAN MAKALELERİ YÖNETME (SİLME / DÜZENLEME) -->
     <div class="expert-article-box" style="margin-top: 2rem;">
         <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Yayınladığım Makaleler</h3>
