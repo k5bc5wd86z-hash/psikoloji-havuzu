@@ -84,7 +84,7 @@
         </form>
     </div>
 
-   <!-- MAKALE YAYINLAMA FORMU -->
+    <!-- MAKALE YAYINLAMA FORMU -->
     <div class="expert-article-box" style="margin-top: 2rem;">
         <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Makale Yayınla</h3>
         <form action="/publish_article" method="POST">
@@ -132,13 +132,13 @@
                     <!-- Silme Formu -->
                     <form action="{{ url_for('expert.delete_post', post_id=post.id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Bu makaleyi silmek istediğinize emin misiniz?');">
                         <button type="submit" style="background: none; border: none; color: #c94a4a; font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 0;">
-                            ❌ Makaleyi Sil
+                            Makaleyi Sil
                         </button>
                     </form>
 
                     <!-- Düzenleme Butonu -->
                     <button type="button" onclick="document.getElementById('editForm-{{ post.id }}').style.display = document.getElementById('editForm-{{ post.id }}').style.display == 'block' ? 'none' : 'block'" style="background: none; border: none; color: var(--accent-warm); font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 0;">
-                        ✏️ Düzenle
+                        Düzenle
                     </button>
                 </div>
 
