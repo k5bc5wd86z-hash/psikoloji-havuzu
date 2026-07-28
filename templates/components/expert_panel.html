@@ -1,9 +1,11 @@
 <section class="editor-section" style="max-width: 1200px;" id="ortak-calisma">
     <div style="margin-bottom: 1rem;">
         <h2 style="font-family: var(--font-serif); font-size: 2.4rem;">Uzman Paneli</h2>
-        <p style="color: var(--text-muted);">Yeni randevu aldığınızda sağ alttan bildirim gelecektir.</p>
+        <p style="color: var(--text-muted);">Yeni randevu aldığınızda bildirim alacaksınız.</p>
     </div>
+
     <div class="expert-dashboard-container">
+        <!-- Randevu Takvimi -->
         <div class="expert-calendar-card">
             <div class="calendar-header"><h3>Randevu Takvimi</h3></div>
             <div class="calendar-grid">
@@ -12,11 +14,12 @@
                 {% for day in range(1, 15) %}
                 <div class="cal-day"><span class="cal-date-num">{{ day }}</span>
                     {% for appt in appointments %}{% if appt.expert_username == session_user and appt.date.endswith('%02d'|format(day)) %}
-                            <div class="cal-event" onclick="alert('Danışan: {{ appt.user_name }}\nNeden: {{ appt.reason }}\nDurum: {{ appt.status }}')">{{ appt.time }} - {{ appt.user_name }}</div>
+                        <div class="cal-event" onclick="alert('Danışan: {{ appt.user_name }}\nNeden: {{ appt.reason }}\nDurum: {{ appt.status }}')">{{ appt.time }} - {{ appt.user_name }}</div>
                     {% endif %}{% endfor %}
                 </div>
                 {% endfor %}
             </div>
+            
             <h4 style="margin-top: 2rem; margin-bottom: 1rem; font-family: var(--font-serif); font-size: 1.4rem;">Bekleyen Talepler</h4>
             <div style="background: var(--bg-base); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-light);">
                 {% for appt in appointments %}
@@ -33,6 +36,8 @@
                 {% endfor %}
             </div>
         </div>
+
+        <!-- Ortak Çalışma Odası (Sohbet) -->
         <div class="collab-card">
             <h3 class="collab-header">Ortak Çalışma Odası</h3>
             <div class="chat-container" id="chatContainer">
@@ -49,10 +54,10 @@
         </div>
     </div>
 
-    <!-- SİSTEMLİ CV YÜKLEME ALANI -->
+    <!-- CV YÜKLEME FORMU -->
     <div class="expert-article-box" style="margin-top: 2rem;">
         <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">CV Yükle ve Sistemi Otomatik Tanıt</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">PDF formatındaki CV'nizi yükleyin; sistem metni okuyup herkese açık profilinizde sergilenecek şekilde otomatik özetlesin.</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">PDF formatındaki CV'nizi yükleyin.</p>
         <form action="/upload_cv" method="POST" enctype="multipart/form-data">
             <div style="margin-bottom: 1rem;">
                 <input type="file" name="cvFile" accept=".pdf" class="editor-input" required style="padding: 0.6rem;">
@@ -61,13 +66,12 @@
         </form>
     </div>
 
-    <!-- DANIŞAN YÖNLENDİRME ALANI -->
+    <!-- DANIŞAN YÖNLENDİRME FORMU -->
     <div class="expert-article-box" style="margin-top: 2rem;">
         <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Danışan Yönlendirme</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Klinik alanınız dışındaki danışanlarınızı uygun gördüğünüz diğer uzmanlara güvenle yönlendirin.</p>
         <form action="/refer_client" method="POST">
             <input type="text" name="clientName" class="editor-input" placeholder="Danışanın Adı ve Soyadı" required style="margin-bottom: 1rem;">
-            <select name="targetExpert" class="editor-select" required style="margin-bottom: 1rem; width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary);">
+            <select name="targetExpert" class="editor-select" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary); margin-bottom: 1rem;">
                 <option value="" disabled selected>Yönlendirilecek Uzmanı Seçin</option>
                 {% for expert in experts %}
                     {% if expert.username != session_user %}
@@ -75,23 +79,23 @@
                     {% endif %}
                 {% endfor %}
             </select>
-            <textarea name="referralNote" class="editor-textarea" placeholder="Yönlendirme nedeni ve klinik notlar (Sadece hedef uzman görebilir)..." required style="min-height: 100px; margin-bottom: 1rem; width: 100%;"></textarea>
+            <textarea name="referralNote" class="editor-textarea" placeholder="Yönlendirme nedeni ve klinik notlar..." required style="min-height: 100px; width: 100%; margin-bottom: 1rem;"></textarea>
             <button type="submit" class="btn-outline" style="width: 100%; padding: 0.8rem; background-color: var(--bg-base);">Yönlendirme Talebi Oluştur</button>
         </form>
     </div>
 
-    <!-- MAKALE YAYINLAMA ALANI -->
+    <!-- MAKALE YAYINLAMA FORMU -->
     <div class="expert-article-box" style="margin-top: 2rem;">
         <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Makale Yayınla</h3>
         <form action="/publish_article" method="POST">
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label for="articleTitle" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Başlığı</label>
-                <input type="text" id="articleTitle" name="title" class="editor-input" placeholder="Makale başlığını girin..." required style="margin-bottom: 0;">
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Başlığı</label>
+                <input type="text" name="title" class="editor-input" placeholder="Makale başlığını girin..." required style="margin-bottom: 0; width: 100%;">
             </div>
 
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label for="articleCategory" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Alanı / Kategori</label>
-                <select id="articleCategory" name="category" class="editor-select" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary); margin-bottom: 0;">
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Alanı / Kategori</label>
+                <select name="category" class="editor-select" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary); margin-bottom: 0;">
                     <option value="" disabled selected>Uzmanlık / Branş Alanı Seçin</option>
                     <option value="Psikoloji">Psikoloji</option>
                     <option value="Klinik Psikoloji">Klinik Psikoloji</option>
@@ -106,15 +110,16 @@
                 </select>
             </div>
 
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label for="articleContent" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale İçeriği</label>
-                <textarea id="articleContent" name="content" class="editor-textarea" placeholder="Makale içeriğini ve referansları buraya yazın..." required style="min-height: 150px; margin-bottom: 0; width: 100%;"></textarea>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale İçeriği</label>
+                <textarea name="content" class="editor-textarea" placeholder="Makale içeriğini ve referansları buraya yazın..." required style="min-height: 150px; width: 100%; margin-bottom: 0;"></textarea>
             </div>
 
             <button type="submit" class="btn-follow" style="width: 100%; padding: 0.8rem;">Makaleyi Yayınla</button>
         </form>
     </div>
 </section>
+
 <script>
     var chatBox = document.getElementById("chatContainer");
     if (chatBox) { chatBox.scrollTop = chatBox.scrollHeight; }
