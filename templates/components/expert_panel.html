@@ -81,21 +81,41 @@
     </div>
 
     <!-- MAKALE YAYINLAMA ALANI -->
-    <div class="form-group" style="margin-bottom: 1.5rem;">
-    <label for="articleCategory" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Alanı / Kategori</label>
-    <select id="articleCategory" name="category" class="form-control" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary);">
-        <option value="" disabled selected>Uzmanlık / Branş Alanı Seçin</option>
-        <option value="Psikoloji">Psikoloji</option>
-        <option value="Klinik Psikoloji">Klinik Psikoloji</option>
-        <option value="Gelişim Psikolojisi">Gelişim Psikolojisi</option>
-        <option value="Sosyal Psikoloji">Sosyal Psikoloji</option>
-        <option value="Bilişsel Davranışçı Yaklaşımlar">Bilişsel Davranışçı Yaklaşımlar</option>
-        <option value="Diyetisyen / Beslenme">Diyetisyen ve Beslenme</option>
-        <option value="Moleküler Biyoloji ve Genetik">Moleküler Biyoloji ve Genetik</option>
-        <option value="Nörobiyoloji ve Beyin Sağlığı">Nörobiyoloji ve Beyin Sağlığı</option>
-        <option value="Bütüncül Esenlik ve Yaşam">Bütüncül Esenlik ve Yaşam</option>
-        <option value="Akademik Araştırmalar">Akademik Araştırmalar</option>
-    </select>
-   </div>
+    <div class="expert-article-box" style="margin-top: 2rem;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Makale Yayınla</h3>
+        <form action="/publish_article" method="POST">
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="articleTitle" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Başlığı</label>
+                <input type="text" id="articleTitle" name="title" class="editor-input" placeholder="Makale başlığını girin..." required style="margin-bottom: 0;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="articleCategory" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Alanı / Kategori</label>
+                <select id="articleCategory" name="category" class="editor-select" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary); margin-bottom: 0;">
+                    <option value="" disabled selected>Uzmanlık / Branş Alanı Seçin</option>
+                    <option value="Psikoloji">Psikoloji</option>
+                    <option value="Klinik Psikoloji">Klinik Psikoloji</option>
+                    <option value="Gelişim Psikolojisi">Gelişim Psikolojisi</option>
+                    <option value="Sosyal Psikoloji">Sosyal Psikoloji</option>
+                    <option value="Bilişsel Davranışçı Yaklaşımlar">Bilişsel Davranışçı Yaklaşımlar</option>
+                    <option value="Diyetisyen / Beslenme">Diyetisyen ve Beslenme</option>
+                    <option value="Moleküler Biyoloji ve Genetik">Moleküler Biyoloji ve Genetik</option>
+                    <option value="Nörobiyoloji ve Beyin Sağlığı">Nörobiyoloji ve Beyin Sağlığı</option>
+                    <option value="Bütüncül Esenlik ve Yaşam">Bütüncül Esenlik ve Yaşam</option>
+                    <option value="Akademik Araştırmalar">Akademik Araştırmalar</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="articleContent" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale İçeriği</label>
+                <textarea id="articleContent" name="content" class="editor-textarea" placeholder="Makale içeriğini ve referansları buraya yazın..." required style="min-height: 150px; margin-bottom: 0;"></textarea>
+            </div>
+
+            <button type="submit" class="btn-follow" style="width: 100%; padding: 0.8rem;">Makaleyi Yayınla</button>
+        </form>
+    </div>
 </section>
-<script>var chatBox = document.getElementById("chatContainer"); if(chatBox){ chatBox.scrollTop = chatBox.scrollHeight; }</script>
+<script>
+    var chatBox = document.getElementById("chatContainer");
+    if (chatBox) { chatBox.scrollTop = chatBox.scrollHeight; }
+</script>
