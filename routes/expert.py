@@ -206,3 +206,33 @@ def edit_post(post_id):
             conn.close()
             
     return redirect(url_for('anasayfa')) 
+
+@expert_bp.route('/update_expert_profile', methods=['POST'])
+def update_expert_profile():
+    if not session.get('user') or session.get('role') == 'Standart Üye':
+        return redirect(url_for('anasayfa'))
+        
+    # Formdan gelen detaylı kutucuk verilerini alalım
+    lisans = request.form.get('eduLisans', '')
+    yuksek = request.form.get('eduYuksek', '')
+    doktora = request.form.get('eduDoktora', '')
+    sertifikalar = request.form.get('certifications', '')
+    deneyimler = request.form.get('experiences', '')
+    
+    # Bu bilgileri şık ve düzenli bir metin halinde CV alanında birleştirebilir veya ayrı sütunlarda tutabiliriz
+    structured_cv = f"Lisans: {lisans}\nYüksek Lisans: {yuksek}\nDoktora: {doktora}\nSertifikalar: {sertifikalar}\nDeneyimler: {deneyimler}"
+    
+    conn = get_db_connection()
+    try:
+        conn.execute('''
+            UPDATE admins 
+            SET cv = ? 
+            WHERE username = ?
+        ''', (structured_cv, session.get('user')))
+        conn.commit()
+    except Exception as e:
+        print("Profil güncelleme hatası:", e)
+    finally:
+        conn.close()
+        
+    return redirect(url_for('anasayfa'))
