@@ -134,7 +134,21 @@ def init_db():
         conn.execute('ALTER TABLE admins ADD COLUMN tag TEXT DEFAULT "Uzman"')
     except Exception:
         pass
-        
+
+    # Atanan testler tablosu
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS assigned_tests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            expert_username TEXT,
+            member_username TEXT,
+            test_title TEXT,
+            test_content TEXT,
+            status TEXT DEFAULT 'Bekliyor',
+            result TEXT,
+            date TEXT
+        )
+    ''')
+    
     # Kurucu Yönetici Garantisi (Kullanıcı: yonetici, Şifre: yonetici123)
     yonetici = conn.execute('SELECT * FROM admins WHERE username = "yonetici"').fetchone()
     if not yonetici:
