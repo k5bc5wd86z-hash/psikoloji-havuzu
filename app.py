@@ -257,8 +257,8 @@ def etik_kurul_testler():
     
 @app.route('/psikoloji_nedir')
 def psikoloji_nedir():
-    return render_template('psikoloji_nedir.html')
-    
+    return render_template('psikoloji_nedir.html')
+    
 @app.route('/tags')
 def tags():
     conn = get_db_connection()
