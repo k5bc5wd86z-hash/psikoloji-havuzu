@@ -272,3 +272,25 @@ def add_expert_note():
     conn.close()
     
     return redirect(url_for('anasayfa'))
+
+@expert_bp.route('/assign_test', methods=['POST'])
+def assign_test():
+    if not session.get('user') or session.get('role') == 'Standart Üye':
+        return redirect(url_for('anasayfa'))
+        
+    expert_username = session.get('user')
+    member_username = request.form.get('memberUsername')
+    test_title = request.form.get('testTitle')
+    test_content = request.form.get('testContent', 'Genel Değerlendirme Ölçeği')
+    date_str = datetime.date.today().strftime('%d.%m.%Y')
+    
+    if member_username and test_title:
+        conn = get_db_connection()
+        conn.execute('''
+            INSERT INTO assigned_tests (expert_username, member_username, test_title, test_content, status, date)
+            VALUES (?, ?, ?, ?, 'Bekliyor', ?)
+        ''', (expert_username, member_username, test_title, test_content, date_str))
+        conn.commit()
+        conn.close()
+        
+    return redirect(url_for('anasayfa'))
