@@ -244,8 +244,17 @@ def tum_uzmanlar():
 
 @app.route('/etik_kurul_testler')
 def etik_kurul_testler():
-    return render_template('testler.html')
-
+    session_role = session.get('role')
+    is_member = session.get('is_member', False)
+    
+    # Eğer giriş yapan bir uzmansa test yönetim sayfasına gitsin
+    if session_role and session_role != 'Standart Üye':
+        return render_template('testler.html')
+        
+    # Eğer standart üye veya ziyaretçiyse, doğrudan ana sayfaya yönlendirip uyarı verelim
+    flash('Test modülü yalnızca uzman yönlendirmesi veya ataması ile kullanılabilmektedir.', 'warning')
+    return redirect(url_for('anasayfa'))
+    
 @app.route('/psikoloji_nedir')
 def psikoloji_nedir():
     return render_template('psikoloji_nedir.html')
