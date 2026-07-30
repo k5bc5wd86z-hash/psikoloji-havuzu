@@ -179,6 +179,45 @@
     </div>
 </section>
 
+<!-- UZMAN PROFİLİNİ VE DETAYLARINI GÜNCELLEME FORMU -->
+<div class="expert-article-box" style="margin-top: 2rem;">
+    <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 0.5rem;">Profilimi ve Akademik Geçmişimi Düzenle</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Sistemde görünecek akademik unvanlarınızı ve kariyer detaylarınızı bu alandan güncelleyebilirsiniz.</p>
+    
+    <form action="{{ url_for('expert.update_expert_profile') }}" method="POST">
+        <!-- Lisans Bilgisi -->
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Lisans Eğitimi (Üniversite / Bölüm)</label>
+            <input type="text" name="eduLisans" class="editor-input" placeholder="Örn: Boğaziçi Üniversitesi - Psikoloji" style="width: 100%; margin-bottom: 0;">
+        </div>
+
+        <!-- Yüksek Lisans Bilgisi -->
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Yüksek Lisans Eğitimi</label>
+            <input type="text" name="eduYuksek" class="editor-input" placeholder="Örn: Hacettepe Üniversitesi - Klinik Psikoloji" style="width: 100%; margin-bottom: 0;">
+        </div>
+
+        <!-- Doktora Bilgisi -->
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Doktora / Uzmanlık Eğitimi</label>
+            <input type="text" name="eduDoktora" class="editor-input" placeholder="Örn: İstanbul Üniversitesi - Nöropsikoloji (Devam ediyor / Mezun)" style="width: 100%; margin-bottom: 0;">
+        </div>
+
+        <!-- Sertifikalar -->
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Sertifikalar ve Yetkinlikler</label>
+            <textarea name="certifications" class="editor-textarea" placeholder="Aldığınız terapi eğitimleri, BDT sertifikaları vb..." style="width: 100%; min-height: 80px; margin-bottom: 0;"></textarea>
+        </div>
+
+        <!-- Deneyimler -->
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Kariyer ve Klinik Deneyimler</label>
+            <textarea name="experiences" class="editor-textarea" placeholder="Çalıştığınız kurumlar, hastaneler veya klinik geçmişiniz..." style="width: 100%; min-height: 100px; margin-bottom: 0;"></textarea>
+        </div>
+
+        <button type="submit" class="btn-follow" style="width: 100%; padding: 0.8rem;">Profil Bilgilerini Güncelle</button>
+    </form>
+</div>
 <script>
     var chatBox = document.getElementById("chatContainer");
     if (chatBox) { chatBox.scrollTop = chatBox.scrollHeight; }
