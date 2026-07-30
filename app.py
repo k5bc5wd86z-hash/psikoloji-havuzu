@@ -100,7 +100,23 @@ def anasayfa():
     
     daily_quote = gunluk_secici.choice(MOTIVATIONAL_QUOTES)
     selected_discipline = None
-    
+
+    # Üyeye atanan testler (Üye giriş yapmışsa)
+    member_assigned_tests = []
+    if is_member and session_user:
+        member_assigned_tests = conn.execute(
+            'SELECT * FROM assigned_tests WHERE member_username = ? ORDER BY id DESC', 
+            (session_user,)
+        ).fetchall()
+
+    # Uzmanın atadığı testler (Uzman giriş yapmışsa)
+    expert_assigned_tests = []
+    if session_role and session_role != 'Standart Üye' and session_user:
+        expert_assigned_tests = conn.execute(
+            'SELECT * FROM assigned_tests WHERE expert_username = ? ORDER BY id DESC', 
+            (session_user,)
+        ).fetchall()
+        
     return render_template('psikoloji_havuzu.html', 
                            posts=posts, 
                            experts=experts, 
@@ -269,3 +285,22 @@ def robots():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route('/submit_test/<int:test_id>', methods=['POST'])
+def submit_test(test_id):
+    if not session.get('is_member') or not session.get('user'):
+        return redirect(url_for('anasayfa'))
+        
+    result_text = request.form.get('testResult')
+    
+    if result_text:
+        conn = get_db_connection()
+        conn.execute('''
+            UPDATE assigned_tests 
+            SET status = 'Tamamlandı', result = ? 
+            WHERE id = ? AND member_username = ?
+        ''', (result_text, test_id, session.get('user')))
+        conn.commit()
+        conn.close()
+        
+    return redirect(url_for('anasayfa'))
