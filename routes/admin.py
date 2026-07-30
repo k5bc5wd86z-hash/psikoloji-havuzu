@@ -85,3 +85,17 @@ def admin_update_settings():
     conn.commit()
     conn.close()
     return redirect('/admin/settings')
+
+@admin_bp.route('/update_expert_tag/<int:expert_id>', methods=['POST'])
+def update_expert_tag(expert_id):
+    if not session.get('user') or session.get('role') not in ['Sistem Yöneticisi', 'Kurucu Yönetici']:
+        return redirect(url_for('anasayfa'))
+        
+    new_tag = request.form.get('expertTag', 'Uzman')
+    
+    conn = get_db_connection()
+    conn.execute('UPDATE admins SET tag = ? WHERE id = ?', (new_tag, expert_id))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('anasayfa'))
