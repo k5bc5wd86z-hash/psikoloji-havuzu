@@ -236,3 +236,39 @@ def update_expert_profile():
         conn.close()
         
     return redirect(url_for('anasayfa'))
+
+@expert_bp.route('/update_expert_password', methods=['POST'])
+def update_expert_password():
+    if not session.get('user') or session.get('role') == 'Standart Üye':
+        return redirect(url_for('anasayfa'))
+        
+    old_pass = request.form.get('oldPass')
+    new_pass = request.form.get('newPass')
+    
+    conn = get_db_connection()
+    user = conn.execute('SELECT * FROM admins WHERE username = ?', (session.get('user'),)).fetchone()
+    
+    if user and check_password_hash(user['password'], old_pass):
+        hashed_new = generate_password_hash(new_pass, method='pbkdf2:sha256')
+        conn.execute('UPDATE admins SET password = ? WHERE username = ?', (hashed_new, session.get('user')))
+        conn.commit()
+    
+    conn.close()
+    return redirect(url_for('anasayfa'))
+
+@expert_bp.route('/add_expert_note', methods=['POST'])
+def add_expert_note():
+    if not session.get('user') or session.get('role') == 'Standart Üye':
+        return redirect(url_for('anasayfa'))
+        
+    folder = request.form.get('folderName', 'Genel')
+    title = request.form.get('noteTitle', 'Başlıksız Not')
+    content = request.form.get('noteContent', '')
+    
+    conn = get_db_connection()
+    conn.execute('INSERT INTO expert_notes (expert_username, folder_name, title, content) VALUES (?, ?, ?, ?)',
+                 (session.get('user'), folder, title, content))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('anasayfa'))
