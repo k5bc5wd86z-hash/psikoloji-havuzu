@@ -206,9 +206,15 @@ def send_contact():
 
 @app.route('/tum_makaleler')
 def tum_makaleler():
-    # Veritabanından tüm makaleleri çekip basacağımız arayüz
-    posts = Post.query.all() # Örnek sorgu
-    return render_template('tum_makaleler.html', posts=posts)
+    conn = get_db_connection()
+    posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
+    
+    # Kullanıcı oturum bilgileri (beğeni butonunun görünmesi için is_member gerekli)
+    is_member = session.get('is_member', False)
+    settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
+    
+    conn.close()
+    return render_template('tum_makaleler.html', posts=posts, is_member=is_member, settings=settings)
 
 @app.route('/tum_uzmanlar')
 def tum_uzmanlar():
