@@ -65,6 +65,20 @@
                 {% endif %}
             </div>
         </div>
+        <!-- YÖNETİCİ UZMAN ETİKETLEME PANELİ -->
+<div style="background: var(--bg-base); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-light); margin-top: 2rem;">
+    <h3 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 1rem;">Uzman Etiket Yönetimi</h3>
+    {% for expert in experts %}
+        <form action="{{ url_for('admin.update_expert_tag', expert_id=expert.id) }}" method="POST" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px dashed var(--border-light);">
+            <strong style="flex: 1;">{{ expert.name }} ({{ expert.role }})</strong>
+            <select name="expertTag" class="editor-select" style="padding: 0.4rem; border-radius: 6px;">
+                <option value="Uzman" {% if expert.tag == 'Uzman' %}selected{% endif %}>Uzman</option>
+                <option value="Kurucu Uzman" {% if expert.tag == 'Kurucu Uzman' %}selected{% endif %}>Kurucu Uzman</option>
+            </select>
+            <button type="submit" class="btn-follow" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Etiketi Güncelle</button>
+        </form>
+    {% endfor %}
+</div>
     </section>
 </body>
 </html>
