@@ -218,8 +218,13 @@ def tum_makaleler():
 
 @app.route('/tum_uzmanlar')
 def tum_uzmanlar():
-    experts = Expert.query.all()
-    return render_template('tum_uzmanlar.html', experts=experts)
+    conn = get_db_connection()
+    # Kurucu yönetici hariç, onaylı olan tüm uzmanları çekiyoruz
+    experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
+    settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
+    conn.close()
+    
+    return render_template('tum_uzmanlar.html', experts=experts, settings=settings)
 
 @app.route('/etik_kurul_testler')
 def etik_kurul_testler():
