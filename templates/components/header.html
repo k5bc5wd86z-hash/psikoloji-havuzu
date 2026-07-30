@@ -58,7 +58,10 @@
     <a href="/psikoloji_nedir" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Psikoloji Nedir?</a>
     <a href="/tum_makaleler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Makalelerimiz</a>
     <a href="/tum_uzmanlar" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Uzman Kadromuz</a>
+    <!-- Sadece Uzman Rolüne Sahip Olanlar Görebilsin -->
+    {% if session_role == 'Uzman' and session_user %}
     <a href="/etik_kurul_testler" style="text-decoration: none; color: var(--text-primary); font-weight: 500; font-size: 1.05rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">Etik Kurul Onaylı Testler</a>
+    {% endif %}
 </div>
 
 <script>
