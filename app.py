@@ -225,11 +225,14 @@ def psikoloji_nedir():
     
 @app.route('/tags')
 def tags():
-    # Sadece Kurucu Uzman etiketine sahip olanlar
-    kurucu_uzmanlar = Expert.query.filter_by(tag='Kurucu Uzman').all()
-    # Sadece ilk 2 makale
-    ornek_makaleler = Post.query.limit(2).all()
-    return render_template('psikoloji_havuzu.html', experts=kurucu_uzmanlar, posts=ornek_makaleler)
+    conn = get_db_connection()
+    # Sadece Kurucu Uzman etiketine sahip olanları çekme
+    kurucu_uzmanlar = conn.execute('SELECT * FROM admins WHERE tag = "Kurucu Uzman"').fetchall()
+    # Sadece ilk 2 makaleyi çekme
+    ornek_makaleler = conn.execute('SELECT * FROM posts LIMIT 2').fetchall()
+    conn.close()
+    
+    return render_template('psikoloji_havuzu.html', experts=kurucu_uzmanlar, posts=ornek_makaleler)
     
 @app.route('/sitemap.xml')
 def sitemap():
