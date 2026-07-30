@@ -27,8 +27,7 @@ def init_db():
     try:
         conn.execute('ALTER TABLE admins ADD COLUMN verification_code TEXT')
     except Exception:
-        pass # Zaten varsa hata verir, yoksay geç
-        
+        pass 
 
     conn.execute('''CREATE TABLE IF NOT EXISTS members (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,7 +84,6 @@ def init_db():
         status TEXT DEFAULT 'Bekliyor'
     )''')
 
-    # --- EKSİK OLAN DİĞER TABLOLAR EKLENDİ ---
     conn.execute('''CREATE TABLE IF NOT EXISTS expert_chats (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT,
@@ -120,6 +118,15 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         song TEXT,
         song_desc TEXT
+    )''')
+
+    # --- UZMAN AJANDA VE NOTLAR TABLOSU EKLENDİ ---
+    conn.execute('''CREATE TABLE IF NOT EXISTS expert_notes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        expert_username TEXT,
+        folder_name TEXT,
+        title TEXT,
+        content TEXT
     )''')
 
     # Kurucu Yönetici Garantisi (Kullanıcı: yonetici, Şifre: yonetici123)
