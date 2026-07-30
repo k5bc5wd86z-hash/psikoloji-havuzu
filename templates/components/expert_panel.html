@@ -1,224 +1,129 @@
-<section class="editor-section" style="max-width: 1200px;" id="ortak-calisma">
-    <div style="margin-bottom: 1rem;">
-        <h2 style="font-family: var(--font-serif); font-size: 2.4rem;">Uzman Paneli</h2>
-        <p style="color: var(--text-muted);">Yeni randevu aldığınızda bildirim alacaksınız.</p>
+<section class="editor-section" style="max-width: 1200px;" id="uzman-paneli-ana">
+    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 style="font-family: var(--font-serif); font-size: 2.4rem;">Uzman Yönetim Paneli</h2>
+            <p style="color: var(--text-muted);">Akademik profilinizi, randevularınızı ve ajanda notlarınızı buradan yönetin.</p>
+        </div>
     </div>
 
-    <div class="expert-dashboard-container">
-        <!-- Randevu Takvimi -->
-        <div class="expert-calendar-card">
-            <div class="calendar-header"><h3>Randevu Takvimi</h3></div>
-            <div class="calendar-grid">
-                <div class="cal-day-header">Pzt</div><div class="cal-day-header">Sal</div><div class="cal-day-header">Çar</div>
-                <div class="cal-day-header">Per</div><div class="cal-day-header">Cum</div><div class="cal-day-header">Cmt</div><div class="cal-day-header">Paz</div>
-                {% for day in range(1, 15) %}
-                <div class="cal-day"><span class="cal-date-num">{{ day }}</span>
-                    {% for appt in appointments %}{% if appt.expert_username == session_user and appt.date.endswith('%02d'|format(day)) %}
-                        <div class="cal-event" onclick="alert('Danışan: {{ appt.user_name }}\nNeden: {{ appt.reason }}\nDurum: {{ appt.status }}')">{{ appt.time }} - {{ appt.user_name }}</div>
-                    {% endif %}{% endfor %}
+    <!-- Sekme Butonları -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border-light); padding-bottom: 1rem;">
+        <button type="button" class="btn-outline" onclick="switchTab('randevularTab')" id="btnRandevular" style="background: var(--accent-warm); color: white;">Randevular & Takvim</button>
+        <button type="button" class="btn-outline" onclick="switchTab('ajandaTab')" id="btnAjanda">Ajanda & Notlar</button>
+        <button type="button" class="btn-outline" onclick="switchTab('profilTab')" id="btnProfil">Profil & Akademik Geçmiş</button>
+        <button type="button" class="btn-outline" onclick="switchTab('sifreTab')" id="btnSifre">Şifre İşlemleri</button>
+    </div>
+
+    <!-- 1. RANDEVULAR VE TAKVİM SEKMESİ -->
+    <div id="randevularTab" class="panel-tab-content">
+        <div class="expert-dashboard-container" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <!-- Takvim Görünümü -->
+            <div class="expert-calendar-card">
+                <div class="calendar-header"><h3>Randevu Takvimi (Aktif Ay)</h3></div>
+                <div class="calendar-grid" style="grid-template-columns: repeat(7, 1fr); display: grid; gap: 5px;">
+                    <div class="cal-day-header">Pzt</div><div class="cal-day-header">Sal</div><div class="cal-day-header">Çar</div>
+                    <div class="cal-day-header">Per</div><div class="cal-day-header">Cum</div><div class="cal-day-header">Cmt</div><div class="cal-day-header">Paz</div>
+                    {% for day in range(1, 32) %}
+                    <div class="cal-day" style="min-height: 70px; background: var(--bg-base); padding: 5px; border-radius: 8px;">
+                        <span class="cal-date-num" style="font-weight: bold; font-size: 0.8rem;">{{ day }}</span>
+                        {% for appt in appointments %}
+                            {% if appt.expert_username == session_user and appt.date.endswith('%02d'|format(day)) %}
+                                <div class="cal-event" style="font-size: 0.7rem; background: var(--accent-warm); color: white; padding: 2px; border-radius: 4px; margin-top: 2px; cursor: pointer;" onclick="alert('Danışan: {{ appt.user_name }}\nSaat: {{ appt.time }}\nNeden: {{ appt.reason }}\nDurum: {{ appt.status }}')">
+                                    {{ appt.time }} - {{ appt.user_name }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
-            
-            <h4 style="margin-top: 2rem; margin-bottom: 1rem; font-family: var(--font-serif); font-size: 1.4rem;">Bekleyen Talepler</h4>
-            <div style="background: var(--bg-base); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-light);">
-                {% for appt in appointments %}
-                    {% if appt.expert_username == session_user %}
-                        <div style="padding: 0.8rem 0; border-bottom: 1px solid var(--border-light);">
-                            <strong>{{ appt.user_name }}</strong> ({{ appt.date }} - {{ appt.time }}) <br>
-                            Durum: <strong>{{ appt.status }}</strong>
-                            <div style="margin-top: 0.5rem;">
-                                <a href="/update_appointment/{{ appt.id }}/Onaylandı" style="color: #4caf50; font-weight: bold; text-decoration: none; margin-right: 1rem;">✔ Onayla</a>
-                                <a href="/update_appointment/{{ appt.id }}/Reddedildi" style="color: #c94a4a; font-weight: bold; text-decoration: none;">❌ Reddet</a>
+
+            <!-- Bekleyen Talepler Listesi -->
+            <div>
+                <h4 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 1rem;">Bekleyen Randevu Talepleri</h4>
+                <div style="background: var(--bg-base); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-light); max-height: 400px; overflow-y: auto;">
+                    {% set ns = namespace(found=false) %}
+                    {% for appt in appointments %}
+                        {% if appt.expert_username == session_user %}
+                            {% set ns.found = true %}
+                            <div style="padding: 0.8rem 0; border-bottom: 1px solid var(--border-light);">
+                                <strong>{{ appt.user_name }}</strong> ({{ appt.date }} - {{ appt.time }}) <br>
+                                Neden: {{ appt.reason }} <br>
+                                Durum: <strong style="color: var(--accent-warm);">{{ appt.status }}</strong>
+                                <div style="margin-top: 0.5rem;">
+                                    <a href="/update_appointment/{{ appt.id }}/Onaylandı" style="color: #4caf50; font-weight: bold; text-decoration: none; margin-right: 1rem;">✔ Onayla</a>
+                                    <a href="/update_appointment/{{ appt.id }}/Reddedildi" style="color: #c94a4a; font-weight: bold; text-decoration: none;">❌ Reddet</a>
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% if not ns.found %}
+                        <p style="color: var(--text-muted); text-align: center;">Bekleyen randevu talebiniz bulunmuyor.</p>
                     {% endif %}
-                {% endfor %}
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Ortak Çalışma Odası (Sohbet) -->
-        <div class="collab-card">
-            <h3 class="collab-header">Ortak Çalışma Odası</h3>
-            <div class="chat-container" id="chatContainer">
-                {% for chat in expert_chats %}
-                    <div class="chat-bubble {% if chat.sender == session_name %}mine{% else %}other{% endif %}">
-                        <span class="chat-sender">{{ chat.sender }}</span>{{ chat.message }}<span class="chat-time">{{ chat.time }}</span>
-                    </div>
-                {% endfor %}
-            </div>
-            <form action="/add_expert_chat" method="POST" style="display: flex; gap: 0.5rem; margin-top: auto;">
-                <input type="text" name="chatMsg" class="editor-input" placeholder="Uzmanlara mesaj yaz..." style="margin-bottom: 0;" required>
-                <button type="submit" class="btn-follow">Gönder</button>
+    <!-- 2. AJANDA VE NOTLAR SEKMESİ -->
+    <div id="ajandaTab" class="panel-tab-content" style="display: none;">
+        <div class="expert-article-box">
+            <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Kişisel Ajanda ve Klasörlü Notlar</h3>
+            <form action="{{ url_for('expert.add_expert_note') }}" method="POST">
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <input type="text" name="folderName" class="editor-input" placeholder="Klasör Adı (Örn: Klinik Notlar, Süpervizyon)" required style="flex: 1; margin-bottom: 0;">
+                    <input type="text" name="noteTitle" class="editor-input" placeholder="Not Başlığı" required style="flex: 1; margin-bottom: 0;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <textarea name="noteContent" class="editor-textarea" placeholder="Notunuzu buraya yazın..." required style="width: 100%; min-height: 120px; margin-bottom: 0;"></textarea>
+                </div>
+                <button type="submit" class="btn-follow" style="width: 100%;">Ajandaya Not Kaydet</button>
             </form>
         </div>
     </div>
 
-    <!-- CV YÜKLEME FORMU -->
-    <div class="expert-article-box" style="margin-top: 2rem;">
-        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">CV Yükle ve Sistemi Otomatik Tanıt</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">PDF formatındaki CV'nizi yükleyin.</p>
-        <form action="/upload_cv" method="POST" enctype="multipart/form-data">
-            <div style="margin-bottom: 1rem;">
-                <input type="file" name="cvFile" accept=".pdf" class="editor-input" required style="padding: 0.6rem;">
-            </div>
-            <button type="submit" class="btn-follow" style="width: 100%;">CV'yi İşle ve Profili Güncelle</button>
-        </form>
+    <!-- 3. PROFİL VE AKADEMİK GEÇMİŞ SEKMESİ -->
+    <div id="profilTab" class="panel-tab-content" style="display: none;">
+        <div class="expert-article-box">
+            <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Akademik ve Profesyonel Profil Düzenleme</h3>
+            <form action="{{ url_for('expert.update_expert_profile') }}" method="POST">
+                <div style="margin-bottom: 1rem;"><label>Lisans Eğitimi</label><input type="text" name="eduLisans" class="editor-input" style="width:100%;" placeholder="Üniversite / Bölüm"></div>
+                <div style="margin-bottom: 1rem;"><label>Yüksek Lisans Eğitimi</label><input type="text" name="eduYuksek" class="editor-input" style="width:100%;" placeholder="Üniversite / Bölüm"></div>
+                <div style="margin-bottom: 1rem;"><label>Doktora / Uzmanlık</label><input type="text" name="eduDoktora" class="editor-input" style="width:100%;" placeholder="Üniversite / Bölüm"></div>
+                <div style="margin-bottom: 1rem;"><label>Sertifikalar</label><textarea name="certifications" class="editor-textarea" style="width:100%;"></textarea></div>
+                <div style="margin-bottom: 1rem;"><label>Deneyimler</label><textarea name="experiences" class="editor-textarea" style="width:100%;"></textarea></div>
+                <button type="submit" class="btn-follow" style="width: 100%;">Profili Güncelle</button>
+            </form>
+        </div>
     </div>
 
-    <!-- DANIŞAN YÖNLENDİRME FORMU -->
-    <div class="expert-article-box" style="margin-top: 2rem;">
-        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Danışan Yönlendirme</h3>
-        <form action="/refer_client" method="POST">
-            <input type="text" name="clientName" class="editor-input" placeholder="Danışanın Adı ve Soyadı" required style="margin-bottom: 1rem;">
-            <select name="targetExpert" class="editor-select" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary); margin-bottom: 1rem;">
-                <option value="" disabled selected>Yönlendirilecek Uzmanı Seçin</option>
-                {% for expert in experts %}
-                    {% if expert.username != session_user %}
-                        <option value="{{ expert.username }}">{{ expert.name }} ({{ expert.role }})</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-            <textarea name="referralNote" class="editor-textarea" placeholder="Yönlendirme nedeni ve klinik notlar..." required style="min-height: 100px; width: 100%; margin-bottom: 1rem;"></textarea>
-            <button type="submit" class="btn-outline" style="width: 100%; padding: 0.8rem; background-color: var(--bg-base);">Yönlendirme Talebi Oluştur</button>
-        </form>
-    </div>
-
-    <!-- MAKALE YAYINLAMA FORMU -->
-    <!-- MAKALE YAYINLAMA FORMU -->
-    <div class="expert-article-box" style="margin-top: 2rem;">
-        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Makale Yayınla</h3>
-        <form action="{{ url_for('expert.publish_article') }}" method="POST">
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Başlığı</label>
-                <input type="text" name="title" class="editor-input" placeholder="Makale başlığını girin..." required style="margin-bottom: 0; width: 100%;">
-            </div>
-
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale Alanı / Kategori</label>
-                <select name="category" class="editor-select" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary); margin-bottom: 0;">
-                    <option value="" disabled selected>Uzmanlık / Branş Alanı Seçin</option>
-                    <option value="Psikoloji">Psikoloji</option>
-                    <option value="Klinik Psikoloji">Klinik Psikoloji</option>
-                    <option value="Gelişim Psikolojisi">Gelişim Psikolojisi</option>
-                    <option value="Sosyal Psikoloji">Sosyal Psikoloji</option>
-                    <option value="Bilişsel Davranışçı Yaklaşımlar">Bilişsel Davranışçı Yaklaşımlar</option>
-                    <option value="Diyetisyen / Beslenme">Diyetisyen ve Beslenme</option>
-                    <option value="Moleküler Biyoloji ve Genetik">Moleküler Biyoloji ve Genetik</option>
-                    <option value="Nörobiyoloji ve Beyin Sağlığı">Nörobiyoloji ve Beyin Sağlığı</option>
-                    <option value="Bütüncül Esenlik ve Yaşam">Bütüncül Esenlik ve Yaşam</option>
-                    <option value="Akademik Araştırmalar">Akademik Araştırmalar</option>
-                </select>
-            </div>
-
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">Makale İçeriği</label>
-                <textarea name="content" class="editor-textarea" placeholder="Makale içeriğini ve referansları buraya yazın..." required style="min-height: 150px; width: 100%; margin-bottom: 0;"></textarea>
-            </div>
-
-            <button type="submit" class="btn-follow" style="width: 100%; padding: 0.8rem;">Makaleyi Yayınla</button>
-        </form>
-    </div>
-    
-    <!-- YAYINLANAN MAKALELERİ YÖNETME (SİLME / DÜZENLEME) -->
-    <div class="expert-article-box" style="margin-top: 2rem;">
-        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Yayınladığım Makaleler</h3>
-        {% for post in posts %}
-            {% if post.author == session.get('name') or post.author.startswith(session.get('name', '')) or session.get('role') in ['Sistem Yöneticisi', 'Kurucu Yönetici'] %}
-            <div style="padding: 1rem 0; border-bottom: 1px solid var(--border-light); margin-bottom: 1rem;">
-                <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; display: block; margin-bottom: 0.2rem;">{{ post.category }}</span>
-                <strong style="font-size: 1.1rem; color: var(--text-primary); display: block; margin-bottom: 0.5rem;">{{ post.title }}</strong>
-                
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <!-- Silme Formu -->
-                    <form action="{{ url_for('expert.delete_post', post_id=post.id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Bu makaleyi silmek istediğinize emin misiniz?');">
-                        <button type="submit" style="background: none; border: none; color: #c94a4a; font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 0;">
-                            Makaleyi Sil
-                        </button>
-                    </form>
-
-                    <!-- Düzenleme Butonu -->
-                    <button type="button" onclick="document.getElementById('editForm-{{ post.id }}').style.display = document.getElementById('editForm-{{ post.id }}').style.display == 'block' ? 'none' : 'block'" style="background: none; border: none; color: var(--accent-warm); font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 0;">
-                        Düzenle
-                    </button>
-                </div>
-
-                <!-- Gizli Düzenleme Formu -->
-                <div id="editForm-{{ post.id }}" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--bg-base); border-radius: 8px; border: 1px solid var(--border-light);">
-                    <form action="{{ url_for('expert.edit_post', post_id=post.id) }}" method="POST">
-                        <div style="margin-bottom: 0.8rem;">
-                            <input type="text" name="title" value="{{ post.title }}" class="editor-input" required style="width: 100%; margin-bottom: 0;">
-                        </div>
-                        <div style="margin-bottom: 0.8rem;">
-                            <select name="category" class="editor-select" required style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary);">
-                                <option value="{{ post.category }}" selected>{{ post.category }} (Mevcut)</option>
-                                <option value="Psikoloji">Psikoloji</option>
-                                <option value="Klinik Psikoloji">Klinik Psikoloji</option>
-                                <option value="Gelişim Psikolojisi">Gelişim Psikolojisi</option>
-                                <option value="Sosyal Psikoloji">Sosyal Psikoloji</option>
-                                <option value="Bilişsel Davranışçı Yaklaşımlar">Bilişsel Davranışçı Yaklaşımlar</option>
-                                <option value="Diyetisyen / Beslenme">Diyetisyen ve Beslenme</option>
-                                <option value="Moleküler Biyoloji ve Genetik">Moleküler Biyoloji ve Genetik</option>
-                                <option value="Nörobiyoloji ve Beyin Sağlığı">Nörobiyoloji ve Beyin Sağlığı</option>
-                                <option value="Bütüncül Esenlik ve Yaşam">Bütüncül Esenlik ve Yaşam</option>
-                                <option value="Akademik Araştırmalar">Akademik Araştırmalar</option>
-                            </select>
-                        </div>
-                        <div style="margin-bottom: 0.8rem;">
-                            <textarea name="content" class="editor-textarea" required style="width: 100%; min-height: 100px; margin-bottom: 0;">{{ post.content }}</textarea>
-                        </div>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button type="submit" class="btn-follow" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Kaydet</button>
-                            <button type="button" onclick="document.getElementById('editForm-{{ post.id }}').style.display = 'none'" style="background: none; border: 1px solid var(--border-light); color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">İptal</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            {% endif %}
-        {% endfor %}
+    <!-- 4. ŞİFRE DEĞİŞTİRME SEKMESİ -->
+    <div id="sifreTab" class="panel-tab-content" style="display: none;">
+        <div class="expert-article-box" style="max-width: 500px; margin: 0 auto;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Şifre Değiştir</h3>
+            <form action="{{ url_for('expert.update_expert_password') }}" method="POST">
+                <div style="margin-bottom: 1rem;"><label>Mevcut Şifre</label><input type="password" name="oldPass" class="editor-input" required style="width:100%;"></div>
+                <div style="margin-bottom: 1rem;"><label>Yeni Şifre</label><input type="password" name="newPass" class="editor-input" required style="width:100%;"></div>
+                <button type="submit" class="btn-follow" style="width: 100%;">Şifreyi Güncelle</button>
+            </form>
+        </div>
     </div>
 </section>
 
-<!-- UZMAN PROFİLİNİ VE DETAYLARINI GÜNCELLEME FORMU -->
-<div class="expert-article-box" style="margin-top: 2rem;">
-    <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 0.5rem;">Profilimi ve Akademik Geçmişimi Düzenle</h3>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Sistemde görünecek akademik unvanlarınızı ve kariyer detaylarınızı bu alandan güncelleyebilirsiniz.</p>
-    
-    <form action="{{ url_for('expert.update_expert_profile') }}" method="POST">
-        <!-- Lisans Bilgisi -->
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Lisans Eğitimi (Üniversite / Bölüm)</label>
-            <input type="text" name="eduLisans" class="editor-input" placeholder="Örn: Boğaziçi Üniversitesi - Psikoloji" style="width: 100%; margin-bottom: 0;">
-        </div>
-
-        <!-- Yüksek Lisans Bilgisi -->
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Yüksek Lisans Eğitimi</label>
-            <input type="text" name="eduYuksek" class="editor-input" placeholder="Örn: Hacettepe Üniversitesi - Klinik Psikoloji" style="width: 100%; margin-bottom: 0;">
-        </div>
-
-        <!-- Doktora Bilgisi -->
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Doktora / Uzmanlık Eğitimi</label>
-            <input type="text" name="eduDoktora" class="editor-input" placeholder="Örn: İstanbul Üniversitesi - Nöropsikoloji (Devam ediyor / Mezun)" style="width: 100%; margin-bottom: 0;">
-        </div>
-
-        <!-- Sertifikalar -->
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Sertifikalar ve Yetkinlikler</label>
-            <textarea name="certifications" class="editor-textarea" placeholder="Aldığınız terapi eğitimleri, BDT sertifikaları vb..." style="width: 100%; min-height: 80px; margin-bottom: 0;"></textarea>
-        </div>
-
-        <!-- Deneyimler -->
-        <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-primary);">Kariyer ve Klinik Deneyimler</label>
-            <textarea name="experiences" class="editor-textarea" placeholder="Çalıştığınız kurumlar, hastaneler veya klinik geçmişiniz..." style="width: 100%; min-height: 100px; margin-bottom: 0;"></textarea>
-        </div>
-
-        <button type="submit" class="btn-follow" style="width: 100%; padding: 0.8rem;">Profil Bilgilerini Güncelle</button>
-    </form>
-</div>
 <script>
-    var chatBox = document.getElementById("chatContainer");
-    if (chatBox) { chatBox.scrollTop = chatBox.scrollHeight; }
+function switchTab(tabId) {
+    document.querySelectorAll('.panel-tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('[id^="btn"]').forEach(el => {
+        el.style.background = 'transparent';
+        el.style.color = 'var(--text-primary)';
+    });
+    document.getElementById(tabId).style.display = 'block';
+    
+    let activeBtnId = 'btn' + tabId.replace('Tab', '');
+    let activeBtn = document.getElementById(activeBtnId);
+    if(activeBtn) {
+        activeBtn.style.background = 'var(--accent-warm)';
+        activeBtn.style.color = 'white';
+    }
+}
 </script>
