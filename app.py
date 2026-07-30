@@ -242,10 +242,12 @@ def tum_uzmanlar():
 @app.route('/etik_kurul_testler')
 def etik_kurul_testler():
     session_role = session.get('role')
-    if session_role and session_role != 'Standart Üye':
+    
+    # Sadece rolü 'Uzman' olanlar erişebilir
+    if session_role == 'Uzman':
         return render_template('testler.html')
         
-    flash('Test modülü yalnızca uzman yönlendirmesi veya ataması ile kullanılabilmektedir.', 'warning')
+    flash('Bu modül yalnızca uzmanlar için erişilebilirdir.', 'warning')
     return redirect(url_for('anasayfa'))
 
 @app.route('/psikoloji_nedir')
