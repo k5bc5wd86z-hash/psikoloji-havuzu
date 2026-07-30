@@ -108,8 +108,38 @@
             </form>
         </div>
     </div>
-</section>
+    <!-- AJANDA KLASÖRLERİ VE NOTLAR LİSTESİ -->
+<div class="expert-article-box" style="margin-top: 2rem;">
+    <h3 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 1rem;">Klasörlerim ve Notlarım</h3>
+    
+    {% set folders = [] %}
+    {% for note in expert_notes %}
+        {% if note.folder_name not in folders %}
+            {% set _ = folders.append(note.folder_name) %}
+        {% endif %}
+    {% endfor %}
 
+    {% if folders %}
+        {% for folder in folders %}
+            <div style="background: var(--bg-base); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-light);">
+                <h4 style="color: var(--accent-warm); margin-bottom: 0.5rem;">📁 {{ folder }}</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                    {% for note in expert_notes %}
+                        {% if note.folder_name == folder %}
+                            <li style="padding: 0.5rem 0; border-bottom: 1px dashed var(--border-light);">
+                                <strong>{{ note.title }}</strong>: {{ note.content }}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted);">Henüz kaydedilmiş bir not veya klasör bulunmuyor.</p>
+    {% endif %}
+</div>
+    
+</section>
 <script>
 function switchTab(tabId) {
     document.querySelectorAll('.panel-tab-content').forEach(el => el.style.display = 'none');
