@@ -50,6 +50,11 @@ def anasayfa():
     community_chats = conn.execute('SELECT * FROM community_chats ORDER BY id DESC').fetchall()
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
     
+    # --- UZMAN NOTLARI BURAYA EKLENDİ ---
+    expert_notes = []
+    if session.get('user'):
+        expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
+    
     bugunun_tarihi_str = datetime.date.today().strftime('%Y%m%d')
     gunluk_secici = random.Random(bugunun_tarihi_str)
     
@@ -102,6 +107,7 @@ def anasayfa():
                            community_chats=community_chats, 
                            expert_chats=expert_chats,
                            appointments=appointments,
+                           expert_notes=expert_notes,
                            diaries=diaries,
                            settings=settings, 
                            session_user=session_user, 
@@ -200,30 +206,30 @@ def send_contact():
 
 @app.route('/tum_makaleler')
 def tum_makaleler():
-    # Veritabanından tüm makaleleri çekip basacağımız arayüz
-    posts = Post.query.all() # Örnek sorgu
-    return render_template('tum_makaleler.html', posts=posts)
+    # Veritabanından tüm makaleleri çekip basacağımız arayüz
+    posts = Post.query.all() # Örnek sorgu
+    return render_template('tum_makaleler.html', posts=posts)
 
 @app.route('/tum_uzmanlar')
 def tum_uzmanlar():
-    experts = Expert.query.all()
-    return render_template('tum_uzmanlar.html', experts=experts)
+    experts = Expert.query.all()
+    return render_template('tum_uzmanlar.html', experts=experts)
 
 @app.route('/etik_kurul_testler')
 def etik_kurul_testler():
-    return render_template('testler.html')
+    return render_template('testler.html')
 
 @app.route('/psikoloji_nedir')
 def psikoloji_nedir():
-    return render_template('psikoloji_nedir.html')
-    
+    return render_template('psikoloji_nedir.html')
+    
 @app.route('/tags')
 def tags():
-    # Sadece Kurucu Uzman etiketine sahip olanlar
-    kurucu_uzmanlar = Expert.query.filter_by(tag='Kurucu Uzman').all()
-    # Sadece ilk 2 makale
-    ornek_makaleler = Post.query.limit(2).all()
-    return render_template('psikoloji_havuzu.html', experts=kurucu_uzmanlar, posts=ornek_makaleler)
+    # Sadece Kurucu Uzman etiketine sahip olanlar
+    kurucu_uzmanlar = Expert.query.filter_by(tag='Kurucu Uzman').all()
+    # Sadece ilk 2 makale
+    ornek_makaleler = Post.query.limit(2).all()
+    return render_template('psikoloji_havuzu.html', experts=kurucu_uzmanlar, posts=ornek_makaleler)
     
 @app.route('/sitemap.xml')
 def sitemap():
