@@ -129,6 +129,12 @@ def init_db():
         content TEXT
     )''')
 
+    # Admins tablosuna tag sütunu ekleme güvenliği
+    try:
+        conn.execute('ALTER TABLE admins ADD COLUMN tag TEXT DEFAULT "Uzman"')
+    except Exception:
+        pass
+        
     # Kurucu Yönetici Garantisi (Kullanıcı: yonetici, Şifre: yonetici123)
     yonetici = conn.execute('SELECT * FROM admins WHERE username = "yonetici"').fetchone()
     if not yonetici:
