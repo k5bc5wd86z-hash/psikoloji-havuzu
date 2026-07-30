@@ -50,7 +50,7 @@ def anasayfa():
     community_chats = conn.execute('SELECT * FROM community_chats ORDER BY id DESC').fetchall()
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
     
-    # --- UZMAN NOTLARI BURAYA EKLENDİ ---
+    # Uzman Notları
     expert_notes = []
     if session.get('user'):
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
@@ -96,12 +96,7 @@ def anasayfa():
     if is_member and session_user:
         diaries = conn.execute('SELECT * FROM diaries WHERE username = ? ORDER BY id DESC', (session_user,)).fetchall()
         
-    conn.close()
-    
-    daily_quote = gunluk_secici.choice(MOTIVATIONAL_QUOTES)
-    selected_discipline = None
-
-    # Üyeye atanan testler (Üye giriş yapmışsa)
+    # Üyeye atanan testler
     member_assigned_tests = []
     if is_member and session_user:
         member_assigned_tests = conn.execute(
@@ -109,7 +104,7 @@ def anasayfa():
             (session_user,)
         ).fetchall()
 
-    # Uzmanın atadığı testler (Uzman giriş yapmışsa)
+    # Uzmanın atadığı testler
     expert_assigned_tests = []
     if session_role and session_role != 'Standart Üye' and session_user:
         expert_assigned_tests = conn.execute(
@@ -117,6 +112,11 @@ def anasayfa():
             (session_user,)
         ).fetchall()
         
+    conn.close()
+    
+    daily_quote = gunluk_secici.choice(MOTIVATIONAL_QUOTES)
+    selected_discipline = None
+    
     return render_template('psikoloji_havuzu.html', 
                            posts=posts, 
                            experts=experts, 
@@ -125,6 +125,8 @@ def anasayfa():
                            appointments=appointments,
                            expert_notes=expert_notes,
                            diaries=diaries,
+                           member_assigned_tests=member_assigned_tests,
+                           expert_assigned_tests=expert_assigned_tests,
                            settings=settings, 
                            session_user=session_user, 
                            session_role=session_role, 
@@ -224,52 +226,58 @@ def send_contact():
 def tum_makaleler():
     conn = get_db_connection()
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
-    
-    # Kullanıcı oturum bilgileri (beğeni butonunun görünmesi için is_member gerekli)
     is_member = session.get('is_member', False)
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
-    
     conn.close()
     return render_template('tum_makaleler.html', posts=posts, is_member=is_member, settings=settings)
 
 @app.route('/tum_uzmanlar')
 def tum_uzmanlar():
     conn = get_db_connection()
-    # Kurucu yönetici hariç, onaylı olan tüm uzmanları çekiyoruz
     experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
     conn.close()
-    
     return render_template('tum_uzmanlar.html', experts=experts, settings=settings)
 
 @app.route('/etik_kurul_testler')
 def etik_kurul_testler():
     session_role = session.get('role')
-    is_member = session.get('is_member', False)
-    
-    # Eğer giriş yapan bir uzmansa test yönetim sayfasına gitsin
     if session_role and session_role != 'Standart Üye':
         return render_template('testler.html')
         
-    # Eğer standart üye veya ziyaretçiyse, doğrudan ana sayfaya yönlendirip uyarı verelim
     flash('Test modülü yalnızca uzman yönlendirmesi veya ataması ile kullanılabilmektedir.', 'warning')
     return redirect(url_for('anasayfa'))
-    
+
 @app.route('/psikoloji_nedir')
 def psikoloji_nedir():
     return render_template('psikoloji_nedir.html')
-    
+
 @app.route('/tags')
 def tags():
     conn = get_db_connection()
-    # Sadece Kurucu Uzman etiketine sahip olanları çekme
     kurucu_uzmanlar = conn.execute('SELECT * FROM admins WHERE tag = "Kurucu Uzman"').fetchall()
-    # Sadece ilk 2 makaleyi çekme
     ornek_makaleler = conn.execute('SELECT * FROM posts LIMIT 2').fetchall()
     conn.close()
-    
     return render_template('psikoloji_havuzu.html', experts=kurucu_uzmanlar, posts=ornek_makaleler)
-    
+
+@app.route('/submit_test/<int:test_id>', methods=['POST'])
+def submit_test(test_id):
+    if not session.get('is_member') or not session.get('user'):
+        return redirect(url_for('anasayfa'))
+        
+    result_text = request.form.get('testResult')
+    if result_text:
+        conn = get_db_connection()
+        conn.execute('''
+            UPDATE assigned_tests 
+            SET status = 'Tamamlandı', result = ? 
+            WHERE id = ? AND member_username = ?
+        ''', (result_text, test_id, session.get('user')))
+        conn.commit()
+        conn.close()
+        
+    return redirect(url_for('anasayfa'))
+
 @app.route('/sitemap.xml')
 def sitemap():
     xml_content = """<?xml version="1.0" encoding="UTF-8"?>
@@ -294,22 +302,3 @@ def robots():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-@app.route('/submit_test/<int:test_id>', methods=['POST'])
-def submit_test(test_id):
-    if not session.get('is_member') or not session.get('user'):
-        return redirect(url_for('anasayfa'))
-        
-    result_text = request.form.get('testResult')
-    
-    if result_text:
-        conn = get_db_connection()
-        conn.execute('''
-            UPDATE assigned_tests 
-            SET status = 'Tamamlandı', result = ? 
-            WHERE id = ? AND member_username = ?
-        ''', (result_text, test_id, session.get('user')))
-        conn.commit()
-        conn.close()
-        
-    return redirect(url_for('anasayfa'))
