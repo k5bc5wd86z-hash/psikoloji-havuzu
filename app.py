@@ -36,7 +36,7 @@ ACADEMIC_DISCIPLINES = [
     "Hasta Hakları"
 ]
 
-   @app.route('/')
+@app.route('/')
 def anasayfa():
    conn = get_db_connection()
     user_role = session.get('role')
