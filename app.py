@@ -238,12 +238,43 @@ from flask import request
 
 @app.route('/tum_makaleler')
 def tum_makaleler():
+    # Hangi sayfadayız ve hangi disiplin seçildi?
+    page = request.args.get('page', 1, type=int)
+    secilen_disiplin = request.args.get('disiplin', 'Tümü')
+    per_page = 9
+    offset = (page - 1) * per_page
+
     conn = get_db_connection()
-    posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
+    
+    # Veritabanından disiplin filtrelemesine göre makaleleri çekiyoruz
+    if secilen_disiplin and secilen_disiplin != 'Tümü':
+        total_posts = conn.execute('SELECT COUNT(*) FROM posts WHERE category = ?', (secilen_disiplin,)).fetchone()[0]
+        posts = conn.execute(
+            'SELECT * FROM posts WHERE category = ? ORDER BY id DESC LIMIT ? OFFSET ?', 
+            (secilen_disiplin, per_page, offset)
+        ).fetchall()
+    else:
+        total_posts = conn.execute('SELECT COUNT(*) FROM posts').fetchone()[0]
+        posts = conn.execute(
+            'SELECT * FROM posts ORDER BY id DESC LIMIT ? OFFSET ?', 
+            (per_page, offset)
+        ).fetchall()
+    
     is_member = session.get('is_member', False)
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
     conn.close()
-    return render_template('tum_makaleler.html', posts=posts, is_member=is_member, settings=settings)
+
+    total_pages = (total_posts + per_page - 1) // per_page if total_posts > 0 else 1
+
+    return render_template(
+        'tum_makaleler.html', 
+        posts=posts, 
+        is_member=is_member, 
+        settings=settings, 
+        page=page, 
+        total_pages=total_pages,
+        secilen_disiplin=secilen_disiplin
+    )
     
 @app.route('/tum_uzmanlar')
 def tum_uzmanlar():
