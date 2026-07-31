@@ -36,24 +36,18 @@ ACADEMIC_DISCIPLINES = [
     "Hasta Hakları"
 ]
 
-@app.route('/')
-def anasayfa():
-    conn = get_db_connection()
-    user_role = session.get('role')
-    session_user = session.get('user')
-    
    @app.route('/')
 def anasayfa():
-    conn = get_db_connection()
+   conn = get_db_connection()
     user_role = session.get('role')
     session_user = session.get('user')
     
-    # 1. KONTROL: Eğer giriş yapan kişi Yönetici ise, ANA SAYFA yerine doğrudan Admin Dashboard'a yönlendir
+    # KESİN KURAL: Yönetici ana sayfada veya kök dizinde asla uzman panelini görmez, admin paneline gider
     if user_role in ['Sistem Yöneticisi', 'Kurucu Yönetici'] and session_user:
         conn.close()
         return redirect('/admin_dashboard')
-    
-    # 2. KONTROL: Eğer giriş yapan KESİNLİKLE 'Uzman' ise (Yönetici değilse), uzman panelini yükle
+        
+    # Eğer normal Uzman ise uzman paneli yüklenir
     if user_role == 'Uzman' and session_user:
         appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session_user,)).fetchall()
@@ -67,7 +61,7 @@ def anasayfa():
                                session_user=session_user,
                                session_name=session.get('name'),
                                session_role=user_role)
-    
+        
     # Standart ana sayfa yüklemesi
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
     experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
