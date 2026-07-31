@@ -29,12 +29,15 @@ class DBWrapper:
             # SQLite AUTOINCREMENT yapısını Postgres SERIAL yapısına çevirir
             query = query.replace('INTEGER PRIMARY KEY AUTOINCREMENT', 'SERIAL PRIMARY KEY')
             
-            # GÜVENLİK FİLTRESİ: Yanlışlıkla çift tırnak ("") yazılmış metinleri tek tırnağa ('') çevirir
-            # Böylece Postgres sütun adı sanıp hata vermez!
+            # Çift tırnak güvenlik filtresi
             query = query.replace('="', "='").replace('" ', "' ").replace('")', "')")
         
         try:
-            cursor.execute(query, params)
+            # Parametre gelmediyse veya boşsa doğrudan paramsiz çalıştırıp Index hatasını önlüyoruz
+            if params is None or params == ():
+                cursor.execute(query)
+            else:
+                cursor.execute(query, params)
         except Exception as e:
             if self.is_postgres:
                 try:
