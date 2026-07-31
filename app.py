@@ -42,7 +42,18 @@ def anasayfa():
     user_role = session.get('role')
     session_user = session.get('user')
     
-    # Uzman paneli yüklemesi
+   @app.route('/')
+def anasayfa():
+    conn = get_db_connection()
+    user_role = session.get('role')
+    session_user = session.get('user')
+    
+    # 1. KONTROL: Eğer giriş yapan kişi Yönetici ise, ANA SAYFA yerine doğrudan Admin Dashboard'a yönlendir
+    if user_role in ['Sistem Yöneticisi', 'Kurucu Yönetici'] and session_user:
+        conn.close()
+        return redirect('/admin_dashboard')
+    
+    # 2. KONTROL: Eğer giriş yapan KESİNLİKLE 'Uzman' ise (Yönetici değilse), uzman panelini yükle
     if user_role == 'Uzman' and session_user:
         appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session_user,)).fetchall()
