@@ -49,7 +49,7 @@ def anasayfa():
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
         conn.close()
         
-        return render_template('expert_dashboard.html', 
+        return render_template('expert_panel.html', 
                                appointments=appointments,
                                expert_notes=expert_notes,
                                session_user=session.get('user'),
