@@ -78,7 +78,8 @@ def publish_article():
     category = request.form.get('category')
     content = request.form.get('content')
     
-    author_name = session.get('name') or session.get('user')
+    session_user = session.get('user')
+    author_name = session.get('name') or session_user
     author_role = session.get('role') or 'Uzman'
     full_author = f"{author_name} — {author_role}"
     
@@ -86,9 +87,9 @@ def publish_article():
         conn = get_db_connection()
         try:
             conn.execute('''
-                INSERT INTO posts (title, category, content, author, likes) 
-                VALUES (?, ?, ?, ?, ?)
-            ''', (title, category, content, full_author, 0))
+                INSERT INTO posts (title, category, content, author, username, likes) 
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (title, category, content, full_author, session_user, 0))
             conn.commit()
         except Exception as e:
             print("Makale yayınlama hatası:", e)
