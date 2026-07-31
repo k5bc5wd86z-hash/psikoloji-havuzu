@@ -16,6 +16,19 @@ resend.api_key = os.environ.get("RESEND_API_KEY")
 
 init_db()
 
+def db_guncelle():
+    conn = get_db_connection()
+    try:
+        conn.execute('ALTER TABLE posts ADD COLUMN username TEXT;')
+        conn.commit()
+        print("Harika! Eksik username sütunu veritabanına eklendi.")
+    except:
+        pass
+    finally:
+        conn.close()
+
+db_guncelle()
+
 app.register_blueprint(auth_bp)
 app.register_blueprint(expert_bp)
 app.register_blueprint(admin_bp)
