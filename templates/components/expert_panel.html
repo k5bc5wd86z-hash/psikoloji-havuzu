@@ -2,19 +2,20 @@
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
         <div>
             <h2 style="font-family: var(--font-serif); font-size: 2.4rem;">Uzman Yönetim Paneli</h2>
-            <p style="color: var(--text-muted);">Akademik profilinizi, randevularınızı ve ajanda notlarınızı buradan yönetin.</p>
+            <p style="color: var(--text-muted);">Akademik profilinizi, randevularınızı, ajanda notlarınızı ve makalelerinizi buradan yönetin.</p>
         </div>
     </div>
 
     <!-- Sekme Butonları -->
-    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border-light); padding-bottom: 1rem;">
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border-light); padding-bottom: 1rem; flex-wrap: wrap;">
         <button type="button" class="btn-outline" onclick="switchTab('randevularTab')" id="btnRandevular" style="background: var(--accent-warm); color: white;">Randevular & Takvim</button>
         <button type="button" class="btn-outline" onclick="switchTab('ajandaTab')" id="btnAjanda">Ajanda & Notlar</button>
         <button type="button" class="btn-outline" onclick="switchTab('profilTab')" id="btnProfil">Profil & Akademik Geçmiş</button>
+        <button type="button" class="btn-outline" onclick="switchTab('makaleTab')" id="btnMakale">Makale Yaz</button>
         <button type="button" class="btn-outline" onclick="switchTab('sifreTab')" id="btnSifre">Şifre İşlemleri</button>
     </div>
 
-    <!-- 1. RANDEVULAR VE TAKVİM SEKMESİ -->
+    <!-- 1. RANDEVULAR VE TAKVİM SEKME İÇERİĞİ -->
     <div id="randevularTab" class="panel-tab-content">
         <div class="expert-dashboard-container" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
             <!-- Takvim Görünümü -->
@@ -65,7 +66,7 @@
         </div>
     </div>
 
-    <!-- 2. AJANDA VE NOTLAR SEKMESİ -->
+    <!-- 2. AJANDA VE NOTLAR SEKME İÇERİĞİ -->
     <div id="ajandaTab" class="panel-tab-content" style="display: none;">
         <div class="expert-article-box">
             <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Kişisel Ajanda ve Klasörlü Notlar</h3>
@@ -80,9 +81,40 @@
                 <button type="submit" class="btn-follow" style="width: 100%;">Ajandaya Not Kaydet</button>
             </form>
         </div>
+
+        <!-- AJANDA KLASÖRLERİ VE NOTLAR LİSTESİ -->
+        <div class="expert-article-box" style="margin-top: 2rem;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 1rem;">Klasörlerim ve Notlarım</h3>
+            
+            {% set folders = [] %}
+            {% for note in expert_notes %}
+                {% if note.folder_name not in folders %}
+                    {% set _ = folders.append(note.folder_name) %}
+                {% endif %}
+            {% endfor %}
+
+            {% if folders %}
+                {% for folder in folders %}
+                    <div style="background: var(--bg-base); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-light);">
+                        <h4 style="color: var(--accent-warm); margin-bottom: 0.5rem;">📁 {{ folder }}</h4>
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            {% for note in expert_notes %}
+                                {% if note.folder_name == folder %}
+                                    <li style="padding: 0.5rem 0; border-bottom: 1px dashed var(--border-light);">
+                                        <strong>{{ note.title }}</strong>: {{ note.content }}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: var(--text-muted);">Henüz kaydedilmiş bir not veya klasör bulunmuyor.</p>
+            {% endif %}
+        </div>
     </div>
 
-    <!-- 3. PROFİL VE AKADEMİK GEÇMİŞ SEKMESİ -->
+    <!-- 3. PROFİL VE AKADEMİK GEÇMİŞ SEKME İÇERİĞİ -->
     <div id="profilTab" class="panel-tab-content" style="display: none;">
         <div class="expert-article-box">
             <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Akademik ve Profesyonel Profil Düzenleme</h3>
@@ -97,7 +129,29 @@
         </div>
     </div>
 
-    <!-- 4. ŞİFRE DEĞİŞTİRME SEKMESİ -->
+    <!-- 4. MAKALE YAZ SEKME İÇERİĞİ -->
+    <div id="makaleTab" class="panel-tab-content" style="display: none;">
+        <div class="expert-article-box">
+            <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Yeni Makale / Yazı Yayınla</h3>
+            <form action="{{ url_for('expert.publish_article') }}" method="POST">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.4rem;">Makale Başlığı</label>
+                    <input type="text" name="title" class="editor-input" placeholder="Başlık yazın..." required style="width: 100%; margin-bottom: 0;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.4rem;">Kategori / Disiplin</label>
+                    <input type="text" name="category" class="editor-input" placeholder="Örn: Klinik Psikoloji" required style="width: 100%; margin-bottom: 0;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.4rem;">Makale İçeriği</label>
+                    <textarea name="content" class="editor-textarea" placeholder="Makale içeriğini buraya girin..." required style="width: 100%; min-height: 180px; margin-bottom: 0;"></textarea>
+                </div>
+                <button type="submit" class="btn-follow" style="width: 100%;">Makaleyi Yayınla</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. ŞİFRE DEĞİŞTİRME SEKME İÇERİĞİ -->
     <div id="sifreTab" class="panel-tab-content" style="display: none;">
         <div class="expert-article-box" style="max-width: 500px; margin: 0 auto;">
             <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Şifre Değiştir</h3>
@@ -108,38 +162,8 @@
             </form>
         </div>
     </div>
-    <!-- AJANDA KLASÖRLERİ VE NOTLAR LİSTESİ -->
-<div class="expert-article-box" style="margin-top: 2rem;">
-    <h3 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 1rem;">Klasörlerim ve Notlarım</h3>
-    
-    {% set folders = [] %}
-    {% for note in expert_notes %}
-        {% if note.folder_name not in folders %}
-            {% set _ = folders.append(note.folder_name) %}
-        {% endif %}
-    {% endfor %}
-
-    {% if folders %}
-        {% for folder in folders %}
-            <div style="background: var(--bg-base); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-light);">
-                <h4 style="color: var(--accent-warm); margin-bottom: 0.5rem;">📁 {{ folder }}</h4>
-                <ul style="list-style-type: none; padding-left: 0;">
-                    {% for note in expert_notes %}
-                        {% if note.folder_name == folder %}
-                            <li style="padding: 0.5rem 0; border-bottom: 1px dashed var(--border-light);">
-                                <strong>{{ note.title }}</strong>: {{ note.content }}
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p style="color: var(--text-muted);">Henüz kaydedilmiş bir not veya klasör bulunmuyor.</p>
-    {% endif %}
-</div>
-    
 </section>
+
 <script>
 function switchTab(tabId) {
     document.querySelectorAll('.panel-tab-content').forEach(el => el.style.display = 'none');
