@@ -2,7 +2,7 @@
         <section class="blog-section" style="order: 2;">
             <div class="section-header"><h2>Güncel Makaleler</h2></div>
             <div class="blog-grid">
-               {% for post in posts %}
+               {% for post in posts[:3] %}
 <article class="blog-card">
     <div style="flex-grow: 1;">
         <!-- Tıklandığında açılacak pencere (modal) için gizli veriler -->
