@@ -15,7 +15,7 @@ app.secret_key = 'psikoloji_havuzu_guvenli_anahtar_2026'
 # Resend API Ayarı
 resend.api_key = os.environ.get("RESEND_API_KEY")
 
-# Veritabanını hemen başlat
+# Veritabanını başlat
 init_db()
 
 # Blueprint Kayıtları
@@ -42,21 +42,23 @@ ACADEMIC_DISCIPLINES = [
 @app.route('/')
 def anasayfa():
     conn = get_db_connection()
+    user_role = session.get('role')
+    session_user = session.get('user')
     
-    # 1. ÖNCE KONTROL: Eğer giriş yapan kişi Uzman ise, doğrudan paneli göster ve çık.
-    if session.get('role') == 'Uzman' and session.get('user'):
+    # 1. KONTROL: Eğer giriş yapan KESİNLİKLE 'Uzman' ise (Yönetici değilse), uzman panelini yükle
+    if user_role == 'Uzman' and session_user:
         appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
-        expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
+        expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session_user,)).fetchall()
         conn.close()
         
         return render_template('components/expert_panel.html', 
                                appointments=appointments,
                                expert_notes=expert_notes,
-                               session_user=session.get('user'),
+                               session_user=session_user,
                                session_name=session.get('name'),
-                               session_role=session.get('role'))
+                               session_role=user_role)
     
-    # 2. Uzman değilse normal ana sayfa verilerini çekmeye devam et
+    # 2. Uzman değilse (Normal Üye, Ziyaretçi veya Yönetici ise) standart ana sayfayı yükle
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
     experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
     appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
@@ -65,8 +67,8 @@ def anasayfa():
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
     
     expert_notes = []
-    if session.get('user'):
-        expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
+    if session_user:
+        expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session_user,)).fetchall()
 
     bugunun_tarihi_str = datetime.date.today().strftime('%Y%m%d')
     gunluk_secici = random.Random(bugunun_tarihi_str)
@@ -101,9 +103,7 @@ def anasayfa():
             }
     
     is_member = session.get('is_member', False)
-    session_user = session.get('user')
     session_name = session.get('name')
-    session_role = session.get('role')
     
     diaries = []
     if is_member and session_user:
@@ -117,7 +117,7 @@ def anasayfa():
         ).fetchall()
 
     expert_assigned_tests = []
-    if session_role and session_role != 'Standart Üye' and session_user:
+    if user_role and user_role != 'Standart Üye' and session_user:
         expert_assigned_tests = conn.execute(
             'SELECT * FROM assigned_tests WHERE expert_username = ? ORDER BY id DESC', 
             (session_user,)
@@ -140,7 +140,7 @@ def anasayfa():
                            expert_assigned_tests=expert_assigned_tests,
                            settings=settings, 
                            session_user=session_user, 
-                           session_role=session_role, 
+                           session_role=user_role, 
                            session_name=session_name, 
                            is_member=is_member, 
                            daily_quote=daily_quote, 
@@ -153,10 +153,8 @@ def like_post(post_id):
     conn = get_db_connection()
     conn.execute('UPDATE posts SET likes = likes + 1 WHERE id = ?', (post_id,))
     conn.commit()
-    
     post = conn.execute('SELECT likes FROM posts WHERE id = ?', (post_id,)).fetchone()
     conn.close()
-    
     if post:
         return jsonify({'success': True, 'new_likes': post['likes']})
     return jsonify({'success': False}), 404
@@ -252,10 +250,7 @@ def tum_uzmanlar():
 
 @app.route('/etik_kurul_testler')
 def etik_kurul_testler():
-    session_role = session.get('role')
-    
-    # Sadece rolü 'Uzman' olanlar erişebilir
-    if session_role == 'Uzman':
+    if session.get('role') == 'Uzman':
         return render_template('testler.html')
         
     flash('Bu modül yalnızca uzmanlar için erişilebilirdir.', 'warning')
