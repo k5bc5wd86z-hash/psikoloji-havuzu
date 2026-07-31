@@ -14,9 +14,9 @@ def login():
 
     conn = get_db_connection()
     
-    # 1. Kurucu Yönetici
+   # 1. Kurucu Yönetici
     if username == 'yonetici':
-        admin = conn.execute('SELECT * FROM admins WHERE username = "yonetici"').fetchone()
+        admin = conn.execute('SELECT * FROM admins WHERE username = ?', ('yonetici',)).fetchone()
         
         if admin and check_password_hash(admin['password'], password):
             code = str(random.randint(100000, 999999))
