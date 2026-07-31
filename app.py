@@ -307,35 +307,6 @@ def submit_test(test_id):
     return redirect(url_for('anasayfa'))
 
 from flask import request
-
-@admin_bp.route('/arsiv/<disiplin_adi>')
-def disiplin_arsivi(disiplin_adi):
-    page = request.args.get('page', 1, type=int)
-    per_page = 10
-    offset = (page - 1) * per_page
-
-    conn = get_db_connection()
-    
-    # O disipline ait toplam makale sayısı
-    total_posts = conn.execute('SELECT COUNT(*) FROM posts WHERE discipline = ?', (disiplin_adi,)).fetchone()[0]
-    
-    # O disipline ait ve o sayfaya denk gelen makaleler
-    posts = conn.execute(
-        'SELECT * FROM posts WHERE discipline = ? ORDER BY id DESC LIMIT ? OFFSET ?', 
-        (disiplin_adi, per_page, offset)
-    ).fetchall()
-    
-    conn.close()
-
-    total_pages = (total_posts + per_page - 1) // per_page if total_posts > 0 else 1
-
-    return render_template(
-        'disiplin_arsiv.html', 
-        posts=posts, 
-        disiplin_adi=disiplin_adi, 
-        page=page, 
-        total_pages=total_pages
-    )
     
 @app.route('/sitemap.xml')
 def sitemap():
