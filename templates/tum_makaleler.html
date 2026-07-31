@@ -16,13 +16,28 @@
     {% include 'components/header.html' %}
 
     <main style="max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem;">
-        <div class="section-header" style="text-align: center; margin-bottom: 2.5rem;">
+        <div class="section-header" style="text-align: center; margin-bottom: 2rem;">
             <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px;">Arşiv & İçerikler</span>
             <h1 style="font-family: var(--font-serif); font-size: 2.5rem; margin-top: 0.5rem; color: var(--text-primary);">Bütün Makaleler</h1>
             <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.5rem;">Bilimsel temelli psikoloji makaleleri ve derinlemesine yazılar.</p>
         </div>
 
-        <!-- Makale Kartları Grid Yapısı -->
+        <!-- Disiplin / Branş Butonları (İstediğin Alan) -->
+        <div class="discipline-filters" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-bottom: 2.5rem;">
+            <a href="{{ url_for('tum_makaleler', disiplin='Tümü') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Tümü' %}background: var(--accent-warm); color: white;{% endif %}">Tümü</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Psikoloji') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Psikoloji' %}background: var(--accent-warm); color: white;{% endif %}">Psikoloji</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Klinik Psikoloji') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Klinik Psikoloji' %}background: var(--accent-warm); color: white;{% endif %}">Klinik Psikoloji</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Gelişim Psikolojisi') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Gelişim Psikolojisi' %}background: var(--accent-warm); color: white;{% endif %}">Gelişim Psikolojisi</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Sosyal Psikoloji') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Sosyal Psikoloji' %}background: var(--accent-warm); color: white;{% endif %}">Sosyal Psikoloji</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Bilişsel Davranışçı Yaklaşımlar') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Bilişsel Davranışçı Yaklaşımlar' %}background: var(--accent-warm); color: white;{% endif %}">Bilişsel Davranışçı Yaklaşımlar</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Diyetisyen ve Beslenme') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Diyetisyen ve Beslenme' %}background: var(--accent-warm); color: white;{% endif %}">Diyetisyen ve Beslenme</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Moleküler Biyoloji ve Genetik') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Moleküler Biyoloji ve Genetik' %}background: var(--accent-warm); color: white;{% endif %}">Moleküler Biyoloji ve Genetik</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Nörobiyoloji ve Beyin Sağlığı') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Nörobiyoloji ve Beyin Sağlığı' %}background: var(--accent-warm); color: white;{% endif %}">Nörobiyoloji ve Beyin Sağlığı</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Bütüncül Esenlik ve Yaşam') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Bütüncül Esenlik ve Yaşam' %}background: var(--accent-warm); color: white;{% endif %}">Bütüncül Esenlik ve Yaşam</a>
+            <a href="{{ url_for('tum_makaleler', disiplin='Akademik Araştırmalar') }}" class="btn-outline" style="padding: 0.5rem 1rem; {% if secilen_disiplin == 'Akademik Araştırmalar' %}background: var(--accent-warm); color: white;{% endif %}">Akademik Araştırmalar</a>
+        </div>
+
+        <!-- Makale Kartları Grid / Alt Alta Yapısı -->
         <div class="blog-grid">
             {% for post in posts %}
                 <article class="blog-card">
@@ -44,10 +59,25 @@
                 </article>
             {% else %}
                 <div style="grid-column: span 3; text-align: center; padding: 3rem; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-light);">
-                    <p style="color: var(--text-muted); font-size: 1.1rem;">Henüz sistemde yayınlanmış makale bulunmuyor.</p>
+                    <p style="color: var(--text-muted); font-size: 1.1rem;">Bu kategoride henüz yayınlanmış makale bulunmuyor.</p>
                 </div>
             {% endfor %}
         </div>
+
+        <!-- Sayfalama (Pagination) Alanı -->
+        {% if total_pages and total_pages > 1 %}
+        <div class="pagination-container" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 3rem;">
+            {% if page > 1 %}
+                <a href="{{ url_for('tum_makaleler', disiplin=secilen_disiplin, page=page-1) }}" class="btn-outline" style="padding: 0.5rem 1rem; text-decoration: none;">← Önceki Sayfa</a>
+            {% endif %}
+
+            <span style="font-weight: 500; color: var(--text-muted);">Sayfa {{ page }} / {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+                <a href="{{ url_for('tum_makaleler', disiplin=secilen_disiplin, page=page+1) }}" class="btn-outline" style="padding: 0.5rem 1rem; text-decoration: none;">Sonraki Sayfa →</a>
+            {% endif %}
+        </div>
+        {% endif %}
     </main>
 
     <!-- Footer -->
