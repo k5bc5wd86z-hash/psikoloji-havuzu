@@ -44,6 +44,7 @@ def init_db():
         content TEXT,
         category TEXT,
         author TEXT,
+        username TEXT,
         likes INTEGER DEFAULT 0,
         date_posted TEXT
     )''')
