@@ -38,19 +38,23 @@ class DBWrapper:
         self.conn.close()
 
 def get_db_connection():
-    # Render'daki ayarlardan gizli Supabase linkini çeker
     db_url = os.environ.get('DATABASE_URL')
     
     if db_url and psycopg2:
-        # BULUT BAĞLANTISI: Eğer link varsa Supabase PostgreSQL'e bağlan
+        print("🚀 BAŞARILI: Supabase PostgreSQL'e bağlanıldı!")
         conn = psycopg2.connect(db_url, cursor_factory=RealDictCursor)
         return DBWrapper(conn, is_postgres=True)
     else:
-        # YEREL BAĞLANTI (Yedek): Link yoksa eski yerel SQLite'a bağlan
+        print("⚠️ HATA: Supabase'e bağlanılamadı! Yerel SQLite'a düşüldü.")
+        if not db_url:
+            print("Sebep: DATABASE_URL Render'da bulunamadı veya yanlış yazıldı.")
+        if not psycopg2:
+            print("Sebep: psycopg2 kütüphanesi yüklenmemiş (requirements.txt kontrol et).")
+            
         conn = sqlite3.connect('psikoloji_havuzu.db')
         conn.row_factory = sqlite3.Row
         return DBWrapper(conn, is_postgres=False)
-
+        
 def init_db():
     conn = get_db_connection()
     
