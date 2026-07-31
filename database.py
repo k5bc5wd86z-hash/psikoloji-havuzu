@@ -28,12 +28,15 @@ class DBWrapper:
             query = query.replace('?', '%s')
             # SQLite AUTOINCREMENT yapısını Postgres SERIAL yapısına çevirir
             query = query.replace('INTEGER PRIMARY KEY AUTOINCREMENT', 'SERIAL PRIMARY KEY')
+            
+            # GÜVENLİK FİLTRESİ: Yanlışlıkla çift tırnak ("") yazılmış metinleri tek tırnağa ('') çevirir
+            # Böylece Postgres sütun adı sanıp hata vermez!
+            query = query.replace('="', "='").replace('" ', "' ").replace('")', "')")
         
         try:
             cursor.execute(query, params)
         except Exception as e:
             if self.is_postgres:
-                # Postgres'te hata çıkarsa transaction kilitlenmesin diye rollback yapıyoruz
                 try:
                     self.conn.rollback()
                 except:
@@ -41,7 +44,7 @@ class DBWrapper:
             raise e
             
         return cursor
-
+        
     def commit(self):
         self.conn.commit()
 
