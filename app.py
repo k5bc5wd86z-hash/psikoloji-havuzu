@@ -43,19 +43,7 @@ ACADEMIC_DISCIPLINES = [
 def anasayfa():
     conn = get_db_connection()
     
-    posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
-    experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
-    appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
-    expert_chats = conn.execute('SELECT * FROM expert_chats ORDER BY id DESC').fetchall()
-    community_chats = conn.execute('SELECT * FROM community_chats ORDER BY id DESC').fetchall()
-    settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
-    
-    # Uzman Notları
-    expert_notes = []
-    if session.get('user'):
-        expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
-
-    # Eğer giriş yapan kişi Uzman ise, DOĞRUDAN uzman paneli şablonunu döndür ve buradan çık (return et)
+    # 1. Eğer giriş yapan kişi Uzman ise, HEMEN BURADA paneli döndür ve fonksiyonu bitir.
     if session.get('role') == 'Uzman' and session.get('user'):
         appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
@@ -68,6 +56,18 @@ def anasayfa():
                                session_name=session.get('name'),
                                session_role=session.get('role'))
     
+    # 2. Uzman değilse (Ziyaretçi veya Standart Üye ise) normal ana sayfa verilerini çek
+    posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
+    experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
+    appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
+    expert_chats = conn.execute('SELECT * FROM expert_chats ORDER BY id DESC').fetchall()
+    community_chats = conn.execute('SELECT * FROM community_chats ORDER BY id DESC').fetchall()
+    settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
+    
+    expert_notes = []
+    if session.get('user'):
+        expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
+
     bugunun_tarihi_str = datetime.date.today().strftime('%Y%m%d')
     gunluk_secici = random.Random(bugunun_tarihi_str)
     
@@ -109,7 +109,6 @@ def anasayfa():
     if is_member and session_user:
         diaries = conn.execute('SELECT * FROM diaries WHERE username = ? ORDER BY id DESC', (session_user,)).fetchall()
         
-    # Üyeye atanan testler
     member_assigned_tests = []
     if is_member and session_user:
         member_assigned_tests = conn.execute(
@@ -117,7 +116,6 @@ def anasayfa():
             (session_user,)
         ).fetchall()
 
-    # Uzmanın atadığı testler
     expert_assigned_tests = []
     if session_role and session_role != 'Standart Üye' and session_user:
         expert_assigned_tests = conn.execute(
@@ -149,7 +147,7 @@ def anasayfa():
                            recommendation=recommendation,
                            disciplines=ACADEMIC_DISCIPLINES,
                            selected_discipline=selected_discipline)
-
+    
 @app.route('/like_post/<int:post_id>', methods=['POST'])
 def like_post(post_id):
     conn = get_db_connection()
