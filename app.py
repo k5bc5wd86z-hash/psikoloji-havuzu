@@ -55,8 +55,8 @@ def anasayfa():
     if session.get('user'):
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
 
+    # Eğer giriş yapan kişi Uzman ise, DOĞRUDAN uzman paneli şablonunu döndür ve buradan çık (return et)
     if session.get('role') == 'Uzman' and session.get('user'):
-        conn = get_db_connection()
         appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
         conn.close()
