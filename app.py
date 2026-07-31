@@ -238,34 +238,12 @@ from flask import request
 
 @app.route('/tum_makaleler')
 def tum_makaleler():
-    # Hangi sayfadayız? (Varsayılan: 1)
-    page = request.args.get('page', 1, type=int)
-    per_page = 9  # Her sayfada kaç makale görünecek? (İstediğin gibi ayarlayabilirsin)
-    offset = (page - 1) * per_page
-
     conn = get_db_connection()
-    
-    # Toplam makale sayısını alıyoruz
-    total_posts = conn.execute('SELECT COUNT(*) FROM posts').fetchone()[0]
-    
-    # Sadece o sayfaya ait makaleleri çekiyoruz (LIMIT ve OFFSET ile)
-    posts = conn.execute('SELECT * FROM posts ORDER BY id DESC LIMIT ? OFFSET ?', (per_page, offset)).fetchall()
-    
+    posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
     is_member = session.get('is_member', False)
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
     conn.close()
-
-    # Toplam sayfa sayısını hesaplıyoruz
-    total_pages = (total_posts + per_page - 1) // per_page if total_posts > 0 else 1
-
-    return render_template(
-        'tum_makaleler.html', 
-        posts=posts, 
-        is_member=is_member, 
-        settings=settings, 
-        page=page, 
-        total_pages=total_pages
-    )
+    return render_template('tum_makaleler.html', posts=posts, is_member=is_member, settings=settings)
     
 @app.route('/tum_uzmanlar')
 def tum_uzmanlar():
