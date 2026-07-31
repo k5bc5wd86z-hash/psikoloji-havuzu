@@ -42,12 +42,8 @@ def anasayfa():
     user_role = session.get('role')
     session_user = session.get('user')
     
-    # KESİN KURAL: Yönetici ana sayfada veya kök dizinde asla uzman panelini görmez, admin paneline gider
-    if user_role in ['Sistem Yöneticisi', 'Kurucu Yönetici'] and session_user:
-        conn.close()
-        return redirect('/admin_dashboard')
-        
-    # Eğer normal Uzman ise uzman paneli yüklenir
+    # KONTROL: Sadece 'Uzman' rolündekiler uzman panelini görür. 
+    # Yönetici ('Sistem Yöneticisi' veya 'Kurucu Yönetici') buraya gelirse engellenmez, normal ana sayfayı görür.
     if user_role == 'Uzman' and session_user:
         appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session_user,)).fetchall()
@@ -61,8 +57,8 @@ def anasayfa():
                                session_user=session_user,
                                session_name=session.get('name'),
                                session_role=user_role)
-        
-    # Standart ana sayfa yüklemesi
+    
+    # Yönetici veya normal ziyaretçi/üye bu noktadan sonra standart ana sayfayı görür:
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
     experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
     appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
