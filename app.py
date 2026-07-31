@@ -54,6 +54,19 @@ def anasayfa():
     expert_notes = []
     if session.get('user'):
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
+
+    if session.get('role') == 'Uzman' and session.get('user'):
+        conn = get_db_connection()
+        appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
+        expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
+        conn.close()
+        
+        return render_template('expert_dashboard.html', 
+                               appointments=appointments,
+                               expert_notes=expert_notes,
+                               session_user=session.get('user'),
+                               session_name=session.get('name'),
+                               session_role=session.get('role'))
     
     bugunun_tarihi_str = datetime.date.today().strftime('%Y%m%d')
     gunluk_secici = random.Random(bugunun_tarihi_str)
