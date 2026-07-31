@@ -148,6 +148,16 @@ def init_db():
             date TEXT
         )
     ''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        content TEXT,
+        category TEXT,
+        author TEXT,
+        username TEXT,
+        likes INTEGER DEFAULT 0,
+        date_posted TEXT
+    )''')
     
     # Kurucu Yönetici Garantisi (Kullanıcı: yonetici, Şifre: yonetici123)
     yonetici = conn.execute('SELECT * FROM admins WHERE username = "yonetici"').fetchone()
