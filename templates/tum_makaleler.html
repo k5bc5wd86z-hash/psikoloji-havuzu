@@ -48,6 +48,21 @@
                 </div>
             {% endfor %}
         </div>
+
+        <!-- Sayfalama (Pagination) Alanı -->
+        {% if total_pages and total_pages > 1 %}
+        <div class="pagination-container" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 3rem;">
+            {% if page > 1 %}
+                <a href="{{ url_for('tum_makaleler', page=page-1) }}" class="btn-outline" style="padding: 0.5rem 1rem; text-decoration: none;">← Önceki Sayfa</a>
+            {% endif %}
+
+            <span style="font-weight: 500; color: var(--text-muted);">Sayfa {{ page }} / {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+                <a href="{{ url_for('tum_makaleler', page=page+1) }}" class="btn-outline" style="padding: 0.5rem 1rem; text-decoration: none;">Sonraki Sayfa →</a>
+            {% endif %}
+        </div>
+        {% endif %}
     </main>
 
     <!-- Footer -->
