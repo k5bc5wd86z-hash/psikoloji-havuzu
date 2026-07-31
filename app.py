@@ -73,7 +73,10 @@ def anasayfa():
     
     # Yönetici veya normal ziyaretçi/üye bu noktadan sonra standart ana sayfayı görür:
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
-    experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
+    
+    # DÜZELTME YAPILDI: Çift tırnaklar tek tırnağa çevrildi
+    experts = conn.execute("SELECT * FROM admins WHERE role != 'Kurucu Yönetici' AND status = 'Onaylı'").fetchall()
+    
     appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
     expert_chats = conn.execute('SELECT * FROM expert_chats ORDER BY id DESC').fetchall()
     community_chats = conn.execute('SELECT * FROM community_chats ORDER BY id DESC').fetchall()
@@ -243,7 +246,8 @@ def tum_makaleler():
 @app.route('/tum_uzmanlar')
 def tum_uzmanlar():
     conn = get_db_connection()
-    experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
+    # DÜZELTME YAPILDI: Çift tırnaklar tek tırnağa çevrildi
+    experts = conn.execute("SELECT * FROM admins WHERE role != 'Kurucu Yönetici' AND status = 'Onaylı'").fetchall()
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
     conn.close()
     return render_template('tum_uzmanlar.html', experts=experts, settings=settings)
