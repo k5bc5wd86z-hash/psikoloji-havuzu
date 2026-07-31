@@ -38,7 +38,7 @@ ACADEMIC_DISCIPLINES = [
 
 @app.route('/')
 def anasayfa():
-   conn = get_db_connection()
+    conn = get_db_connection()
     user_role = session.get('role')
     session_user = session.get('user')
     
