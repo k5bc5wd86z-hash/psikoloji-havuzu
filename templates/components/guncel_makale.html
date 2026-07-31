@@ -2,22 +2,33 @@
         <section class="blog-section" style="order: 2;">
             <div class="section-header"><h2>Güncel Makaleler</h2></div>
             <div class="blog-grid">
-                {% for post in posts %}
-                    <article class="blog-card">
-                        <div style="flex-grow: 1;">
-                            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-warm); font-weight: 600; margin-bottom: 0.8rem;">{{ post.category }}</div>
-                            <h3 style="font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem;">{{ post.title }}</h3>
-                            <div id="post-title-{{ post.id }}" style="display: none;">{{ post.title }}</div>
-                            <div id="post-category-{{ post.id }}" style="display: none;">{{ post.category }}</div>
-                            <!-- YAZAR ADI KALDIRILDI, TARİH EKLENDİ -->
-                         <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; display: block; margin-bottom: 0.3rem;">{{ post.category }}</span>
-                         <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; display: block; margin-bottom: 0.8rem;">Yazar: {{ post.author }}</span>
-                         <h3 style="font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary); line-height: 1.3;">{{ post.title }}</h3>
-                            <div id="post-content-{{ post.id }}" style="display: none;">{{ post.content }}</div>
-                            <p class="text-clamp" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">{{ post.content }}</p>
-                        </div>
-                        <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; align-items: center;">
-                            {% if is_member %}
+               {% for post in posts %}
+<article class="blog-card">
+    <div style="flex-grow: 1;">
+        <!-- Tıklandığında açılacak pencere (modal) için gizli veriler -->
+        <div id="post-title-{{ post.id }}" style="display: none;">{{ post.title }}</div>
+        <div id="post-category-{{ post.id }}" style="display: none;">{{ post.category }}</div>
+        <div id="post-content-{{ post.id }}" style="display: none;">{{ post.content }}</div>
+
+        <!-- Ekranda Görünen Kart İçeriği -->
+        <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; display: block; margin-bottom: 0.4rem;">
+            {{ post.category }}
+        </span>
+        
+        <h3 style="font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 0.3rem; color: var(--text-primary); line-height: 1.3;">
+            {{ post.title }}
+        </h3>
+        
+        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; display: block; margin-bottom: 1rem;">
+            Yazar: {{ post.author }}
+        </span>
+        
+        <p class="text-clamp" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+            {{ post.content }}
+        </p>
+    </div>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; align-items: center;">
+        {% if is_member %}
                             <!-- AJAX UYUMLU BEĞENİ BUTONU -->
                             <button id="like-btn-{{ post.id }}" class="btn-outline" style="padding: 0.5rem 1rem;" onclick="likePost({{ post.id }})">Beğen (<span id="like-count-{{ post.id }}">{{ post.likes }}</span>)</button>
                             {% endif %}
