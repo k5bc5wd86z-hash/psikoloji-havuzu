@@ -1,11 +1,55 @@
 # -*- coding: utf-8 -*-
+import os
 import sqlite3
 from werkzeug.security import generate_password_hash
 
+# Render/Supabase için Postgres kütüphanesini içe aktarmayı dene
+try:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+except ImportError:
+    psycopg2 = None
+
+class DBWrapper:
+    """
+    Sihirli Köprü Sınıfı:
+    app.py veya diğer dosyalardaki SQL kodlarını (fetchone, fetchall vb.) 
+    hiç değiştirmeden projenin Supabase (PostgreSQL) ile çalışmasını sağlar.
+    """
+    def __init__(self, conn, is_postgres=False):
+        self.conn = conn
+        self.is_postgres = is_postgres
+
+    def execute(self, query, params=()):
+        cursor = self.conn.cursor()
+        if self.is_postgres:
+            # SQLite '?' formatını Postgres '%s' formatına çevirir
+            query = query.replace('?', '%s')
+            # SQLite AUTOINCREMENT yapısını Postgres SERIAL yapısına çevirir
+            query = query.replace('INTEGER PRIMARY KEY AUTOINCREMENT', 'SERIAL PRIMARY KEY')
+        
+        cursor.execute(query, params)
+        return cursor
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.conn.close()
+
 def get_db_connection():
-    conn = sqlite3.connect('psikoloji_havuzu.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+    # Render'daki ayarlardan gizli Supabase linkini çeker
+    db_url = os.environ.get('DATABASE_URL')
+    
+    if db_url and psycopg2:
+        # BULUT BAĞLANTISI: Eğer link varsa Supabase PostgreSQL'e bağlan
+        conn = psycopg2.connect(db_url, cursor_factory=RealDictCursor)
+        return DBWrapper(conn, is_postgres=True)
+    else:
+        # YEREL BAĞLANTI (Yedek): Link yoksa eski yerel SQLite'a bağlan
+        conn = sqlite3.connect('psikoloji_havuzu.db')
+        conn.row_factory = sqlite3.Row
+        return DBWrapper(conn, is_postgres=False)
 
 def init_db():
     conn = get_db_connection()
@@ -23,7 +67,7 @@ def init_db():
         status TEXT
     )''')
     
-    # Eksik sütunları otomatik ekleme (Render disk sıfırlanmalarına karşı güvenlik önlemi)
+    # Eksik sütunları otomatik ekleme
     try:
         conn.execute('ALTER TABLE admins ADD COLUMN verification_code TEXT')
     except Exception:
@@ -121,7 +165,7 @@ def init_db():
         song_desc TEXT
     )''')
 
-    # --- UZMAN AJANDA VE NOTLAR TABLOSU EKLENDİ ---
+    # UZMAN AJANDA VE NOTLAR TABLOSU
     conn.execute('''CREATE TABLE IF NOT EXISTS expert_notes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         expert_username TEXT,
@@ -150,7 +194,7 @@ def init_db():
         )
     ''')
     
-    # Kurucu Yönetici Garantisi (Kullanıcı: yonetici, Şifre: yonetici123)
+    # Kurucu Yönetici Garantisi
     yonetici = conn.execute('SELECT * FROM admins WHERE username = "yonetici"').fetchone()
     if not yonetici:
         hashed_pw = generate_password_hash('yonetici123', method='pbkdf2:sha256') 
