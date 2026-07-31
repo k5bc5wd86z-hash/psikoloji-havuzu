@@ -238,7 +238,6 @@ from flask import request
 
 @app.route('/tum_makaleler')
 def tum_makaleler():
-    # Hangi sayfadayız ve hangi disiplin seçildi?
     page = request.args.get('page', 1, type=int)
     secilen_disiplin = request.args.get('disiplin', 'Tümü')
     per_page = 9
@@ -246,19 +245,28 @@ def tum_makaleler():
 
     conn = get_db_connection()
     
-    # Veritabanından disiplin filtrelemesine göre makaleleri çekiyoruz
-    if secilen_disiplin and secilen_disiplin != 'Tümü':
-        total_posts = conn.execute('SELECT COUNT(*) FROM posts WHERE category = ?', (secilen_disiplin,)).fetchone()[0]
-        posts = conn.execute(
-            'SELECT * FROM posts WHERE category = ? ORDER BY id DESC LIMIT ? OFFSET ?', 
-            (secilen_disiplin, per_page, offset)
-        ).fetchall()
-    else:
-        total_posts = conn.execute('SELECT COUNT(*) FROM posts').fetchone()[0]
-        posts = conn.execute(
-            'SELECT * FROM posts ORDER BY id DESC LIMIT ? OFFSET ?', 
-            (per_page, offset)
-        ).fetchall()
+    try:
+        if secilen_disiplin and secilen_disiplin != 'Tümü':
+            # PostgreSQL sözlük döndürdüğü için kolon adıyla veya güvenli çekiyoruz
+            count_res = conn.execute('SELECT COUNT(*) as cnt FROM posts WHERE category = ?', (secilen_disiplin,)).fetchone()
+            total_posts = count_res['cnt'] if isinstance(count_res, dict) else count_res[0]
+            
+            posts = conn.execute(
+                'SELECT * FROM posts WHERE category = ? ORDER BY id DESC LIMIT ? OFFSET ?', 
+                (secilen_disiplin, per_page, offset)
+            ).fetchall()
+        else:
+            count_res = conn.execute('SELECT COUNT(*) as cnt FROM posts').fetchone()
+            total_posts = count_res['cnt'] if isinstance(count_res, dict) else count_res[0]
+            
+            posts = conn.execute(
+                'SELECT * FROM posts ORDER BY id DESC LIMIT ? OFFSET ?', 
+                (per_page, offset)
+            ).fetchall()
+    except Exception as e:
+        print(f"Hata: {e}")
+        total_posts = 0
+        posts = []
     
     is_member = session.get('is_member', False)
     settings = conn.execute('SELECT * FROM site_settings ORDER BY id DESC LIMIT 1').fetchone()
