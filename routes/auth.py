@@ -47,7 +47,7 @@ def login():
             conn.close()
             return "Hesabınız henüz onaylanmamış.", 403
         session['user'] = expert['username']
-        session['role'] = expert['role']
+        session['role'] = 'Uzman'  # Burayı doğrudan sabitliyoruz!
         session['name'] = expert['name']
         session['is_member'] = False
         conn.close()
