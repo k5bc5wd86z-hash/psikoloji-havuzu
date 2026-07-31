@@ -132,7 +132,7 @@
         </div>
     </div>
 
-    <!-- 4. MAKALE YAZ SEKME İÇERİĞİ -->
+   <!-- 4. MAKALE YAZ SEKME İÇERİĞİ -->
     <div id="makaleTab" class="panel-tab-content" style="display: none;">
         <div class="expert-article-box">
             <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Yeni Makale / Yazı Yayınla</h3>
@@ -151,6 +151,31 @@
                 </div>
                 <button type="submit" class="btn-follow" style="width: 100%;">Makaleyi Yayınla</button>
             </form>
+        </div>
+
+        <!-- YAYINLANAN MAKALELERİM LİSTESİ (SİL / DÜZENLE) -->
+        <div class="expert-article-box" style="margin-top: 2rem;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 1rem;">Yayınladığım Makaleler</h3>
+            <div style="background: var(--bg-base); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-light); max-height: 400px; overflow-y: auto;">
+                {% set ns_article = namespace(found=false) %}
+                {% for post in posts %}
+                    {% if post.author == session_name or post.author == session_user %}
+                        {% set ns_article.found = true %}
+                        <div style="padding: 0.8rem 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>{{ post.title }}</strong> <br>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">Kategori: {{ post.category }}</span>
+                            </div>
+                            <div>
+                                <a href="/delete_post/{{ post.id }}" style="color: #c94a4a; font-weight: bold; text-decoration: none; font-size: 0.9rem;" onclick="return confirm('Bu makaleyi silmek istediğinize emin misiniz?');">❌ Sil</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {% if not ns_article.found %}
+                    <p style="color: var(--text-muted); text-align: center;">Henüz yayınlanmış bir makaleniz bulunmuyor.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 
