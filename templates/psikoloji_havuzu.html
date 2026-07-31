@@ -49,20 +49,22 @@
             --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; 
         }
 
-        /* MOBİL UYUMLULUK İÇİN EK GÜVENLİK DOKUNUŞLARI */
+        /* MOBİL DÜZELTME */
         body {
-            overflow-x: hidden; /* Telefonda sağa kaymaları engeller */
+            overflow-x: hidden;
         }
         .page-section-wrapper {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1rem; /* Mobilde kenarlardan taşmayı önlemek için güvenli pay */
+            padding: 0 1rem;
             box-sizing: border-box;
         }
+        /* Başlıkların alt alta harf harf dökülmesini engelleyen güvenli ayar */
         .hero h1 {
-            font-size.clamp: 2rem; /* Büyük başlıkların telefonda ekrana sığmasını sağlar */
-            word-break: break-word;
+            font-size: 2rem;
+            word-break: normal;
+            overflow-wrap: break-word;
         }
     </style>
 </head>
