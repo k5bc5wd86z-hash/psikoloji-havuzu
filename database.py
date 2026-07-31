@@ -7,7 +7,8 @@ from werkzeug.security import generate_password_hash
 try:
     import psycopg2
     from psycopg2.extras import RealDictCursor
-except ImportError:
+except Exception as e:
+    print(f"🔥🔥🔥 GİZLİ HATA YAKALANDI: {e}")
     psycopg2 = None
 
 class DBWrapper:
