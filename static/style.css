@@ -366,3 +366,41 @@ header {
 
 /* Makale Formu Uzman Adaptasyonu */
 .expert-article-box { background: var(--bg-card); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-light); margin-top: 2rem; box-shadow: var(--shadow-soft); }
+
+/* --- MOBİL UYUM VE TAŞMA DÜZELTME KODLARI --- */
+@media screen and (max-width: 768px) {
+    /* Header ve Üst Menü Sıkışmasını Önleme */
+    header, .header-container, nav {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 0.5rem 1rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Logo ve Başlık Hizalama */
+    header img, .logo {
+        max-height: 35px !important;
+    }
+
+    /* Sağa Yapışan Makaleler ve Kartlar İçin Genel Düzenleme */
+    .page-section-wrapper, .card, .container, section {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Grid veya Flex Yapıların Mobilde Alt Alta Gelmesi İçin */
+    .row, .grid, .experts-grid, .articles-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
