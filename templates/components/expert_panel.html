@@ -1,18 +1,15 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-<!-- Üst Bilgi ve Çıkış Barı -->
+<link rel="stylesheet" href="{{ url_for('static', filename='expert_style.css') }}">
 {% include 'components/header.html' %}
-         <div>
-        <span>Hoş geldiniz, <strong>{{ session_name }}</strong> (Uzman)</span>
-    </div>
-<section class="editor-section" style="max-width: 1200px;" id="uzman-paneli-ana">
-    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h2 style="font-family: var(--font-serif); font-size: 2.4rem;">Uzman Yönetim Paneli</h2>
-            <p style="color: var(--text-muted);">Akademik profilinizi, randevularınızı, ajanda notlarınızı ve makalelerinizi buradan yönetin.</p>
-        </div>
-    </div>
 
+<div style="max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem;">
+    <!-- Fazlalık yazı silindi, doğrudan ana panel section'ı başlıyor -->
+    <section class="editor-section" style="max-width: 100%; margin: 0;" id="uzman-paneli-ana">
+        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="font-family: var(--font-serif); font-size: 2.4rem; margin-bottom: 0.5rem;">Uzman Yönetim Paneli</h2>
+                <p style="color: var(--text-muted);">Akademik profilinizi, randevularınızı, ajanda notlarınızı ve makalelerinizi buradan yönetin.</p>
+            </div>
+        </div>
     <!-- Sekme Butonları -->
     <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border-light); padding-bottom: 1rem; flex-wrap: wrap;">
         <button type="button" class="btn-outline" onclick="switchTab('randevularTab')" id="btnRandevular" style="background: var(--accent-warm); color: white;">Randevular & Takvim</button>
