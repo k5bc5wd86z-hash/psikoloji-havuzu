@@ -43,7 +43,7 @@ ACADEMIC_DISCIPLINES = [
 def anasayfa():
     conn = get_db_connection()
     
-    # 1. Eğer giriş yapan kişi Uzman ise, HEMEN BURADA paneli döndür ve fonksiyonu bitir.
+    # 1. ÖNCE KONTROL: Eğer giriş yapan kişi Uzman ise, doğrudan paneli göster ve çık.
     if session.get('role') == 'Uzman' and session.get('user'):
         appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session.get('user'),)).fetchall()
@@ -56,7 +56,7 @@ def anasayfa():
                                session_name=session.get('name'),
                                session_role=session.get('role'))
     
-    # 2. Uzman değilse (Ziyaretçi veya Standart Üye ise) normal ana sayfa verilerini çek
+    # 2. Uzman değilse normal ana sayfa verilerini çekmeye devam et
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
     experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
     appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
