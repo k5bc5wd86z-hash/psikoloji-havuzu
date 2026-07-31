@@ -184,6 +184,31 @@ def add_diary():
             
     return redirect(url_for('anasayfa'))
 
+@expert_bp.route('/edit_post/<int:post_id>', methods=['POST'])
+def edit_post(post_id):
+    if not session.get('user'):
+        return redirect(url_for('anasayfa'))
+        
+    title = request.form.get('title')
+    category = request.form.get('category')
+    content = request.form.get('content')
+    
+    if title and content:
+        conn = get_db_connection()
+        try:
+            conn.execute('''
+                UPDATE posts 
+                SET title = ?, category = ?, content = ? 
+                WHERE id = ?
+            ''', (title, category, content, post_id))
+            conn.commit()
+        except Exception as e:
+            print("Makale güncelleme hatası:", e)
+        finally:
+            conn.close()
+            
+    return redirect(url_for('anasayfa')) 
+
 @app.route('/delete_post/<int:post_id>', methods=['POST', 'GET'])
 def delete_post(post_id):
     if session.get('role') in ['Sistem Yöneticisi', 'Kurucu Yönetici', 'Uzman']:
