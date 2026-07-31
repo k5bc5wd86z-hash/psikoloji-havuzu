@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Psikoloji Havuzu - Etik kurul onaylı testler, uzman kadro ve derinlemesine psikoloji makaleleri ile güvenilir dijital platform.">
     <meta name="author" content="Psikoloji Havuzu Uzman Kadrosu">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-
+    
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -30,10 +32,8 @@
       }
     }
     </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>{% block title %}Psikoloji Havuzu | Bütüncül Platform{% endblock %}</title>
-    <meta name="description" content="{% block description %}Psikoloji Havuzu, uzman psikologlarla danışanları bir araya getiren güvenilir bütüncül destek platformu.{% endblock %}">
     
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -47,6 +47,22 @@
             --bg-base: {{ settings.bg_base if settings else '#FBF9F5' }}; 
             --bg-card: {{ settings.bg_card if settings else '#FFFFFF' }}; 
             --accent-warm: {{ settings.accent_warm if settings else '#BFA085' }}; 
+        }
+
+        /* MOBİL UYUMLULUK İÇİN EK GÜVENLİK DOKUNUŞLARI */
+        body {
+            overflow-x: hidden; /* Telefonda sağa kaymaları engeller */
+        }
+        .page-section-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem; /* Mobilde kenarlardan taşmayı önlemek için güvenli pay */
+            box-sizing: border-box;
+        }
+        .hero h1 {
+            font-size.clamp: 2rem; /* Büyük başlıkların telefonda ekrana sığmasını sağlar */
+            word-break: break-word;
         }
     </style>
 </head>
@@ -68,10 +84,10 @@
             </div>
         {% else %}
             <!-- Üye DEĞİLSE Normal Karşılama Görünür -->
-            <section class="hero" style="text-align: center; padding: 4rem 1.5rem 2rem 1.5rem;">
-                <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px;">Bütüncül Esenlik Platformu</span>
-                <h1>{{ settings.hero_title if settings and settings.hero_title else 'Zihni, Bedeni ve Davranışı Anlamak.' }}</h1>
-                <p>{{ settings.hero_subtitle if settings and settings.hero_subtitle else 'Profesyonel danışmanlık ve bilimsel makaleler.' }}</p>
+            <section class="hero" style="text-align: center; padding: 3rem 1rem 1.5rem 1.rem;">
+                <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1.5px; display: block; margin-bottom: 0.5rem;">Bütüncül Esenlik Platformu</span>
+                <h1 style="font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.2;">{{ settings.hero_title if settings and settings.hero_title else 'Zihni, Bedeni ve Davranışı Anlamak.' }}</h1>
+                <p style="font-size: clamp(0.95rem, 2vw, 1.1rem); padding: 0 0.5rem;">{{ settings.hero_subtitle if settings and settings.hero_subtitle else 'Profesyonel danışmanlık ve bilimsel makaleler.' }}</p>
             </section>
         {% endif %}
 
