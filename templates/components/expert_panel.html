@@ -1,14 +1,10 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <!-- Üst Bilgi ve Çıkış Barı -->
-<div style="max-width: 1200px; margin: 2rem auto 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 1rem;">
-    <div>
+{% include 'components/header.html' %}
+         <div>
         <span>Hoş geldiniz, <strong>{{ session_name }}</strong> (Uzman)</span>
     </div>
-    <div>
-        <a href="/logout" style="background: #c94a4a; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 6px; font-weight: bold;">Çıkış Yap</a>
-    </div>
-</div>
 <section class="editor-section" style="max-width: 1200px;" id="uzman-paneli-ana">
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
         <div>
