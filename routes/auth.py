@@ -41,7 +41,6 @@ def login():
         return redirect(url_for('anasayfa'))
     
     # 2. Uzman Girişi
-    # 2. Uzman Girişi
     expert = conn.execute('SELECT * FROM admins WHERE username = ?', (username,)).fetchone()
     if expert and check_password_hash(expert['password'], password):
         if expert['status'] != 'Onaylı':
