@@ -88,7 +88,10 @@ def init_db():
         conn.commit()
     except Exception:
         if conn.is_postgres:
-            try: conn.conn.rollback() except: pass
+            try:
+                conn.conn.rollback()
+            except:
+                pass
 
     conn.execute('''CREATE TABLE IF NOT EXISTS members (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -197,7 +200,10 @@ def init_db():
         conn.commit()
     except Exception:
         if conn.is_postgres:
-            try: conn.conn.rollback() except: pass
+            try:
+                conn.conn.rollback()
+            except:
+                pass
 
     # Atanan testler tablosu
     conn.execute('''
