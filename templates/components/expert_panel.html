@@ -133,6 +133,7 @@
     </div>
 
    <!-- 4. MAKALE YAZ SEKME İÇERİĞİ -->
+   <!-- 4. MAKALE YAZ SEKME İÇERİĞİ -->
     <div id="makaleTab" class="panel-tab-content" style="display: none;">
         <div class="expert-article-box">
             <h3 style="font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 1rem;">Yeni Makale / Yazı Yayınla</h3>
@@ -143,7 +144,19 @@
                 </div>
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; margin-bottom: 0.4rem;">Kategori / Disiplin</label>
-                    <input type="text" name="category" class="editor-input" placeholder="Örn: Klinik Psikoloji" required style="width: 100%; margin-bottom: 0;">
+                    <select name="category" class="editor-select" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-primary); margin-bottom: 0;">
+                        <option value="" disabled selected>Uzmanlık / Branş Alanı Seçin</option>
+                        <option value="Psikoloji">Psikoloji</option>
+                        <option value="Klinik Psikoloji">Klinik Psikoloji</option>
+                        <option value="Gelişim Psikolojisi">Gelişim Psikolojisi</option>
+                        <option value="Sosyal Psikoloji">Sosyal Psikoloji</option>
+                        <option value="Bilişsel Davranışçı Yaklaşımlar">Bilişsel Davranışçı Yaklaşımlar</option>
+                        <option value="Diyetisyen / Beslenme">Diyetisyen ve Beslenme</option>
+                        <option value="Moleküler Biyoloji ve Genetik">Moleküler Biyoloji ve Genetik</option>
+                        <option value="Nörobiyoloji ve Beyin Sağlığı">Nörobiyoloji ve Beyin Sağlığı</option>
+                        <option value="Bütüncül Esenlik ve Yaşam">Bütüncül Esenlik ve Yaşam</option>
+                        <option value="Akademik Araştırmalar">Akademik Araştırmalar</option>
+                    </select>
                 </div>
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; margin-bottom: 0.4rem;">Makale İçeriği</label>
@@ -154,29 +167,67 @@
         </div>
 
         <!-- YAYINLANAN MAKALELERİM LİSTESİ (SİL / DÜZENLE) -->
-        <!-- YAYINLANAN MAKALELERİM LİSTESİ (SİL / DÜZENLE) -->
         <div class="expert-article-box" style="margin-top: 2rem;">
             <h3 style="font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 1rem;">Yayınladığım Makaleler</h3>
             <div style="background: var(--bg-base); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-light); max-height: 400px; overflow-y: auto;">
                 
-                {% if my_posts %}
-                    {% for post in my_posts %}
-                        <div style="padding: 0.8rem 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong>{{ post.title }}</strong> <br>
-                                <span style="font-size: 0.85rem; color: var(--text-muted);">Kategori: {{ post.category }}</span>
+                {% set ns_article = namespace(found=false) %}
+                {% for post in posts %}
+                    {% if post.author == session.get('name') or post.author.startswith(session.get('name', '')) or session.get('role') in ['Sistem Yöneticisi', 'Kurucu Yönetici'] or post.username == session.get('user') %}
+                        {% set ns_article.found = true %}
+                        <div style="padding: 1rem 0; border-bottom: 1px solid var(--border-light); margin-bottom: 1rem;">
+                            <span style="color: var(--accent-warm); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.5px; display: block; margin-bottom: 0.2rem;">{{ post.category }}</span>
+                            <strong style="font-size: 1.1rem; color: var(--text-primary); display: block; margin-bottom: 0.5rem;">{{ post.title }}</strong>
+                            
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <!-- Silme Formu -->
+                                <form action="{{ url_for('expert.delete_post', post_id=post.id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Bu makaleyi silmek istediğinize emin misiniz?');">
+                                    <button type="submit" style="background: none; border: none; color: #c94a4a; font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 0;">
+                                          Sil
+                                    </button>
+                                </form>
+
+                                <!-- Düzenleme Butonu -->
+                                <button type="button" onclick="document.getElementById('editForm-{{ post.id }}').style.display = document.getElementById('editForm-{{ post.id }}').style.display == 'block' ? 'none' : 'block'" style="background: none; border: none; color: var(--accent-warm); font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 0;">
+                                      Düzenle
+                                </button>
                             </div>
-                            <div>
-                                <a href="/delete_post/{{ post.id }}" style="color: #c94a4a; font-weight: bold; text-decoration: none; font-size: 0.9rem;" onclick="return confirm('Bu makaleyi silmek istediğinize emin misiniz?');">❌ Sil</a>
+
+                            <!-- Gizli Düzenleme Formu -->
+                            <div id="editForm-{{ post.id }}" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-light);">
+                                <form action="{{ url_for('expert.edit_post', post_id=post.id) }}" method="POST">
+                                    <div style="margin-bottom: 0.8rem;">
+                                        <input type="text" name="title" value="{{ post.title }}" class="editor-input" required style="width: 100%; margin-bottom: 0;">
+                                    </div>
+                                    <div style="margin-bottom: 0.8rem;">
+                                        <select name="category" class="editor-select" required style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-light); background: var(--bg-base); color: var(--text-primary);">
+                                            <option value="{{ post.category }}" selected>{{ post.category }} (Mevcut)</option>
+                                            <option value="Psikoloji">Psikoloji</option>
+                                            <option value="Klinik Psikoloji">Klinik Psikoloji</option>
+                                            <option value="Gelişim Psikolojisi">Gelişim Psikolojisi</option>
+                                            <option value="Sosyal Psikoloji">Sosyal Psikoloji</option>
+                                            <option value="Bilişsel Davranışçı Yaklaşımlar">Bilişsel Davranışçı Yaklaşımlar</option>
+                                            <option value="Diyetisyen / Beslenme">Diyetisyen ve Beslenme</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom: 0.8rem;">
+                                        <textarea name="content" class="editor-textarea" required style="width: 100%; min-height: 100px; margin-bottom: 0;">{{ post.content }}</textarea>
+                                    </div>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button type="submit" class="btn-follow" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Kaydet</button>
+                                        <button type="button" onclick="document.getElementById('editForm-{{ post.id }}').style.display = 'none'" style="background: none; border: 1px solid var(--border-light); color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">İptal</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                    {% endfor %}
-                {% else %}
+                    {% endif %}
+                {% endfor %}
+                {% if not ns_article.found %}
                     <p style="color: var(--text-muted); text-align: center;">Henüz yayınlanmış bir makaleniz bulunmuyor.</p>
                 {% endif %}
-                
             </div>
         </div>
+    </div>
 
     <!-- 5. ŞİFRE DEĞİŞTİRME SEKME İÇERİĞİ -->
     <div id="sifreTab" class="panel-tab-content" style="display: none;">
