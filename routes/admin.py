@@ -11,10 +11,11 @@ def admin_dashboard():
         return redirect('/')
     conn = get_db_connection()
     all_members = conn.execute('SELECT * FROM members').fetchall()
-    pending_experts = conn.execute('SELECT * FROM admins WHERE status LIKE "%Bekliyor%"').fetchall()
+    g_experts = conn.execute("SELECT * FROM admins WHERE status LIKE '%Bekliyor%'").fetchall()
+    
     conn.close()
     return render_template('admin_dashboard.html', all_members=all_members, pending_experts=pending_experts)
-
+    
 @admin_bp.route('/admin/approve_expert/<username>')
 def approve_expert(username):
     if session.get('role') in ['Sistem Yöneticisi', 'Kurucu Yönetici']:
