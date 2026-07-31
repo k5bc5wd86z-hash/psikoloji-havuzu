@@ -12,13 +12,10 @@ from routes.admin import admin_bp
 app = Flask(__name__)
 app.secret_key = 'psikoloji_havuzu_guvenli_anahtar_2026'
 
-# Resend API Ayarı
 resend.api_key = os.environ.get("RESEND_API_KEY")
 
-# Veritabanını başlat
 init_db()
 
-# Blueprint Kayıtları
 app.register_blueprint(auth_bp)
 app.register_blueprint(expert_bp)
 app.register_blueprint(admin_bp)
@@ -45,20 +42,22 @@ def anasayfa():
     user_role = session.get('role')
     session_user = session.get('user')
     
-    # 1. KONTROL: Eğer giriş yapan KESİNLİKLE 'Uzman' ise (Yönetici değilse), uzman panelini yükle
+    # Uzman paneli yüklemesi
     if user_role == 'Uzman' and session_user:
         appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
         expert_notes = conn.execute('SELECT * FROM expert_notes WHERE expert_username = ?', (session_user,)).fetchall()
+        my_posts = conn.execute('SELECT * FROM posts WHERE username = ? ORDER BY id DESC', (session_user,)).fetchall()
         conn.close()
         
         return render_template('components/expert_panel.html', 
                                appointments=appointments,
                                expert_notes=expert_notes,
+                               my_posts=my_posts,
                                session_user=session_user,
                                session_name=session.get('name'),
                                session_role=user_role)
     
-    # 2. Uzman değilse (Normal Üye, Ziyaretçi veya Yönetici ise) standart ana sayfayı yükle
+    # Standart ana sayfa yüklemesi
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
     experts = conn.execute('SELECT * FROM admins WHERE role != "Kurucu Yönetici" AND status = "Onaylı"').fetchall()
     appointments = conn.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
@@ -184,44 +183,6 @@ def add_diary():
             
     return redirect(url_for('anasayfa'))
 
-@expert_bp.route('/edit_post/<int:post_id>', methods=['POST'])
-def edit_post(post_id):
-    if not session.get('user'):
-        return redirect(url_for('anasayfa'))
-        
-    title = request.form.get('title')
-    category = request.form.get('category')
-    content = request.form.get('content')
-    
-    if title and content:
-        conn = get_db_connection()
-        try:
-            conn.execute('''
-                UPDATE posts 
-                SET title = ?, category = ?, content = ? 
-                WHERE id = ?
-            ''', (title, category, content, post_id))
-            conn.commit()
-        except Exception as e:
-            print("Makale güncelleme hatası:", e)
-        finally:
-            conn.close()
-            
-    return redirect(url_for('anasayfa')) 
-
-@app.route('/delete_post/<int:post_id>', methods=['POST', 'GET'])
-def delete_post(post_id):
-    if session.get('role') in ['Sistem Yöneticisi', 'Kurucu Yönetici', 'Uzman']:
-        conn = get_db_connection()
-        conn.execute('DELETE FROM posts WHERE id = ?', (post_id,))
-        conn.commit()
-        conn.close()
-        flash('Makale başarıyla silindi.', 'success')
-    else:
-        flash('Bu işlem için yetkiniz yok.', 'danger')
-        
-    return redirect(url_for('anasayfa'))
-
 @app.route('/add_community_chat', methods=['POST'])
 def add_community_chat():
     msg = request.form.get('chatMsg')
@@ -284,14 +245,6 @@ def etik_kurul_testler():
 @app.route('/psikoloji_nedir')
 def psikoloji_nedir():
     return render_template('psikoloji_nedir.html')
-
-@app.route('/tags')
-def tags():
-    conn = get_db_connection()
-    kurucu_uzmanlar = conn.execute('SELECT * FROM admins WHERE tag = "Kurucu Uzman"').fetchall()
-    ornek_makaleler = conn.execute('SELECT * FROM posts LIMIT 2').fetchall()
-    conn.close()
-    return render_template('psikoloji_havuzu.html', experts=kurucu_uzmanlar, posts=ornek_makaleler)
 
 @app.route('/submit_test/<int:test_id>', methods=['POST'])
 def submit_test(test_id):
