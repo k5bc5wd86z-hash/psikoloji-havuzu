@@ -29,7 +29,17 @@ class DBWrapper:
             # SQLite AUTOINCREMENT yapısını Postgres SERIAL yapısına çevirir
             query = query.replace('INTEGER PRIMARY KEY AUTOINCREMENT', 'SERIAL PRIMARY KEY')
         
-        cursor.execute(query, params)
+        try:
+            cursor.execute(query, params)
+        except Exception as e:
+            if self.is_postgres:
+                # Postgres'te hata çıkarsa transaction kilitlenmesin diye rollback yapıyoruz
+                try:
+                    self.conn.rollback()
+                except:
+                    pass
+            raise e
+            
         return cursor
 
     def commit(self):
@@ -72,11 +82,13 @@ def init_db():
         status TEXT
     )''')
     
-    # Eksik sütunları otomatik ekleme
+    # Eksik sütunları otomatik ekleme ve güvenli rollback
     try:
         conn.execute('ALTER TABLE admins ADD COLUMN verification_code TEXT')
+        conn.commit()
     except Exception:
-        pass 
+        if conn.is_postgres:
+            try: conn.conn.rollback() except: pass
 
     conn.execute('''CREATE TABLE IF NOT EXISTS members (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -181,9 +193,11 @@ def init_db():
 
     # Admins tablosuna tag sütunu ekleme güvenliği
     try:
-        conn.execute('ALTER TABLE admins ADD COLUMN tag TEXT DEFAULT "Uzman"')
+        conn.execute("ALTER TABLE admins ADD COLUMN tag TEXT DEFAULT 'Uzman'")
+        conn.commit()
     except Exception:
-        pass
+        if conn.is_postgres:
+            try: conn.conn.rollback() except: pass
 
     # Atanan testler tablosu
     conn.execute('''
@@ -200,7 +214,7 @@ def init_db():
     ''')
     
     # Kurucu Yönetici Garantisi
-    yonetici = conn.execute('SELECT * FROM admins WHERE username = "yonetici"').fetchone()
+    yonetici = conn.execute('SELECT * FROM admins WHERE username = ?', ('yonetici',)).fetchone()
     if not yonetici:
         hashed_pw = generate_password_hash('yonetici123', method='pbkdf2:sha256') 
         conn.execute('INSERT INTO admins (username, password, role, name, email, status) VALUES (?, ?, ?, ?, ?, ?)',
