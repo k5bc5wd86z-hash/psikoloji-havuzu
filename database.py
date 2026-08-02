@@ -202,7 +202,7 @@ def init_db():
     )''')
 
     # Admins tablosuna tag sütunu ekleme güvenliği
-    try:
+try:
     conn.execute('UPDATE admins SET "tag" = ? WHERE id = ?', (new_tag, expert_id))
     conn.commit()
 except Exception:
