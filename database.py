@@ -201,19 +201,6 @@ def init_db():
         content TEXT
     )''')
 
-    # Admins tablosuna tag sütunu ekleme güvenliği
-# Admins tablosuna tag sütunu ekleme güvenliği
-try:
-    conn.execute('UPDATE admins SET "tag" = ? WHERE id = ?', (new_tag, expert_id))
-    conn.commit()
-except Exception:
-    # Check if 'conn' is defined and exists in the current scope
-    if 'conn' in locals() and conn is not None:
-        try:
-            if getattr(conn, 'is_postgres', False):
-                conn.conn.rollback()
-        except Exception:
-            pass
             
     # Atanan testler tablosu
     conn.execute('''
