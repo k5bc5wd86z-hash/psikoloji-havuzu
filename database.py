@@ -75,19 +75,33 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     
-    # 1. Admins tablosu
-    conn.execute('''CREATE TABLE IF NOT EXISTS admins (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        role TEXT NOT NULL,
-        name TEXT NOT NULL,
-        email TEXT,
-        cv TEXT,
-        photo TEXT,
-        status TEXT,
-        tag TEXT DEFAULT 'Uzman'
-    )''')
+    # 1. Admins tablosu (PostgreSQL ve SQLite uyumlu)
+    if conn.is_postgres:
+        conn.execute('''CREATE TABLE IF NOT EXISTS admins (
+            id SERIAL PRIMARY KEY,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT NOT NULL,
+            name TEXT NOT NULL,
+            email TEXT,
+            cv TEXT,
+            photo TEXT,
+            status TEXT,
+            "tag" TEXT DEFAULT 'Uzman'
+        )''')
+    else:
+        conn.execute('''CREATE TABLE IF NOT EXISTS admins (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT NOT NULL,
+            name TEXT NOT NULL,
+            email TEXT,
+            cv TEXT,
+            photo TEXT,
+            status TEXT,
+            tag TEXT DEFAULT 'Uzman'
+        )''')
     
     # Eksik sütunları otomatik ekleme ve güvenli rollback
     try:
