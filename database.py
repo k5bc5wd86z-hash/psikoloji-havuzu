@@ -86,6 +86,7 @@ def init_db():
         cv TEXT,
         photo TEXT,
         status TEXT
+        tag TEXT DEFAULT 'Uzman'
     )''')
     
     # Eksik sütunları otomatik ekleme ve güvenli rollback
