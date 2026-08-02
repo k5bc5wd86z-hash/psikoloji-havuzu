@@ -87,7 +87,7 @@ def init_db():
             cv TEXT,
             photo TEXT,
             status TEXT,
-            "tag" TEXT DEFAULT 'Uzman'
+            tag TEXT DEFAULT 'Uzman'
         )''')
     else:
         conn.execute('''CREATE TABLE IF NOT EXISTS admins (
