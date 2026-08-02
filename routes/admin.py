@@ -103,12 +103,19 @@ def update_expert_tag(expert_id):
     new_tag = request.form.get('expertTag', 'Uzman')
     
     conn = get_db_connection()
-    # Projenizdeki tablo adınız 'admins' ise bu şekilde kalabilir, 
-    # eğer uzmanlar 'experts' tablosundaysa burayı 'experts' olarak değiştirebilirsiniz.
-    conn.execute('UPDATE admins SET tag = ? WHERE id = ?', (new_tag, expert_id))
-    conn.commit()
-    conn.close()
-    
-    # İşlem tamamlandıktan sonra anasayfa yerine tekrar yönetim paneline yönlendirmek 
-    # akışın kesilmemesini sağlar (kendi yönetim paneli rota adınızla güncelleyebilirsiniz).
-    return redirect(url_for('admin_bp.yonetici_paneli'))
+    try:
+        conn.execute('UPDATE admins SET tag = ? WHERE id = ?', (new_tag, expert_id))
+        conn.commit()
+    except Exception:
+        if 'conn' in locals() and conn is not None:
+            try:
+                if getattr(conn, 'is_postgres', False):
+                    conn.conn.rollback()
+            except Exception:
+                pass
+        raise
+    finally:
+        if 'conn' in locals() and conn is not None:
+            conn.close()
+            
+    return redirect(url_for('anasayfa'))
