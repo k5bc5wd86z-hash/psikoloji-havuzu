@@ -85,7 +85,7 @@ def init_db():
         email TEXT,
         cv TEXT,
         photo TEXT,
-        status TEXT
+        status TEXT,
         tag TEXT DEFAULT 'Uzman'
     )''')
     
