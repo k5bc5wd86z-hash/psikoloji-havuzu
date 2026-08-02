@@ -74,6 +74,7 @@
             <select name="expertTag" class="editor-select" style="padding: 0.4rem; border-radius: 6px;">
                 <option value="Uzman" {% if expert.tag == 'Uzman' %}selected{% endif %}>Uzman</option>
                 <option value="Kurucu Uzman" {% if expert.tag == 'Kurucu Uzman' %}selected{% endif %}>Kurucu Uzman</option>
+                <option.value="Yönetim Kurulu Üyesi" {% if expert.tag == 'Yönetim Kurulu Üyesi' %}selected{% endif %}>Yönetim Kurulu Üyesi</option>
             </select>
             <button type="submit" class="btn-follow" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Etiketi Güncelle</button>
         </form>
