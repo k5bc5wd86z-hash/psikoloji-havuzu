@@ -203,15 +203,15 @@ def init_db():
 
     # Admins tablosuna tag sütunu ekleme güvenliği
     try:
-        conn.execute("ALTER TABLE admins ADD COLUMN tag TEXT DEFAULT 'Uzman'")
-        conn.commit()
-    except Exception:
-        if conn.is_postgres:
-            try:
-                conn.conn.rollback()
-            except:
-                pass
-
+    conn.execute('UPDATE admins SET "tag" = ? WHERE id = ?', (new_tag, expert_id))
+    conn.commit()
+except Exception:
+    if conn.is_postgres:
+        try:
+            conn.conn.rollback()
+        except:
+            pass
+            
     # Atanan testler tablosu
     conn.execute('''
         CREATE TABLE IF NOT EXISTS assigned_tests (
